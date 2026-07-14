@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>Perfections Dental — Staff Login</title>
+    <title>Perfections Dental — Sign In</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <link
       rel="stylesheet"
@@ -88,11 +88,11 @@
         color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
       }
       .role-name { font-size: 0.76rem; font-weight: 700; color: var(--dark); }
-      .patient-portal-link {
+      .register-link {
         display: block; text-align: center; margin-top: 22px; font-size: 0.85rem;
         color: var(--blue); text-decoration: none; font-weight: 600;
       }
-      .patient-portal-link:hover { text-decoration: underline; }
+      .register-link:hover { text-decoration: underline; }
       .loading-overlay {
         position: fixed; inset: 0; background: rgba(253,250,245,0.9);
         backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
@@ -122,17 +122,17 @@
         <img src="assets/logo.png" alt="Perfections Dental" onerror="this.style.display='none'" />
       </div>
       <div class="login-title">Perfections Dental</div>
-      <div class="login-sub">Staff sign in</div>
+      <div class="login-sub">Sign in to your account</div>
 
       <div id="errorMessage" class="message error-message"></div>
       <div id="successMessage" class="message success-message"></div>
 
       <form id="loginForm">
         <div class="glass-field">
-          <label>Email address</label>
+          <label>Email, phone, or patient ID</label>
           <div class="input-wrapper">
-            <i class="fas fa-envelope field-icon"></i>
-            <input type="email" id="email" class="glass-input" placeholder="you@perfectionsdental.ng" required />
+            <i class="fas fa-user field-icon"></i>
+            <input type="text" id="identifier" class="glass-input" placeholder="you@perfectionsdental.ng / phone / PAT-00001" required />
           </div>
         </div>
         <div class="glass-field">
@@ -166,14 +166,14 @@
             <div class="role-name">Nurse</div>
           </div>
           <div class="credential-item" data-email="reception@perfectionsdental.ng">
-            <div class="role-badge"><i class="fas fa-desk"></i></div>
+            <div class="role-badge"><i class="fas fa-bell-concierge"></i></div>
             <div class="role-name">Reception</div>
           </div>
         </div>
       </div>
 
-      <a class="patient-portal-link" href="/pages/patient/login.html">
-        <i class="fas fa-tooth"></i> Are you a patient? Sign in to the Patient Portal
+      <a class="register-link" href="/pages/patient/register.html">
+        <i class="fas fa-tooth"></i> New patient? Create an account
       </a>
     </div>
 

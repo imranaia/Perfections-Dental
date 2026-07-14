@@ -70,11 +70,86 @@ def is_valid_email(email):
 
 
 # =========================================
-# Login Endpoint
+# Staff auth helpers — shared by /login and /unified-login
+# =========================================
+def authenticate_staff(cursor, email, password):
+    """Look up a staff user by email and verify the password.
+    Returns the raw DB row on success, None otherwise (bad email, wrong
+    password, inactive account) — never raises for a no-match."""
+    sql = """
+        SELECT
+            u.id,
+            u.employee_id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            u.password_hash,
+            u.license_number,
+            u.specialization,
+            u.qualifications,
+            u.experience_years,
+            u.status,
+            u.avatar,
+            r.id as role_id,
+            r.name as role
+        FROM users u
+        INNER JOIN roles r ON u.role_id = r.id
+        WHERE u.email = ? AND u.status = 'active'
+    """
+    cursor.execute(sql, (email,))
+    user = cursor.fetchone()
+
+    if not user or not check_password_hash(user['password_hash'], password):
+        return None
+    return user
+
+
+def _staff_public(user):
+    """Strip the password hash and shape a DB row for session/JSON use."""
+    return {
+        'id': user['id'],
+        'employee_id': user['employee_id'],
+        'first_name': user['first_name'],
+        'last_name': user['last_name'],
+        'name': f"{user['first_name']} {user['last_name']}",
+        'email': user['email'],
+        'role': user['role'],
+        'role_id': user['role_id'],
+        'license_number': user['license_number'],
+        'specialization': user['specialization'],
+        'avatar': user['avatar'] or f"{user['first_name'][0]}{user['last_name'][0]}",
+        'can_switch_to_doctor': user['role'] == 'superadmin'
+    }
+
+
+def start_staff_session(user_data):
+    session.clear()
+    session['user_id'] = user_data['id']
+    session['user'] = user_data
+    session['role'] = user_data['role']
+    session['active_role'] = user_data['role']
+    session.permanent = True
+
+
+def _log_staff_login(cursor, db, user_id):
+    audit_sql = """
+        INSERT INTO audit_logs (user_id, action, table_name, ip_address, user_agent)
+        VALUES (?, 'LOGIN', 'users', ?, ?)
+    """
+    cursor.execute(audit_sql, (
+        user_id,
+        request.remote_addr,
+        request.headers.get('User-Agent')
+    ))
+    db.commit()
+
+
+# =========================================
+# Login Endpoint (staff only — kept for any existing callers)
 # =========================================
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    """Authenticate user and create session"""
+    """Authenticate a staff user and create a session"""
     try:
         data = request.get_json()
 
@@ -99,68 +174,14 @@ def login():
 
         try:
             with db.cursor() as cursor:
-                # Get user with role information
-                sql = """
-                    SELECT 
-                        u.id,
-                        u.employee_id,
-                        u.first_name,
-                        u.last_name,
-                        u.email,
-                        u.password_hash,
-                        u.license_number,
-                        u.specialization,
-                        u.qualifications,
-                        u.experience_years,
-                        u.status,
-                        u.avatar,
-                        r.id as role_id,
-                        r.name as role
-                    FROM users u
-                    INNER JOIN roles r ON u.role_id = r.id
-                    WHERE u.email = ? AND u.status = 'active'
-                """
-                cursor.execute(sql, (email,))
-                user = cursor.fetchone()
+                user = authenticate_staff(cursor, email, password)
 
-                if not user or not check_password_hash(user['password_hash'], password):
+                if not user:
                     return jsonify({'error': 'Invalid email or password'}), 401
 
-                # Remove password hash from session data
-                user_data = {
-                    'id': user['id'],
-                    'employee_id': user['employee_id'],
-                    'first_name': user['first_name'],
-                    'last_name': user['last_name'],
-                    'name': f"{user['first_name']} {user['last_name']}",
-                    'email': user['email'],
-                    'role': user['role'],
-                    'role_id': user['role_id'],
-                    'license_number': user['license_number'],
-                    'specialization': user['specialization'],
-                    'avatar': user['avatar'] or f"{user['first_name'][0]}{user['last_name'][0]}",
-                    'can_switch_to_doctor': user['role'] == 'superadmin'
-                }
-
-                # Set session data
-                session.clear()
-                session['user_id'] = user['id']
-                session['user'] = user_data
-                session['role'] = user['role']
-                session['active_role'] = user['role']
-                session.permanent = True
-
-                # Log login in audit_logs
-                audit_sql = """
-                    INSERT INTO audit_logs (user_id, action, table_name, ip_address, user_agent)
-                    VALUES (?, 'LOGIN', 'users', ?, ?)
-                """
-                cursor.execute(audit_sql, (
-                    user['id'],
-                    request.remote_addr,
-                    request.headers.get('User-Agent')
-                ))
-                db.commit()
+                user_data = _staff_public(user)
+                start_staff_session(user_data)
+                _log_staff_login(cursor, db, user['id'])
 
                 # Determine redirect URL
                 redirect_url = f'/pages/{user["role"]}/dashboard.html'
@@ -182,6 +203,72 @@ def login():
 
     except Exception as e:
         print(f"Login error: {e}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+
+
+# =========================================
+# Unified Login Endpoint — the one login page (staff + patients) posts here.
+# Tries staff first (only when the identifier looks like an email — patient
+# phone numbers/IDs would just fail email validation), then falls back to
+# patient lookup by phone, email, or patient ID.
+# =========================================
+@auth_bp.route('/unified-login', methods=['POST'])
+def unified_login():
+    """Authenticate either a staff member or a patient from one form."""
+    try:
+        data = request.get_json() or {}
+        identifier = (data.get('identifier') or '').strip()
+        password = data.get('password') or ''
+
+        if not identifier or not password:
+            return jsonify({'error': 'Please enter your email, phone, or patient ID and password'}), 400
+
+        # Deferred import: patient.auth imports reception.patients, which
+        # imports this module (for login_required) — importing it here
+        # instead of at module load time avoids a circular import.
+        from patient.auth import authenticate_patient, start_patient_session, _patient_public
+
+        db = get_db()
+        if not db:
+            return jsonify({'error': 'Database connection failed'}), 500
+
+        try:
+            with db.cursor() as cursor:
+                if is_valid_email(identifier):
+                    user = authenticate_staff(cursor, identifier.lower(), password)
+                    if user:
+                        user_data = _staff_public(user)
+                        start_staff_session(user_data)
+                        _log_staff_login(cursor, db, user['id'])
+
+                        redirect_url = f'/pages/{user["role"]}/dashboard.html'
+                        return jsonify({
+                            'success': True,
+                            'message': 'Login successful',
+                            'user': user_data,
+                            'redirect': redirect_url
+                        }), 200
+
+                patient = authenticate_patient(cursor, identifier, password)
+                if patient:
+                    start_patient_session(patient)
+                    return jsonify({
+                        'success': True,
+                        'message': 'Login successful',
+                        'patient': _patient_public(patient),
+                        'redirect': '/pages/patient/dashboard.html'
+                    }), 200
+
+            return jsonify({'error': 'Invalid credentials'}), 401
+
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            return jsonify({'error': 'Database error occurred'}), 500
+        finally:
+            db.close()
+
+    except Exception as e:
+        print(f"Unified login error: {e}")
         return jsonify({'error': 'An unexpected error occurred'}), 500
 
 

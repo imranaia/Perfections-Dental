@@ -2,94 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Patient Portal — Perfections Dental</title>
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="/css/glass.css" />
-    <style>
-      body.login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-      .login-wrap { width: 100%; max-width: 420px; padding: 40px 36px; }
-      .login-logo {
-        width: 76px; height: 76px; margin: 0 auto 18px; border-radius: 22px;
-        background: linear-gradient(135deg, var(--green), var(--green-dark));
-        box-shadow: 0 12px 28px rgba(29, 181, 104, 0.35);
-        display: flex; align-items: center; justify-content: center; overflow: hidden;
-      }
-      .login-logo img { width: 100%; height: 100%; object-fit: cover; }
-      .login-title { text-align: center; font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--blue-dark); margin-bottom: 2px; }
-      .login-sub { text-align: center; color: var(--mid-gray); font-size: 0.88rem; margin-bottom: 26px; }
-      .message { padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 0.86rem; border-left: 3px solid; display: none; }
-      .message.show { display: block; }
-      .error-message { background: var(--danger-light); color: var(--danger); border-left-color: var(--danger); }
-      .success-message { background: var(--green-light); color: var(--green-dark); border-left-color: var(--green); }
-      .switch-link { display: block; text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--blue); text-decoration: none; font-weight: 600; }
-      .switch-link:hover { text-decoration: underline; }
-      .staff-link { display: block; text-align: center; margin-top: 8px; font-size: 0.8rem; color: var(--mid-gray); text-decoration: none; }
-    </style>
+    <title>Perfections Dental — Sign In</title>
+    <meta http-equiv="refresh" content="0; url=/login.html" />
+    <script>window.location.replace('/login.html');</script>
   </head>
-  <body class="glass-app login-page">
-    <div class="glass-mesh"><span></span><span></span><span></span></div>
-
-    <div class="login-wrap glass-strong">
-      <div class="login-logo"><i class="fas fa-tooth" style="color:#fff;font-size:1.8rem"></i></div>
-      <div class="login-title">Patient Portal</div>
-      <div class="login-sub">Perfections Dental Services</div>
-
-      <div id="errorMessage" class="message error-message"></div>
-      <div id="successMessage" class="message success-message"></div>
-
-      <form id="patientLoginForm">
-        <div class="glass-field">
-          <label>Phone number</label>
-          <input type="text" id="phone" class="glass-input" placeholder="+234 800 000 0000" required />
-        </div>
-        <div class="glass-field">
-          <label>Password</label>
-          <input type="password" id="password" class="glass-input" placeholder="••••••••" required />
-        </div>
-        <button type="submit" class="glass-btn glass-btn-success" style="width:100%; padding:13px;">
-          <i class="fas fa-right-to-bracket"></i> Sign In
-        </button>
-      </form>
-
-      <a class="switch-link" href="/pages/patient/register.html">New patient? Create a portal account</a>
-      <a class="staff-link" href="/login.html">Staff login instead</a>
-    </div>
-
-    <script>
-      const form = document.getElementById('patientLoginForm');
-      const errorMsg = document.getElementById('errorMessage');
-      const successMsg = document.getElementById('successMessage');
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        errorMsg.classList.remove('show');
-        successMsg.classList.remove('show');
-        const phone = document.getElementById('phone').value.trim();
-        const password = document.getElementById('password').value;
-
-        try {
-          const res = await fetch('/api/patient/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ phone, password }),
-          });
-          const data = await res.json();
-          if (res.ok && data.success) {
-            successMsg.textContent = 'Welcome back! Redirecting…';
-            successMsg.classList.add('show');
-            setTimeout(() => (window.location.href = data.redirect), 500);
-          } else {
-            errorMsg.textContent = data.error || 'Invalid phone or password';
-            errorMsg.classList.add('show');
-          }
-        } catch (err) {
-          errorMsg.textContent = 'Network error — please check the server is running.';
-          errorMsg.classList.add('show');
-        }
-      });
-    </script>
+  <body>
+    <p>Staff and patient sign-in have merged into one page. Redirecting to <a href="/login.html">/login.html</a>…</p>
   </body>
 </html>

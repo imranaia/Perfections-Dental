@@ -200,7 +200,7 @@ app = create_app(os.getenv('FLASK_ENV', 'development'))
 
 @app.route('/')
 def index():
-    return send_from_directory('../pdsl', 'index.html')
+    return send_from_directory(app.static_folder, 'index.html')
 
 
 # =========================================

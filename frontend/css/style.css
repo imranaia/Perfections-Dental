@@ -125,7 +125,7 @@ body {
 .sidebar {
     width: 280px;
     height: 100vh;
-    background: var(--pure-white);
+    background: linear-gradient(165deg, var(--primary-blue-dark), var(--primary-blue));
     box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
@@ -143,7 +143,7 @@ body {
 /* 3D Sidebar Header */
 .sidebar-header {
     padding: var(--space-xl) var(--space-lg);
-    background: linear-gradient(145deg, var(--primary-blue), var(--primary-blue-dark));
+    background: rgba(255, 255, 255, 0.08);
     position: relative;
     overflow: hidden;
     transform-style: preserve-3d;
@@ -295,7 +295,7 @@ body {
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.5);
     font-weight: 600;
 }
 
@@ -304,7 +304,7 @@ body {
     align-items: center;
     gap: var(--space-md);
     padding: var(--space-md) var(--space-lg);
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.8);
     transition: all var(--transition-base);
     border-left: 4px solid transparent;
     cursor: pointer;
@@ -319,7 +319,7 @@ body {
     top: 0;
     width: 0;
     height: 100%;
-    background: rgba(0, 102, 204, 0.05);
+    background: rgba(255, 255, 255, 0.08);
     transition: width var(--transition-base);
     z-index: var(--z-below);
 }
@@ -329,14 +329,14 @@ body {
 }
 
 .menu-item:hover {
-    color: var(--primary-blue);
+    color: #fff;
     transform: translateX(4px);
 }
 
 .menu-item.active {
-    background: rgba(0, 102, 204, 0.1);
-    color: var(--primary-blue);
-    border-left-color: var(--primary-blue);
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-left-color: #fff;
 }
 
 .menu-item i {

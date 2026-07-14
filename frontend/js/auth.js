@@ -70,41 +70,47 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
+
+            const identifier = document.getElementById('identifier').value.trim();
             const password = document.getElementById('password').value.trim();
-            
-            if (!email || !password) {
-                showMessage('error', 'Please enter both email and password');
+
+            if (!identifier || !password) {
+                showMessage('error', 'Please enter your email, phone, or patient ID and password');
                 return;
             }
-            
+
             showLoading(true);
-            
+
             try {
-                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                const response = await fetch(`${API_BASE_URL}/auth/unified-login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     credentials: 'include',
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ identifier, password })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok && data.success) {
-                    sessionStorage.setItem('user', JSON.stringify(data.user));
-                    sessionStorage.setItem('active_role', data.user.role);
-                    
+                    // Staff accounts get a user/role in the response; patient
+                    // accounts get a patient instead (see backend/auth.py's
+                    // unified_login) — the patient portal manages its own
+                    // session state, so there's nothing extra to store here.
+                    if (data.user) {
+                        sessionStorage.setItem('user', JSON.stringify(data.user));
+                        sessionStorage.setItem('active_role', data.user.role);
+                    }
+
                     showMessage('success', 'Login successful! Redirecting...');
-                    
+
                     setTimeout(() => {
                         window.location.href = data.redirect;
                     }, 1000);
                 } else {
                     showLoading(false);
-                    showMessage('error', data.error || 'Invalid email or password');
+                    showMessage('error', data.error || 'Invalid credentials');
                 }
             } catch (error) {
                 console.error('Login error:', error);
@@ -113,18 +119,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     const credentialItems = document.querySelectorAll('.credential-item');
     credentialItems.forEach(item => {
         item.addEventListener('click', () => {
             const email = item.getAttribute('data-email');
             const passwordInput = document.getElementById('password');
-            const emailInput = document.getElementById('email');
-            
-            if (email) {
-                emailInput.value = email;
+            const identifierInput = document.getElementById('identifier');
+
+            if (email && identifierInput) {
+                identifierInput.value = email;
                 passwordInput.value = '1234';
-                emailInput.focus();
+                identifierInput.focus();
             }
         });
     });

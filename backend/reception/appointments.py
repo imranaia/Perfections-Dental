@@ -15,6 +15,8 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from reception.patients import generate_patient_number
+
 appointments_bp = Blueprint(
     'reception_appointments', __name__, url_prefix='/api/reception/appointments')
 
@@ -481,23 +483,20 @@ def create_appointment():
             patient_id = data.get('patient_id')
 
             if data.get('is_new_patient'):
-                # Insert with placeholder; update number after we have the id
+                # Generate the number before inserting (matches reception/patients.py)
+                patient_number = generate_patient_number(db, cursor)
                 cursor.execute("""
                     INSERT INTO patients (
                         patient_number, first_name, last_name, dob, gender,
                         phone, email, registration_date, status
-                    ) VALUES ('PENDING', ?, ?, ?, ?, ?, ?, date('now'), 'active')
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, date('now'), 'active')
                 """, (
+                    patient_number,
                     data.get('first_name'), data.get('last_name'),
                     data.get('dob'),        data.get('gender'),
                     data.get('phone'),      data.get('email')
                 ))
                 patient_id = cursor.lastrowid
-                patient_number = f"PAT-{patient_id:05d}"
-                cursor.execute(
-                    "UPDATE patients SET patient_number = ? WHERE id = ?",
-                    (patient_number, patient_id)
-                )
 
             if not patient_id:
                 db.close()

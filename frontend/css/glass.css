@@ -2,7 +2,7 @@
    Perfections Dental Services
    "Liquid Glass" Design System — v2.0
    Shared across the public site, the staff dashboards, and the patient
-   portal. Palette and type pulled straight from the pdsl landing page
+   portal. Palette and type pulled straight from the landing page
    so every surface of the product reads as one brand.
    ========================================= */
 
@@ -46,32 +46,6 @@
     --radius-lg: 28px;
     --radius-xl: 36px;
     --radius-pill: 100px;
-}
-
-:root[data-theme="dark"] {
-    --cream: #0b1826;
-    --off-white: #0f2136;
-    --dark: #f6f2eb;
-    --mid-gray: #9fb0c3;
-    --light-border: rgba(255, 255, 255, 0.1);
-    --glass-bg: rgba(20, 35, 55, 0.55);
-    --glass-bg-strong: rgba(20, 35, 55, 0.75);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-        --cream: #0b1826;
-        --off-white: #0f2136;
-        --dark: #f6f2eb;
-        --mid-gray: #9fb0c3;
-        --light-border: rgba(255, 255, 255, 0.1);
-        --glass-bg: rgba(20, 35, 55, 0.55);
-        --glass-bg-strong: rgba(20, 35, 55, 0.75);
-        --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-        --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    }
 }
 
 * , *::before, *::after { box-sizing: border-box; }
@@ -141,19 +115,69 @@ body.glass-app::before {
 .glass-shell {
     display: flex;
     min-height: 100vh;
+    padding-left: 76px; /* room for the collapsed sidebar rail */
 }
+
+/* ── Sidebar: a small blue rail by default; click the toggle to open it
+   into a full blue panel with white text. Same behavior at every width —
+   it's an overlay drawer, not a layout that reflows the page. ── */
 .glass-sidebar {
-    width: 264px;
+    width: 76px;
     flex-shrink: 0;
-    padding: 24px 18px;
+    padding: 20px 10px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    position: sticky;
+    gap: 4px;
+    position: fixed;
     top: 0;
+    left: 0;
     height: 100vh;
+    overflow-x: hidden;
     overflow-y: auto;
+    z-index: 300;
+    background: linear-gradient(165deg, var(--blue-dark), var(--blue));
+    border: none;
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    box-shadow: var(--glass-shadow-lg);
+    transition: width 0.3s var(--ease);
 }
+.glass-sidebar.open {
+    width: 250px;
+}
+.glass-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 290;
+    background: rgba(11, 24, 38, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s var(--ease);
+}
+.glass-sidebar-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+/* Docked inside the rail itself (not fixed to the viewport) so it can
+   never overlap page content — it just sits at the top of the sidebar and
+   moves with it. */
+.glass-sidebar-toggle {
+    width: 100%;
+    height: 42px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    transition: background 0.2s var(--ease);
+}
+.glass-sidebar-toggle:hover { background: rgba(255, 255, 255, 0.22); }
+
 .glass-main {
     flex: 1;
     min-width: 0;
@@ -175,15 +199,15 @@ body.glass-app::before {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 12px 22px;
+    padding: 10px 4px 22px;
     text-decoration: none;
 }
 .glass-brand-mark {
     width: 42px;
     height: 42px;
     border-radius: 14px;
-    background: linear-gradient(135deg, var(--blue), var(--blue-mid));
-    box-shadow: 0 6px 16px rgba(4, 80, 160, 0.35);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 6px 16px rgba(2, 20, 45, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -191,18 +215,20 @@ body.glass-app::before {
     flex-shrink: 0;
 }
 .glass-brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+.glass-brand-words { overflow: hidden; white-space: nowrap; }
+.glass-sidebar:not(.open) .glass-brand-words { display: none; }
 .glass-brand-words strong {
     display: block;
     font-family: var(--font-display);
     font-size: 1rem;
     font-weight: 800;
-    color: var(--blue-dark);
+    color: #fff;
     letter-spacing: -0.2px;
 }
 .glass-brand-words small {
     font-size: 0.66rem;
     font-weight: 600;
-    color: var(--green-dark);
+    color: rgba(255, 255, 255, 0.7);
     letter-spacing: 0.6px;
     text-transform: uppercase;
 }
@@ -214,19 +240,28 @@ body.glass-app::before {
     gap: 12px;
     padding: 11px 14px;
     border-radius: var(--radius-sm);
-    color: var(--mid-gray);
+    color: rgba(255, 255, 255, 0.75);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.88rem;
+    white-space: nowrap;
     transition: all 0.25s var(--ease);
 }
-.glass-nav-link i { width: 18px; text-align: center; font-size: 0.95rem; }
-.glass-nav-link:hover { background: rgba(4, 80, 160, 0.08); color: var(--blue); }
+.glass-nav-link i { width: 18px; text-align: center; font-size: 0.95rem; flex-shrink: 0; }
+.glass-nav-link:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
 .glass-nav-link.active {
-    background: linear-gradient(110deg, var(--blue), var(--blue-mid));
+    background: rgba(255, 255, 255, 0.18);
     color: #fff;
-    box-shadow: 0 8px 20px rgba(4, 80, 160, 0.3);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
+/* Collapsed rail: icons only, centered — the label text is still in the
+   DOM (no markup change needed per page), just shrunk to invisible. */
+.glass-sidebar:not(.open) .glass-nav-link {
+    justify-content: center;
+    padding: 11px 0;
+    font-size: 0;
+}
+.glass-sidebar:not(.open) .glass-nav-link i { font-size: 1.05rem; }
 
 /* ── Cards ── */
 .glass-card {
@@ -403,8 +438,6 @@ body.glass-app::before {
 @media (max-width: 1000px) { .glass-grid-4 { grid-template-columns: repeat(2, 1fr); } .glass-grid-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 700px) {
     .glass-grid-2, .glass-grid-3, .glass-grid-4 { grid-template-columns: 1fr; }
-    .glass-shell { flex-direction: column; }
-    .glass-sidebar { width: 100%; height: auto; position: relative; flex-direction: row; overflow-x: auto; }
     .glass-main { padding: 20px; }
 }
 

@@ -14,6 +14,7 @@ from flask import Blueprint, request, jsonify, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from db import get_db
+from reception.patients import generate_patient_number
 
 patient_bp = Blueprint('patient_auth', __name__, url_prefix='/api/patient/auth')
 
@@ -85,14 +86,13 @@ def register():
             else:
                 if not first_name or not last_name:
                     return jsonify({'error': 'First and last name are required for a new patient'}), 400
+                # Generate the number before inserting (matches reception/patients.py)
+                patient_number = generate_patient_number(db, cursor)
                 cursor.execute("""
-                    INSERT INTO patients (first_name, last_name, email, phone, password_hash, portal_active)
-                    VALUES (?, ?, ?, ?, ?, 1)
-                """, (first_name, last_name, email or None, phone, password_hash))
+                    INSERT INTO patients (patient_number, first_name, last_name, email, phone, password_hash, portal_active)
+                    VALUES (?, ?, ?, ?, ?, ?, 1)
+                """, (patient_number, first_name, last_name, email or None, phone, password_hash))
                 patient_id = cursor.lastrowid
-                cursor.execute("""
-                    UPDATE patients SET patient_number = ? WHERE id = ?
-                """, (f"PT-{patient_id:04d}", patient_id))
 
             db.commit()
 
@@ -118,31 +118,48 @@ def register():
         db.close()
 
 
+def authenticate_patient(cursor, identifier, password):
+    """Look up a patient by phone, email, or patient ID and verify the
+    password. Returns the raw DB row on success, None otherwise — never
+    raises for a no-match. Used by both this module's own /login route and
+    the unified staff+patient login in backend/auth.py."""
+    cursor.execute("""
+        SELECT * FROM patients
+        WHERE (phone = ? OR email = ? OR patient_number = ?) AND portal_active = 1
+    """, (identifier, identifier.lower(), identifier))
+    patient = cursor.fetchone()
+
+    if not patient or not patient['password_hash'] or not check_password_hash(patient['password_hash'], password):
+        return None
+    return patient
+
+
+def start_patient_session(patient):
+    session.clear()
+    session['patient_id'] = patient['id']
+    session['patient'] = _patient_public(patient)
+    session.permanent = True
+
+
 @patient_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json() or {}
-    identifier = (data.get('phone') or data.get('email') or '').strip()
+    identifier = (data.get('phone') or data.get('email')
+                  or data.get('patient_number') or '').strip()
     password = data.get('password') or ''
 
     if not identifier or not password:
-        return jsonify({'error': 'Phone/email and password are required'}), 400
+        return jsonify({'error': 'Phone/email/patient ID and password are required'}), 400
 
     db = get_db()
     try:
         with db.cursor() as cursor:
-            cursor.execute("""
-                SELECT * FROM patients
-                WHERE (phone = ? OR email = ?) AND portal_active = 1
-            """, (identifier, identifier.lower()))
-            patient = cursor.fetchone()
+            patient = authenticate_patient(cursor, identifier, password)
 
-        if not patient or not patient['password_hash'] or not check_password_hash(patient['password_hash'], password):
+        if not patient:
             return jsonify({'error': 'Invalid credentials'}), 401
 
-        session.clear()
-        session['patient_id'] = patient['id']
-        session['patient'] = _patient_public(patient)
-        session.permanent = True
+        start_patient_session(patient)
 
         return jsonify({
             'success': True,
