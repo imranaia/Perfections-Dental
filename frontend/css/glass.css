@@ -93,6 +93,16 @@ body.glass-app::before {
     to   { transform: translate(36px, 26px) scale(1.06); }
 }
 
+/* Login/register screens have almost no other content on the page, so the
+   default subtle mesh reads as "plain white" and the card blends into the
+   background. Turn the blue/green up so the page clearly has color, and
+   give the card its own blue-tinted shadow so it visibly sits above it. */
+body.login-page .glass-mesh span { opacity: 0.34; }
+body.login-page .login-wrap.glass-strong {
+    border: 1px solid rgba(4, 80, 160, 0.16);
+    box-shadow: 0 34px 70px -18px rgba(4, 80, 160, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
 /* ── Core glass surface ── */
 .glass {
     background: var(--glass-bg);
@@ -195,19 +205,29 @@ body.glass-app::before {
 }
 
 /* ── Brand lockup ── */
+/* One unified white card holding the mark + wordmark together, so the
+   logo and the Perfections Dental / Services Limited text pop in full
+   3D contrast against the blue sidebar, instead of floating loose on it. */
 .glass-brand {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 4px 22px;
+    margin: 4px 4px 14px;
+    padding: 9px 12px;
     text-decoration: none;
+    background: #fff;
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 26px rgba(2, 20, 45, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.glass-sidebar:not(.open) .glass-brand {
+    padding: 7px;
+    margin: 4px 0 14px;
+    justify-content: center;
 }
 .glass-brand-mark {
     width: 42px;
     height: 42px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 6px 16px rgba(2, 20, 45, 0.35);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -216,19 +236,9 @@ body.glass-app::before {
 }
 .glass-brand-mark img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Liquid-glass wordmark card — same Playfair/dark-blue + green-caps
-   treatment as the landing page's navbar logo, on a frosted glass
-   surface so it stays legible (and pops) against the blue sidebar. */
 .glass-brand-words {
     overflow: hidden;
     white-space: nowrap;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: var(--radius-sm);
-    padding: 6px 12px;
-    box-shadow: 0 6px 18px rgba(2, 20, 45, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 .glass-sidebar:not(.open) .glass-brand-words { display: none; }
 .glass-brand-words strong {
