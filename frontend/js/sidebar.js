@@ -21,7 +21,16 @@
       toggle.type = 'button';
       toggle.setAttribute('aria-label', 'Toggle menu');
       toggle.innerHTML = '<i class="fas fa-bars"></i>';
-      sidebar.insertBefore(toggle, sidebar.firstChild);
+      // Docked right after the brand/logo block, not before it — the logo
+      // should always be the first thing visible at the top of the rail.
+      const brand = sidebar.querySelector('.glass-brand');
+      if (brand && brand.nextSibling) {
+        sidebar.insertBefore(toggle, brand.nextSibling);
+      } else if (brand) {
+        sidebar.appendChild(toggle);
+      } else {
+        sidebar.insertBefore(toggle, sidebar.firstChild);
+      }
     }
 
     function setOpen(open) {
