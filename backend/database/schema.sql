@@ -438,6 +438,20 @@ CREATE TABLE IF NOT EXISTS clinic_settings (
     updated_at    DATETIME NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Landing page "Meet Your Smile Architects" team section (superadmin/team.py)
+CREATE TABLE IF NOT EXISTS team_members (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    name          TEXT NOT NULL,
+    role_title    TEXT NOT NULL,
+    bio           TEXT,
+    photo_url     TEXT,
+    tags          TEXT,              -- comma-separated, e.g. "Implantology,Laser Dentistry"
+    display_order INTEGER NOT NULL DEFAULT 0,
+    is_active     INTEGER NOT NULL DEFAULT 1,
+    created_at    DATETIME NOT NULL DEFAULT (datetime('now')),
+    updated_at    DATETIME NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Enforces first-come-first-served booking: one non-cancelled appointment
 -- per doctor per exact datetime slot.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_appt_slot_unique

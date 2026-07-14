@@ -1418,10 +1418,11 @@
       <div class="container">
         <nav class="navbar">
           <a href="#home" class="logo-area">
-            <div class="logo-mark">
+            <div class="logo-mark" id="logoMark">
               <img
                 src="/assets/logo.png"
                 alt="Logo"
+                data-field-src="site.logo_url"
                 onerror="
                   this.style.display = 'none';
                   this.nextElementSibling.style.display = 'flex';
@@ -1457,12 +1458,12 @@
           <div class="hero-left">
             <div class="hero-eyebrow reveal">
               <i class="fas fa-certificate"></i>
-              Abuja's Most Trusted Dental Clinic
+              <span data-field="site.hero_eyebrow">Abuja's Most Trusted Dental Clinic</span>
             </div>
-            <h1 class="hero-h1 reveal reveal-delay-1">
+            <h1 class="hero-h1 reveal reveal-delay-1" data-field-html="site.hero_headline">
               Your smile<br />deserves <em>the very<br />best care</em>
             </h1>
-            <p class="hero-sub reveal reveal-delay-2">
+            <p class="hero-sub reveal reveal-delay-2" data-field="site.hero_subtext">
               State-of-the-art technology, pain-free treatments, and world-class
               expertise — all under one roof. At Perfections Dental, we don't
               just treat teeth, we craft perfect smiles.
@@ -1525,20 +1526,20 @@
     <div class="container">
       <div class="stats-band reveal">
         <div class="stat-item">
-          <div class="stat-num">15+</div>
-          <div class="stat-label">Years of Excellence</div>
+          <div class="stat-num" data-field="site.stat_years">15+</div>
+          <div class="stat-label" data-field="site.stat_years_label">Years of Excellence</div>
         </div>
         <div class="stat-item">
-          <div class="stat-num">7,000+</div>
-          <div class="stat-label">Happy Patients</div>
+          <div class="stat-num" data-field="site.stat_patients">7,000+</div>
+          <div class="stat-label" data-field="site.stat_patients_label">Happy Patients</div>
         </div>
         <div class="stat-item">
-          <div class="stat-num">24/7</div>
-          <div class="stat-label">Emergency Care</div>
+          <div class="stat-num" data-field="site.stat_emergency">24/7</div>
+          <div class="stat-label" data-field="site.stat_emergency_label">Emergency Care</div>
         </div>
         <div class="stat-item">
-          <div class="stat-num">100%</div>
-          <div class="stat-label">Pain-Free Promise</div>
+          <div class="stat-num" data-field="site.stat_painfree">100%</div>
+          <div class="stat-label" data-field="site.stat_painfree_label">Pain-Free Promise</div>
         </div>
       </div>
     </div>
@@ -1712,7 +1713,7 @@
           </p>
           <div class="sec-line"></div>
         </div>
-        <div class="team-grid">
+        <div class="team-grid" id="teamGrid">
           <div class="team-card reveal">
             <div class="team-img-wrap">
               <img
@@ -1961,11 +1962,11 @@
           </div>
           <div class="cta-contact-info">
             <span
-              ><i class="fas fa-map-marker-alt"></i> Plot 14, Michael Okpara
-              Square, Wuse Zone 2, Abuja</span
+              ><i class="fas fa-map-marker-alt"></i>
+              <span data-field="site.address">Plot 14, Michael Okpara Square, Wuse Zone 2, Abuja</span></span
             >
-            <span><i class="fas fa-phone-alt"></i> +234 802 345 6789</span>
-            <span><i class="fas fa-clock"></i> Mon–Sat: 8am – 8pm</span>
+            <span><i class="fas fa-phone-alt"></i> <span data-field="site.phone">+234 802 345 6789</span></span>
+            <span><i class="fas fa-clock"></i> <span data-field="site.hours">Mon–Sat: 8am – 8pm</span></span>
           </div>
         </div>
       </div>
@@ -2016,12 +2017,12 @@
           <div class="footer-col">
             <h4>Contact</h4>
             <ul>
-              <li><i class="fas fa-phone-alt"></i> +234 802 345 6789</li>
+              <li><i class="fas fa-phone-alt"></i> <span data-field="site.phone">+234 802 345 6789</span></li>
               <li>
-                <i class="fas fa-envelope"></i> smile@perfectionsdental.ng
+                <i class="fas fa-envelope"></i> <span data-field="site.email">smile@perfectionsdental.ng</span>
               </li>
-              <li><i class="fas fa-clock"></i> Mon–Sat: 8am – 8pm</li>
-              <li><i class="fas fa-map-marker-alt"></i> Wuse Zone 2, Abuja</li>
+              <li><i class="fas fa-clock"></i> <span data-field="site.hours">Mon–Sat: 8am – 8pm</span></li>
+              <li><i class="fas fa-map-marker-alt"></i> <span data-field="site.address">Wuse Zone 2, Abuja</span></li>
             </ul>
           </div>
         </div>
@@ -2036,6 +2037,8 @@
       </div>
     </div>
 
+    <script src="/js/site-content.js"></script>
+    <script src="/js/landing-editor.js"></script>
     <script>
       // Mobile nav toggle
       const toggle = document.getElementById("mobileToggle");
