@@ -1,0 +1,1181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Reception Dashboard - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .stat-card {
+        border-left-color: var(--primary-blue);
+      }
+
+      .quick-action-bar {
+        display: flex;
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+      }
+
+      .quick-action-button {
+        flex: 1;
+        min-width: 150px;
+        background: var(--pure-white);
+        border: none;
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        cursor: pointer;
+        transition: all var(--transition-base);
+        box-shadow: var(--shadow-sm);
+        border-left: 4px solid transparent;
+      }
+
+      .quick-action-button:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-left-color: var(--primary-blue);
+      }
+
+      .quick-action-button.emergency {
+        border-left-color: var(--error);
+        background: rgba(255, 59, 48, 0.02);
+      }
+
+      .quick-action-button.emergency:hover {
+        background: rgba(255, 59, 48, 0.05);
+      }
+
+      .quick-action-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(0, 102, 204, 0.1);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 1.3rem;
+      }
+
+      .quick-action-button.emergency .quick-action-icon {
+        background: rgba(255, 59, 48, 0.1);
+        color: var(--error);
+      }
+
+      .quick-action-content {
+        text-align: left;
+      }
+
+      .quick-action-title {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 2px;
+      }
+
+      .quick-action-desc {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .appointment-row {
+        display: flex;
+        align-items: center;
+        padding: var(--space-sm) 0;
+        border-bottom: 1px solid var(--light-gray);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .appointment-row:hover {
+        background: rgba(0, 102, 204, 0.05);
+        border-radius: var(--radius-md);
+        padding-left: var(--space-sm);
+      }
+
+      .appointment-time {
+        width: 80px;
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+
+      .appointment-patient {
+        flex: 2;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .appointment-doctor {
+        flex: 1;
+        color: var(--text-light);
+        font-size: 0.9rem;
+      }
+
+      .appointment-status {
+        width: 100px;
+      }
+
+      .emergency-tag {
+        background: var(--error);
+        color: white;
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: var(--space-sm);
+      }
+
+      .payment-methods {
+        display: flex;
+        gap: var(--space-sm);
+        flex-wrap: wrap;
+        margin-top: var(--space-sm);
+      }
+
+      .payment-method {
+        flex: 1;
+        min-width: 60px;
+        background: var(--off-white);
+        border: 2px solid transparent;
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .payment-method:hover {
+        border-color: var(--primary-blue);
+        background: white;
+      }
+
+      .payment-method.selected {
+        border-color: var(--primary-blue);
+        background: white;
+      }
+
+      .payment-method.free.selected {
+        border-color: var(--purple);
+      }
+
+      .payment-method i {
+        font-size: 1.5rem;
+        color: var(--primary-blue);
+        margin-bottom: var(--space-xs);
+      }
+
+      .payment-method.free i {
+        color: var(--purple);
+      }
+
+      .payment-method span {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .invoice-preview {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        border: 1px solid var(--light-gray);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .invoice-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 2px solid var(--primary-blue);
+      }
+
+      .invoice-logo {
+        width: 50px;
+        height: 50px;
+      }
+
+      .invoice-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .invoice-title {
+        flex: 1;
+      }
+
+      .invoice-title h4 {
+        font-size: 1.1rem;
+        color: var(--primary-blue);
+        margin-bottom: 2px;
+      }
+
+      .invoice-title p {
+        font-size: 0.7rem;
+        color: var(--text-light);
+      }
+
+      .invoice-section {
+        margin: var(--space-md) 0;
+        padding: var(--space-md) 0;
+        border-bottom: 1px dashed var(--medium-gray);
+      }
+
+      .invoice-section-title {
+        font-weight: 600;
+        color: var(--primary-blue);
+        margin-bottom: var(--space-sm);
+        font-size: 0.9rem;
+      }
+
+      .invoice-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--space-xs);
+        padding: var(--space-xs) 0;
+      }
+
+      .invoice-line.medication {
+        color: var(--primary-blue);
+        font-style: italic;
+      }
+
+      .invoice-total {
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
+        border-top: 2px solid var(--dark-gray);
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.1rem;
+      }
+
+      .discount-badge {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .medication-tag {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        margin-left: var(--space-xs);
+      }
+
+      .dosage-selector {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        margin: var(--space-sm) 0;
+        flex-wrap: wrap;
+      }
+
+      .dosage-input {
+        width: 70px;
+        padding: var(--space-xs);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        text-align: center;
+        font-size: 0.8rem;
+      }
+
+      .add-medication-btn {
+        background: var(--off-white);
+        border: 2px dashed var(--light-gray);
+        border-radius: var(--radius-md);
+        padding: var(--space-sm);
+        width: 100%;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        color: var(--text-light);
+      }
+
+      .add-medication-btn:hover {
+        border-color: var(--primary-blue);
+        color: var(--primary-blue);
+        background: rgba(0, 102, 204, 0.05);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img
+                src="../../assets/logo.png"
+                alt="Perfections Dental Services"
+              />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Front Desk</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Quick Action Bar -->
+        <div class="quick-action-bar">
+          <button
+            class="quick-action-button"
+            onclick="navigateTo('appointments.html')"
+          >
+            <div class="quick-action-icon">
+              <i class="fas fa-calendar-plus"></i>
+            </div>
+            <div class="quick-action-content">
+              <div class="quick-action-title">New Appointment</div>
+              <div class="quick-action-desc">Book a patient</div>
+            </div>
+          </button>
+
+          <button
+            class="quick-action-button emergency"
+            onclick="navigateTo('emergencies.html')"
+          >
+            <div class="quick-action-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="quick-action-content">
+              <div class="quick-action-title">Mark Emergency</div>
+              <div class="quick-action-desc">Urgent care needed</div>
+            </div>
+          </button>
+
+          <button
+            class="quick-action-button"
+            onclick="navigateTo('patients.html')"
+          >
+            <div class="quick-action-icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="quick-action-content">
+              <div class="quick-action-title">Walk-in Registration</div>
+              <div class="quick-action-desc">Register new patient</div>
+            </div>
+          </button>
+
+          <button
+            class="quick-action-button"
+            onclick="navigateTo('payments.html')"
+          >
+            <div class="quick-action-icon">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="quick-action-content">
+              <div class="quick-action-title">Process Payment</div>
+              <div class="quick-action-desc">Collect payment</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-header">
+              <div class="stat-icon-blue">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+            </div>
+            <div class="stat-value-blue">24</div>
+            <div class="stat-label-blue">Today's Appointments</div>
+            <div class="stat-change positive">16 checked in | 8 pending</div>
+          </div>
+
+          <div class="stat-card green">
+            <div class="stat-header">
+              <div class="stat-icon-green">
+                <i class="fas fa-users"></i>
+              </div>
+            </div>
+            <div class="stat-value-green">12</div>
+            <div class="stat-label-green">Patients Waiting</div>
+            <div class="stat-change positive">Avg wait: 12 min</div>
+          </div>
+
+          <div class="stat-card orange">
+            <div class="stat-header">
+              <div class="stat-icon-orange">
+                <i class="fas fa-naira-sign"></i>
+              </div>
+            </div>
+            <div class="stat-value-orange">₦257K</div>
+            <div class="stat-label-orange">Today's Revenue</div>
+            <div class="stat-change positive">+12% vs yesterday</div>
+          </div>
+
+          <div class="stat-card purple">
+            <div class="stat-header">
+              <div class="stat-icon-purple">
+                <i class="fas fa-ambulance"></i>
+              </div>
+            </div>
+            <div class="stat-value-purple">2</div>
+            <div class="stat-label-purple">Emergencies</div>
+            <div class="stat-change negative">Needs attention</div>
+          </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="grid grid-2">
+          <!-- Appointments Today -->
+          <div class="table-container">
+            <div class="table-header">
+              <h3 class="table-title">Today's Appointments</h3>
+              <div class="table-actions">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="navigateTo('appointments.html')"
+                >
+                  View Schedule
+                </button>
+              </div>
+            </div>
+            <div style="padding: 0 var(--space-lg)">
+              <div class="appointment-row" onclick="viewAppointment('sarah')">
+                <div class="appointment-time">9:00 AM</div>
+                <div class="appointment-patient">
+                  <div class="user-avatar" style="width: 32px; height: 32px">
+                    SJ
+                  </div>
+                  <span>Sarah Jones</span>
+                  <span class="emergency-tag" style="display: none"
+                    >EMERGENCY</span
+                  >
+                </div>
+                <div class="appointment-doctor">Dr. Smith</div>
+                <div class="appointment-status">
+                  <span class="badge badge-success">Checked In</span>
+                </div>
+              </div>
+
+              <div class="appointment-row" onclick="viewAppointment('tunde')">
+                <div class="appointment-time">9:15 AM</div>
+                <div class="appointment-patient">
+                  <div class="user-avatar" style="width: 32px; height: 32px">
+                    TB
+                  </div>
+                  <span>Tunde Bakare</span>
+                </div>
+                <div class="appointment-doctor">Dr. Jones</div>
+                <div class="appointment-status">
+                  <span class="badge badge-warning">Waiting</span>
+                </div>
+              </div>
+
+              <div class="appointment-row" onclick="viewAppointment('chioma')">
+                <div class="appointment-time">9:30 AM</div>
+                <div class="appointment-patient">
+                  <div class="user-avatar" style="width: 32px; height: 32px">
+                    CO
+                  </div>
+                  <span>Chioma Obi</span>
+                </div>
+                <div class="appointment-doctor">Dr. Eze</div>
+                <div class="appointment-status">
+                  <span class="badge badge-error">No-show</span>
+                </div>
+              </div>
+
+              <div
+                class="appointment-row"
+                onclick="viewAppointment('emergency')"
+              >
+                <div class="appointment-time">9:45 AM</div>
+                <div class="appointment-patient">
+                  <div class="user-avatar" style="width: 32px; height: 32px">
+                    EP
+                  </div>
+                  <span>Emergency Patient</span>
+                  <span class="emergency-tag">EMERGENCY</span>
+                </div>
+                <div class="appointment-doctor">Dr. Smith</div>
+                <div class="appointment-status">
+                  <span class="badge badge-error">Severe Pain</span>
+                </div>
+              </div>
+
+              <div class="appointment-row" onclick="viewAppointment('ada')">
+                <div class="appointment-time">10:00 AM</div>
+                <div class="appointment-patient">
+                  <div class="user-avatar" style="width: 32px; height: 32px">
+                    AE
+                  </div>
+                  <span>Ada Eze</span>
+                </div>
+                <div class="appointment-doctor">Dr. Jones</div>
+                <div class="appointment-status">
+                  <span class="badge badge-info">Confirmed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Payment -->
+          <div class="table-container">
+            <div class="table-header">
+              <h3 class="table-title">Quick Payment</h3>
+              <div class="table-actions">
+                <span class="badge badge-info">Consultation: ₦10,000</span>
+              </div>
+            </div>
+            <div style="padding: var(--space-lg)">
+              <div style="margin-bottom: var(--space-lg)">
+                <div class="form-group">
+                  <label class="form-label">Select Patient</label>
+                  <select
+                    class="input-wrapper"
+                    id="patientSelect"
+                    onchange="updatePaymentPatient()"
+                    style="
+                      width: 100%;
+                      padding: var(--space-md);
+                      border-radius: var(--radius-md);
+                      border: 2px solid var(--light-gray);
+                    "
+                  >
+                    <option value="sarah">Sarah Jones - Cleaning</option>
+                    <option value="tunde">Tunde Bakare - Consultation</option>
+                    <option value="chioma">Chioma Obi - Filling</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Invoice Preview with Logo and Medications -->
+              <div class="invoice-preview">
+                <div class="invoice-header">
+                  <div class="invoice-logo">
+                    <img src="../../assets/logo.png" alt="Perfections Dental" />
+                  </div>
+                  <div class="invoice-title">
+                    <h4>PERFECTIONS DENTAL SERVICES</h4>
+                    <p>Excellence in Dental Care</p>
+                  </div>
+                </div>
+
+                <!-- Services Section -->
+                <div class="invoice-section">
+                  <div class="invoice-section-title">
+                    <i
+                      class="fas fa-tooth"
+                      style="margin-right: var(--space-xs)"
+                    ></i>
+                    Services
+                  </div>
+                  <div class="invoice-line">
+                    <span>Consultation Fee</span>
+                    <span>₦10,000</span>
+                  </div>
+                  <div class="invoice-line">
+                    <span>Teeth Cleaning</span>
+                    <span>₦15,000</span>
+                  </div>
+                </div>
+
+                <!-- Medications Section -->
+                <div class="invoice-section" id="medicationsSection">
+                  <div class="invoice-section-title">
+                    <i
+                      class="fas fa-prescription"
+                      style="
+                        margin-right: var(--space-xs);
+                        color: var(--primary-blue);
+                      "
+                    ></i>
+                    Prescribed Medications
+                    <span class="medication-tag">Dr. Smith</span>
+                  </div>
+                  <div class="invoice-line medication" id="medication1">
+                    <span
+                      >Amoxicillin 500mg
+                      <span style="font-size: 0.7rem"
+                        >(1 tab TID x 7 days)</span
+                      ></span
+                    >
+                    <span>₦2,500</span>
+                  </div>
+                  <div class="invoice-line medication" id="medication2">
+                    <span
+                      >Ibuprofen 400mg
+                      <span style="font-size: 0.7rem"
+                        >(1 tab PRN pain)</span
+                      ></span
+                    >
+                    <span>₦1,200</span>
+                  </div>
+                </div>
+
+                <!-- Add Medication Button -->
+                <div
+                  class="add-medication-btn"
+                  onclick="toggleMedicationForm()"
+                >
+                  <i class="fas fa-plus"></i> Add Prescribed Medication
+                </div>
+
+                <!-- Medication Form (Hidden by default) -->
+                <div
+                  id="medicationForm"
+                  style="
+                    display: none;
+                    margin-top: var(--space-sm);
+                    padding: var(--space-sm);
+                    background: var(--off-white);
+                    border-radius: var(--radius-md);
+                  "
+                >
+                  <select
+                    style="
+                      width: 100%;
+                      padding: var(--space-xs);
+                      margin-bottom: var(--space-xs);
+                      border-radius: var(--radius-md);
+                      border: 2px solid var(--light-gray);
+                    "
+                    id="medicationSelect"
+                  >
+                    <option>Amoxicillin 500mg</option>
+                    <option>Ibuprofen 400mg</option>
+                    <option>Paracetamol 500mg</option>
+                    <option>Metronidazole 400mg</option>
+                    <option>Lidocaine 2%</option>
+                  </select>
+                  <div class="dosage-selector">
+                    <select class="dosage-input" id="dosageAmount">
+                      <option>1 tab</option>
+                      <option>2 tab</option>
+                      <option>1/2 tab</option>
+                    </select>
+                    <select class="dosage-input" id="dosageFrequency">
+                      <option>BID</option>
+                      <option>TID</option>
+                      <option>QID</option>
+                      <option>PRN</option>
+                    </select>
+                    <span>x</span>
+                    <input
+                      type="number"
+                      class="dosage-input"
+                      value="7"
+                      id="dosageDays"
+                      min="1"
+                      max="30"
+                    />
+                  </div>
+                  <button
+                    class="btn btn-sm btn-primary"
+                    style="width: 100%"
+                    onclick="addMedication()"
+                  >
+                    Add to Invoice
+                  </button>
+                </div>
+
+                <!-- Discount -->
+                <div class="invoice-line" style="margin-top: var(--space-md)">
+                  <span
+                    >Discount
+                    <span class="discount-badge">Staff Family - 10%</span></span
+                  >
+                  <span style="color: var(--error)">-₦2,500</span>
+                </div>
+
+                <!-- Total -->
+                <div class="invoice-total">
+                  <span>TOTAL</span>
+                  <span id="totalAmount">₦22,500</span>
+                </div>
+              </div>
+
+              <!-- Payment Methods -->
+              <div style="margin: var(--space-lg) 0">
+                <label class="form-label">Payment Method</label>
+                <div class="payment-methods">
+                  <div
+                    class="payment-method"
+                    onclick="selectPaymentMethod(this, 'pos')"
+                  >
+                    <i class="fas fa-credit-card"></i>
+                    <span>POS</span>
+                  </div>
+                  <div
+                    class="payment-method"
+                    onclick="selectPaymentMethod(this, 'transfer')"
+                  >
+                    <i class="fas fa-university"></i>
+                    <span>Transfer</span>
+                  </div>
+                  <div
+                    class="payment-method"
+                    onclick="selectPaymentMethod(this, 'cash')"
+                  >
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Cash</span>
+                  </div>
+                  <div
+                    class="payment-method free"
+                    onclick="selectPaymentMethod(this, 'free')"
+                  >
+                    <i class="fas fa-heart"></i>
+                    <span>FREE</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Free Reason (hidden by default) -->
+              <div
+                id="freeReason"
+                style="
+                  display: none;
+                  margin-bottom: var(--space-md);
+                  padding: var(--space-sm);
+                  background: rgba(175, 82, 222, 0.1);
+                  border-radius: var(--radius-md);
+                "
+              >
+                <label class="form-label">Reason for Free Service</label>
+                <select
+                  style="
+                    width: 100%;
+                    padding: var(--space-sm);
+                    border-radius: var(--radius-md);
+                    border: 2px solid var(--light-gray);
+                  "
+                >
+                  <option>Staff Family</option>
+                  <option>Emergency Hardship</option>
+                  <option>Charity Case</option>
+                  <option>Community Service</option>
+                  <option>Pro Bono</option>
+                </select>
+              </div>
+
+              <button
+                class="btn btn-primary"
+                style="width: 100%"
+                onclick="generateInvoice()"
+              >
+                <i class="fas fa-print"></i>
+                Generate Invoice
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doctor Availability -->
+        <div class="table-container" style="margin-top: var(--space-xl)">
+          <div class="table-header">
+            <h3 class="table-title">Doctor Availability</h3>
+            <div class="table-actions">
+              <i
+                class="fas fa-sync-alt"
+                style="color: var(--text-light); cursor: pointer"
+                onclick="refreshAvailability()"
+              ></i>
+            </div>
+          </div>
+          <div style="padding: var(--space-lg)">
+            <div class="grid grid-4" style="gap: var(--space-md)">
+              <div class="stat-card" style="padding: var(--space-md)">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-sm);
+                    margin-bottom: var(--space-sm);
+                  "
+                >
+                  <div class="user-avatar" style="width: 40px; height: 40px">
+                    DS
+                  </div>
+                  <div>
+                    <div style="font-weight: 600">Dr. Smith</div>
+                    <span class="badge badge-success">Available</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-light)">
+                  Next: 10:30 AM
+                </div>
+              </div>
+
+              <div class="stat-card" style="padding: var(--space-md)">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-sm);
+                    margin-bottom: var(--space-sm);
+                  "
+                >
+                  <div class="user-avatar" style="width: 40px; height: 40px">
+                    DJ
+                  </div>
+                  <div>
+                    <div style="font-weight: 600">Dr. Jones</div>
+                    <span class="badge badge-warning">In Procedure</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-light)">
+                  Free: 10:45 AM
+                </div>
+              </div>
+
+              <div class="stat-card" style="padding: var(--space-md)">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-sm);
+                    margin-bottom: var(--space-sm);
+                  "
+                >
+                  <div class="user-avatar" style="width: 40px; height: 40px">
+                    DE
+                  </div>
+                  <div>
+                    <div style="font-weight: 600">Dr. Eze</div>
+                    <span class="badge badge-error">With Patient</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-light)">
+                  Free: 11:00 AM
+                </div>
+              </div>
+
+              <div class="stat-card" style="padding: var(--space-md)">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-sm);
+                    margin-bottom: var(--space-sm);
+                  "
+                >
+                  <div class="user-avatar" style="width: 40px; height: 40px">
+                    DO
+                  </div>
+                  <div>
+                    <div style="font-weight: 600">Dr. Okon</div>
+                    <span class="badge badge-success">Available</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-light)">
+                  Next: Immediate
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // State
+      let selectedPaymentMethod = "pos";
+      let medicationCount = 2;
+      let currentPatient = "sarah";
+
+      // Initialize loading
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.body.classList.remove("loading-active");
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+
+        // Set first payment method as selected
+        document.querySelector(".payment-method").classList.add("selected");
+      });
+
+      // Navigation
+      function navigateTo(page) {
+        window.location.href = page;
+      }
+
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      // Appointment functions
+      function viewAppointment(patient) {
+        showToast(`Viewing appointment for ${patient}`, "info");
+      }
+
+      // Payment functions
+      function selectPaymentMethod(element, method) {
+        selectedPaymentMethod = method;
+
+        document.querySelectorAll(".payment-method").forEach((m) => {
+          m.classList.remove("selected");
+        });
+
+        element.classList.add("selected");
+
+        const freeReason = document.getElementById("freeReason");
+        freeReason.style.display = method === "free" ? "block" : "none";
+      }
+
+      function updatePaymentPatient() {
+        const select = document.getElementById("patientSelect");
+        currentPatient = select.value;
+        showToast(
+          `Patient changed to ${select.options[select.selectedIndex].text}`,
+          "info",
+        );
+      }
+
+      // Medication functions
+      function toggleMedicationForm() {
+        const form = document.getElementById("medicationForm");
+        if (form.style.display === "none") {
+          form.style.display = "block";
+        } else {
+          form.style.display = "none";
+        }
+      }
+
+      function addMedication() {
+        const select = document.getElementById("medicationSelect");
+        const medication = select.value;
+        const amount = document.getElementById("dosageAmount").value;
+        const frequency = document.getElementById("dosageFrequency").value;
+        const days = document.getElementById("dosageDays").value;
+
+        medicationCount++;
+
+        // Add medication to invoice
+        const medicationsSection =
+          document.getElementById("medicationsSection");
+        const newMedication = document.createElement("div");
+        newMedication.className = "invoice-line medication";
+        newMedication.id = `medication${medicationCount}`;
+
+        // Random price between 1000-5000
+        const price = Math.floor(Math.random() * 4000) + 1000;
+
+        newMedication.innerHTML = `
+          <span>${medication} <span style="font-size: 0.7rem;">(${amount} ${frequency} x ${days} days)</span></span>
+          <span>₦${price.toLocaleString()}</span>
+        `;
+
+        medicationsSection.appendChild(newMedication);
+
+        // Hide form and update total
+        document.getElementById("medicationForm").style.display = "none";
+        calculateTotal();
+
+        showToast(`${medication} added to invoice`, "success");
+      }
+
+      function calculateTotal() {
+        // Base services total
+        let total = 25000; // Consultation (10000) + Cleaning (15000)
+
+        // Add medication totals
+        const medications = document.querySelectorAll(
+          ".invoice-line.medication",
+        );
+        medications.forEach((med) => {
+          const priceText = med.querySelector("span:last-child").textContent;
+          const price = parseInt(priceText.replace(/[₦,]/g, ""));
+          total += price;
+        });
+
+        // Apply discount
+        const discount = 2500;
+        total -= discount;
+
+        document.getElementById("totalAmount").textContent =
+          `₦${total.toLocaleString()}`;
+        return total;
+      }
+
+      function generateInvoice() {
+        const patient =
+          document.getElementById("patientSelect").options[
+            document.getElementById("patientSelect").selectedIndex
+          ].text;
+        const total = calculateTotal();
+        const method = selectedPaymentMethod.toUpperCase();
+
+        // Create printable invoice
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Invoice - ${patient}</title>
+              <style>
+                body { font-family: 'Courier New', monospace; padding: 20px; max-width: 800px; margin: 0 auto; }
+                .header { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; border-bottom: 2px solid #0066cc; padding-bottom: 10px; }
+                .logo { width: 50px; height: 50px; }
+                .logo img { width: 100%; height: 100%; object-fit: contain; }
+                .title { flex: 1; }
+                .title h4 { font-size: 1.1rem; color: #0066cc; margin-bottom: 2px; }
+                .title p { font-size: 0.7rem; color: #666; }
+                .section { margin: 20px 0; padding: 10px 0; border-bottom: 1px dashed #ccc; }
+                .section-title { font-weight: 600; color: #0066cc; margin-bottom: 10px; }
+                .line { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                .medication { color: #0066cc; }
+                .total { margin-top: 20px; padding-top: 20px; border-top: 2px solid #000; font-weight: 700; display: flex; justify-content: space-between; font-size: 1.1rem; }
+                .footer { margin-top: 40px; text-align: center; font-size: 0.8rem; color: #666; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <div class="logo"><img src="../../assets/logo.png" alt="Perfections Dental" /></div>
+                <div class="title">
+                  <h4>PERFECTIONS DENTAL SERVICES</h4>
+                  <p>Excellence in Dental Care</p>
+                </div>
+              </div>
+              <h2>Invoice</h2>
+              <p><strong>Patient:</strong> ${patient}</p>
+              <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+              <p><strong>Payment Method:</strong> ${method}</p>
+              
+              <div class="section">
+                <div class="section-title">Services</div>
+                <div class="line">
+                  <span>Consultation Fee</span>
+                  <span>₦10,000</span>
+                </div>
+                <div class="line">
+                  <span>Teeth Cleaning</span>
+                  <span>₦15,000</span>
+                </div>
+              </div>
+              
+              <div class="section">
+                <div class="section-title">Prescribed Medications</div>
+                ${Array.from(
+                  document.querySelectorAll(".invoice-line.medication"),
+                )
+                  .map(
+                    (item) => `
+                  <div class="line medication">
+                    ${item.innerHTML}
+                  </div>
+                `,
+                  )
+                  .join("")}
+              </div>
+              
+              <div class="line">
+                <span>Discount (Staff Family - 10%)</span>
+                <span>-₦2,500</span>
+              </div>
+              
+              <div class="total">
+                <span>TOTAL</span>
+                <span>₦${total.toLocaleString()}</span>
+              </div>
+              
+              <div class="footer">
+                <p>Thank you for choosing Perfections Dental Services</p>
+                <p>This is a computer-generated invoice. No signature required.</p>
+              </div>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+
+        showToast(`Invoice generated for ${patient}`, "success");
+      }
+
+      // Refresh availability
+      function refreshAvailability() {
+        showToast("Refreshing doctor availability...", "info");
+        setTimeout(() => {
+          showToast("Availability updated", "success");
+        }, 1000);
+      }
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        if (!toast) {
+          const toastDiv = document.createElement("div");
+          toastDiv.className = "toast";
+          toastDiv.id = "toast";
+          toastDiv.innerHTML = `
+            <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="toast-message" id="toastMessage">${message}</div>
+            <button class="toast-close" onclick="this.parentElement.classList.remove('show')">&times;</button>
+          `;
+          document.body.appendChild(toastDiv);
+        }
+
+        const toastEl = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toastEl.querySelector(".toast-icon i");
+
+        toastMessage.innerText = message;
+        toastEl.className = "toast show " + type;
+
+        if (type === "success") {
+          toastIcon.className = "fas fa-check-circle";
+        } else if (type === "error") {
+          toastIcon.className = "fas fa-exclamation-circle";
+        } else if (type === "warning") {
+          toastIcon.className = "fas fa-exclamation-triangle";
+        } else if (type === "info") {
+          toastIcon.className = "fas fa-info-circle";
+        }
+
+        setTimeout(() => {
+          toastEl.classList.remove("show");
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>

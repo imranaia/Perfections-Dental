@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>My Schedule - Doctor - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .schedule-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .schedule-navigation {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        background: var(--pure-white);
+        padding: var(--space-xs);
+        border-radius: var(--radius-full);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .nav-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .nav-btn:hover {
+        background: var(--off-white);
+        color: var(--primary-blue);
+      }
+
+      .current-date {
+        font-weight: 600;
+        font-size: 1.1rem;
+        min-width: 200px;
+        text-align: center;
+      }
+
+      .view-options {
+        display: flex;
+        gap: var(--space-xs);
+        background: var(--pure-white);
+        padding: var(--space-xs);
+        border-radius: var(--radius-full);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .view-btn {
+        padding: var(--space-sm) var(--space-lg);
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .view-btn.active {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .timeline-grid {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .timeline-hour {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: var(--space-sm);
+        min-height: 80px;
+      }
+
+      .hour-label {
+        width: 100px;
+        font-weight: 600;
+        color: var(--text-dark);
+        padding-top: var(--space-sm);
+      }
+
+      .hour-slots {
+        flex: 1;
+        display: flex;
+        gap: var(--space-md);
+        flex-wrap: wrap;
+      }
+
+      .appointment-slot {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        width: 250px;
+        border-left: 4px solid var(--primary-blue);
+        transition: all var(--transition-base);
+        cursor: pointer;
+      }
+
+      .appointment-slot:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .appointment-slot.emergency {
+        border-left-color: var(--error);
+        background: rgba(255, 59, 48, 0.05);
+      }
+
+      .appointment-slot.completed {
+        border-left-color: var(--success);
+        opacity: 0.8;
+      }
+
+      .appointment-time {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-xs);
+      }
+
+      .appointment-patient {
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .appointment-procedure {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-xs);
+      }
+
+      .appointment-status {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .status-checked-in {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .status-waiting {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .status-not-arrived {
+        background: rgba(255, 59, 48, 0.1);
+        color: var(--error);
+      }
+
+      .status-completed {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .break-slot {
+        background: rgba(108, 117, 125, 0.1);
+        border-left-color: var(--dark-gray);
+        color: var(--text-light);
+        font-style: italic;
+      }
+
+      .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .summary-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-base);
+      }
+
+      .summary-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .summary-card.blue {
+        border: 2px solid;
+        border-color: var(--primary-blue);
+      }
+      .summary-card.green {
+        border: 2px solid;
+        border-color: var(--success);
+      }
+      .summary-card.orange {
+        border: 2px solid;
+        border-color: var(--warning);
+      }
+      .summary-card.red {
+        border: 2px solid;
+        border-color: var(--error);
+      }
+
+      .summary-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(0, 102, 204, 0.1);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 1.2rem;
+      }
+
+      .summary-info h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+
+      .summary-info p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">My Schedule</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Schedule Header -->
+        <div class="schedule-header">
+          <div class="schedule-navigation">
+            <button class="nav-btn"><i class="fas fa-chevron-left"></i></button>
+            <span class="current-date">Monday, March 15, 2026</span>
+            <button class="nav-btn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="view-options">
+            <button class="view-btn active">Day</button>
+            <button class="view-btn">Week</button>
+            <button class="view-btn">Month</button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+          <div class="summary-card blue">
+            <div class="summary-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="summary-info">
+              <h4 style="color: var(--primary-blue)">8</h4>
+              <p>Total Appointments</p>
+            </div>
+          </div>
+
+          <div class="summary-card green">
+            <div
+              class="summary-icon"
+              style="background: rgba(52, 199, 89, 0.1); color: var(--success)"
+            >
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="summary-info">
+              <h4 style="color: var(--success)">3</h4>
+              <p>Completed</p>
+            </div>
+          </div>
+
+          <div class="summary-card orange">
+            <div
+              class="summary-icon"
+              style="background: rgba(255, 159, 10, 0.1); color: var(--warning)"
+            >
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="summary-info">
+              <h4 style="color: var(--warning)">2</h4>
+              <p>In Progress</p>
+            </div>
+          </div>
+
+          <div class="summary-card red">
+            <div
+              class="summary-icon"
+              style="background: rgba(255, 59, 48, 0.1); color: var(--error)"
+            >
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="summary-info">
+              <h4 style="color: var(--error)">3</h4>
+              <p>Waiting</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Grid -->
+        <div class="timeline-grid">
+          <!-- 8:00 AM -->
+          <div class="timeline-hour">
+            <div class="hour-label">8:00 AM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot completed">
+                <div class="appointment-time">8:00 - 8:30</div>
+                <div class="appointment-patient">John Okonkwo</div>
+                <div class="appointment-procedure">Emergency - Severe Pain</div>
+                <span class="appointment-status status-completed"
+                  >Completed</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 9:00 AM -->
+          <div class="timeline-hour">
+            <div class="hour-label">9:00 AM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot">
+                <div class="appointment-time">9:00 - 9:30</div>
+                <div class="appointment-patient">Sarah Jones</div>
+                <div class="appointment-procedure">
+                  Crown Consultation - Room 2
+                </div>
+                <span class="appointment-status status-checked-in"
+                  >Checked In</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 9:45 AM -->
+          <div class="timeline-hour">
+            <div class="hour-label">9:45 AM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot">
+                <div class="appointment-time">9:45 - 10:30</div>
+                <div class="appointment-patient">Michael Obi</div>
+                <div class="appointment-procedure">Root Canal - Room 1</div>
+                <span class="appointment-status status-waiting">Waiting</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 10:30 AM -->
+          <div class="timeline-hour">
+            <div class="hour-label">10:30 AM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot">
+                <div class="appointment-time">10:30 - 11:30</div>
+                <div class="appointment-patient">Ada Eze</div>
+                <div class="appointment-procedure">
+                  New Patient Exam - Room 3
+                </div>
+                <span class="appointment-status status-not-arrived"
+                  >Not Arrived</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 11:30 AM - Break -->
+          <div class="timeline-hour">
+            <div class="hour-label">11:30 AM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot break-slot">
+                <div class="appointment-time">11:30 - 12:00</div>
+                <div class="appointment-patient">Coffee Break</div>
+                <div class="appointment-procedure">15 minutes</div>
+                <span
+                  class="appointment-status"
+                  style="
+                    background: rgba(108, 117, 125, 0.1);
+                    color: var(--text-light);
+                  "
+                  >Break</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 12:00 PM -->
+          <div class="timeline-hour">
+            <div class="hour-label">12:00 PM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot">
+                <div class="appointment-time">12:00 - 12:45</div>
+                <div class="appointment-patient">Tunde Okafor</div>
+                <div class="appointment-procedure">Deep Cleaning - Room 2</div>
+                <span class="appointment-status status-waiting">Waiting</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1:00 PM - Lunch -->
+          <div class="timeline-hour">
+            <div class="hour-label">1:00 PM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot break-slot">
+                <div class="appointment-time">1:00 - 2:00</div>
+                <div class="appointment-patient">Lunch Break</div>
+                <div class="appointment-procedure">1 hour</div>
+                <span
+                  class="appointment-status"
+                  style="
+                    background: rgba(108, 117, 125, 0.1);
+                    color: var(--text-light);
+                  "
+                  >Lunch</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 2:00 PM -->
+          <div class="timeline-hour">
+            <div class="hour-label">2:00 PM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot">
+                <div class="appointment-time">2:00 - 2:45</div>
+                <div class="appointment-patient">Chioma Umeh</div>
+                <div class="appointment-procedure">Extraction - Room 1</div>
+                <span class="appointment-status status-waiting">Waiting</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3:00 PM -->
+          <div class="timeline-hour">
+            <div class="hour-label">3:00 PM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot">
+                <div class="appointment-time">3:00 - 3:30</div>
+                <div class="appointment-patient">Funke Adebayo</div>
+                <div class="appointment-procedure">Follow-up - Room 2</div>
+                <span class="appointment-status status-waiting">Waiting</span>
+              </div>
+              <div class="appointment-slot emergency">
+                <div class="appointment-time">3:15 - 3:45</div>
+                <div class="appointment-patient">Emergency Walk-in</div>
+                <div class="appointment-procedure">Severe Toothache</div>
+                <span
+                  class="appointment-status"
+                  style="
+                    background: rgba(255, 59, 48, 0.1);
+                    color: var(--error);
+                  "
+                  >Emergency</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 4:00 PM -->
+          <div class="timeline-hour">
+            <div class="hour-label">4:00 PM</div>
+            <div class="hour-slots">
+              <div class="appointment-slot">
+                <div class="appointment-time">4:00 - 4:30</div>
+                <div class="appointment-patient">Emeka Kalu</div>
+                <div class="appointment-procedure">Consultation - Room 3</div>
+                <span class="appointment-status status-waiting">Waiting</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div
+          style="
+            display: flex;
+            gap: var(--space-xl);
+            padding: var(--space-md);
+            background: var(--pure-white);
+            border-radius: var(--radius-lg);
+          "
+        >
+          <div style="display: flex; align-items: center; gap: var(--space-sm)">
+            <div
+              style="
+                width: 20px;
+                height: 20px;
+                background: var(--off-white);
+                border-left: 4px solid var(--primary-blue);
+                border-radius: 4px;
+              "
+            ></div>
+            <span style="font-size: 0.9rem">Scheduled</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: var(--space-sm)">
+            <div
+              style="
+                width: 20px;
+                height: 20px;
+                background: var(--off-white);
+                border-left: 4px solid var(--success);
+                border-radius: 4px;
+              "
+            ></div>
+            <span style="font-size: 0.9rem">Completed</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: var(--space-sm)">
+            <div
+              style="
+                width: 20px;
+                height: 20px;
+                background: var(--off-white);
+                border-left: 4px solid var(--error);
+                border-radius: 4px;
+              "
+            ></div>
+            <span style="font-size: 0.9rem">Emergency</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: var(--space-sm)">
+            <div
+              style="
+                width: 20px;
+                height: 20px;
+                background: rgba(108, 117, 125, 0.1);
+                border-left: 4px solid var(--dark-gray);
+                border-radius: 4px;
+              "
+            ></div>
+            <span style="font-size: 0.9rem">Break/Lunch</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // View options
+      document.querySelectorAll(".view-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document
+            .querySelectorAll(".view-btn")
+            .forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Reports - Reception - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .reports-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .report-type-tabs {
+        display: flex;
+        gap: var(--space-xs);
+        background: var(--pure-white);
+        padding: var(--space-xs);
+        border-radius: var(--radius-full);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .report-tab {
+        padding: var(--space-sm) var(--space-lg);
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .report-tab.active {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .date-range {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        background: var(--pure-white);
+        padding: var(--space-xs);
+        border-radius: var(--radius-full);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .date-range input {
+        border: none;
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--radius-full);
+        width: 140px;
+      }
+
+      .report-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+      }
+
+      .report-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-base);
+        cursor: pointer;
+      }
+
+      .report-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .report-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(0, 102, 204, 0.1);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 1.5rem;
+        margin-bottom: var(--space-md);
+      }
+
+      .report-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .report-description {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        margin-bottom: var(--space-md);
+      }
+
+      .report-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-light);
+        font-size: 0.8rem;
+      }
+
+      .daily-summary {
+        background: linear-gradient(145deg, var(--primary-blue));
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        color: white;
+        margin-bottom: var(--space-xl);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .daily-summary::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.2) 0%,
+          transparent 70%
+        );
+        animation: rotateGradient 20s linear infinite;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-lg);
+        margin-top: var(--space-lg);
+      }
+
+      .summary-item {
+        text-align: center;
+      }
+
+      .summary-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .summary-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      .export-section {
+        display: flex;
+        gap: var(--space-md);
+        justify-content: flex-end;
+        margin-top: var(--space-lg);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img
+                src="../../assets/logo.png"
+                alt="Perfections Dental Services"
+              />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Reports</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Reports Header -->
+        <div class="reports-header">
+          <div class="report-type-tabs">
+            <button class="report-tab active">Daily</button>
+            <button class="report-tab">Weekly</button>
+            <button class="report-tab">Monthly</button>
+            <button class="report-tab">Quarterly</button>
+            <button class="report-tab">Yearly</button>
+          </div>
+
+          <div class="date-range">
+            <i
+              class="fas fa-calendar"
+              style="color: var(--text-light); margin-left: var(--space-sm)"
+            ></i>
+            <input type="text" value="Mar 15, 2026" readonly />
+            <span>-</span>
+            <input type="text" value="Mar 15, 2026" readonly />
+            <button
+              class="btn btn-sm btn-primary"
+              style="margin-right: var(--space-xs)"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+
+        <!-- Daily Summary Banner -->
+        <div class="daily-summary">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h2 style="font-size: 1.5rem">Daily Summary - March 15, 2026</h2>
+            <span
+              class="badge"
+              style="background: rgba(255, 255, 255, 0.2); color: white"
+              >Last updated: 2 min ago</span
+            >
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="summary-value">24</div>
+              <div class="summary-label">Appointments</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-value">28</div>
+              <div class="summary-label">Transactions</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-value">₦257K</div>
+              <div class="summary-label">Revenue</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-value">3</div>
+              <div class="summary-label">Free Services</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Report Cards -->
+        <div class="report-cards">
+          <!-- Financial Report -->
+          <div
+            class="report-card"
+            onclick="navigateTo('../superadmin/financial.html')"
+          >
+            <div class="report-icon">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div class="report-title">Financial Report</div>
+            <div class="report-description">
+              Revenue breakdown, payment methods, and transaction history
+            </div>
+            <div class="report-meta">
+              <span><i class="fas fa-chart-line"></i> Real-time</span>
+              <span class="badge badge-success">Updated now</span>
+            </div>
+          </div>
+
+          <!-- Appointment Report -->
+          <div class="report-card">
+            <div
+              class="report-icon"
+              style="background: rgba(52, 199, 89, 0.1); color: var(--success)"
+            >
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="report-title">Appointment Summary</div>
+            <div class="report-description">
+              Check-ins, no-shows, cancellations, and peak hours
+            </div>
+            <div class="report-meta">
+              <span><i class="fas fa-clock"></i> Today: 24 total</span>
+              <span class="badge badge-info">View</span>
+            </div>
+          </div>
+
+          <!-- Patient Report -->
+          <div class="report-card">
+            <div
+              class="report-icon"
+              style="background: rgba(255, 159, 10, 0.1); color: var(--warning)"
+            >
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="report-title">Patient Demographics</div>
+            <div class="report-description">
+              New vs returning, age groups, gender distribution
+            </div>
+            <div class="report-meta">
+              <span><i class="fas fa-user-plus"></i> 12 new today</span>
+              <span class="badge badge-info">View</span>
+            </div>
+          </div>
+
+          <!-- Inventory Report -->
+          <div class="report-card">
+            <div
+              class="report-icon"
+              style="background: rgba(175, 82, 222, 0.1); color: var(--purple)"
+            >
+              <i class="fas fa-pills"></i>
+            </div>
+            <div class="report-title">Inventory Status</div>
+            <div class="report-description">
+              Low stock alerts, expiring medications, usage trends
+            </div>
+            <div class="report-meta">
+              <span
+                ><i class="fas fa-exclamation-triangle"></i> 3 low stock</span
+              >
+              <span class="badge badge-error">Alert</span>
+            </div>
+          </div>
+
+          <!-- Staff Performance -->
+          <div class="report-card">
+            <div
+              class="report-icon"
+              style="
+                background: rgba(0, 102, 204, 0.1);
+                color: var(--primary-blue);
+              "
+            >
+              <i class="fas fa-user-md"></i>
+            </div>
+            <div class="report-title">Staff Performance</div>
+            <div class="report-description">
+              Doctor productivity, nurse assists, reception efficiency
+            </div>
+            <div class="report-meta">
+              <span><i class="fas fa-star"></i> 4.8 avg rating</span>
+              <span class="badge badge-info">View</span>
+            </div>
+          </div>
+
+          <!-- Daily Cash Report -->
+          <div class="report-card">
+            <div
+              class="report-icon"
+              style="background: rgba(255, 59, 48, 0.1); color: var(--error)"
+            >
+              <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="report-title">Cash Reconciliation</div>
+            <div class="report-description">
+              End-of-day cash count, POS settlement, transfer summary
+            </div>
+            <div class="report-meta">
+              <span><i class="fas fa-calculator"></i> End of day</span>
+              <span class="badge badge-warning">Due today</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed Report Table -->
+        <div class="table-container" style="margin-top: var(--space-xl)">
+          <div class="table-header">
+            <h3 class="table-title">Transaction Details</h3>
+            <div class="export-section">
+              <button class="btn btn-sm btn-secondary">
+                <i class="fas fa-file-pdf"></i>
+                PDF
+              </button>
+              <button class="btn btn-sm btn-secondary">
+                <i class="fas fa-file-excel"></i>
+                Excel
+              </button>
+              <button class="btn btn-sm btn-primary">
+                <i class="fas fa-print"></i>
+                Print
+              </button>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Patient</th>
+                <th>Service</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>9:15 AM</td>
+                <td>Sarah Jones</td>
+                <td>Consultation + Cleaning</td>
+                <td>₦22,500</td>
+                <td>POS</td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+
+              <tr>
+                <td>10:00 AM</td>
+                <td>Michael Obi</td>
+                <td>Root Canal</td>
+                <td>₦45,000</td>
+                <td>Transfer</td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+
+              <tr>
+                <td>10:45 AM</td>
+                <td>Ada Eze</td>
+                <td>Consultation</td>
+                <td>₦10,000</td>
+                <td>Cash</td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+
+              <tr>
+                <td>11:30 AM</td>
+                <td>John Okonkwo</td>
+                <td>Emergency</td>
+                <td>₦0</td>
+                <td>FREE</td>
+                <td><span class="badge badge-info">Pro Bono</span></td>
+              </tr>
+
+              <tr>
+                <td>12:15 PM</td>
+                <td>Tunde Okafor</td>
+                <td>Deep Cleaning</td>
+                <td>₦15,000</td>
+                <td>POS</td>
+                <td><span class="badge badge-success">Paid</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Summary Footer -->
+          <div
+            style="
+              padding: var(--space-lg);
+              background: var(--off-white);
+              border-top: 2px solid var(--light-gray);
+            "
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: flex-end;
+                gap: var(--space-xl);
+              "
+            >
+              <div>
+                <span style="color: var(--text-light)">Subtotal:</span>
+                <span style="font-weight: 600; margin-left: var(--space-md)"
+                  >₦92,500</span
+                >
+              </div>
+              <div>
+                <span style="color: var(--text-light)">Discounts:</span>
+                <span style="font-weight: 600; margin-left: var(--space-md)"
+                  >-₦2,500</span
+                >
+              </div>
+              <div>
+                <span style="font-weight: 600">Total:</span>
+                <span
+                  style="
+                    font-weight: 700;
+                    color: var(--primary-blue);
+                    margin-left: var(--space-md);
+                  "
+                  >₦90,000</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Report tabs
+      document.querySelectorAll(".report-tab").forEach((tab) => {
+        tab.addEventListener("click", function () {
+          document
+            .querySelectorAll(".report-tab")
+            .forEach((t) => t.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Patients - Reception - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      /* OVERRIDE STYLES - Fix for modal display issue */
+      html,
+      body {
+        overflow: auto !important;
+        position: relative !important;
+        height: auto !important;
+        min-height: 100vh !important;
+      }
+
+      .app-container {
+        overflow: visible !important;
+        min-height: 100vh !important;
+      }
+
+      .main-content {
+        height: auto !important;
+        min-height: 100vh !important;
+      }
+
+      /* Your existing styles - keeping them exactly as they were */
+      .patients-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .patient-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .patient-stat-card-blue,
+      .patient-stat-card-green,
+      .patient-stat-card-orange,
+      .patient-stat-card-purple {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid;
+        transition: all var(--transition-base);
+        transform: translateY(0);
+      }
+
+      .patient-stat-card-blue:hover,
+      .patient-stat-card-green:hover,
+      .patient-stat-card-orange:hover,
+      .patient-stat-card-purple:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .patient-stat-card-blue {
+        border-color: var(--primary-blue);
+      }
+
+      .patient-stat-card-green {
+        border-color: var(--success);
+      }
+
+      .patient-stat-card-orange {
+        border-color: var(--warning);
+      }
+
+      .patient-stat-card-purple {
+        border-color: var(--purple);
+      }
+
+      .patient-stat-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(0, 102, 204, 0.1);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 1.2rem;
+      }
+
+      .patient-stat-info h3 {
+        font-size: 1.5rem;
+        margin-bottom: 2px;
+      }
+
+      .patient-stat-info p {
+        color: var(--text-light);
+        font-size: 0.8rem;
+      }
+
+      .patient-filters {
+        display: flex;
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+      }
+
+      .filter-input {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        background: var(--pure-white);
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--radius-full);
+        border: 2px solid var(--light-gray);
+      }
+
+      .filter-input input {
+        border: none;
+        background: none;
+        outline: none;
+        width: 100%;
+      }
+
+      .filter-select {
+        padding: var(--space-sm) var(--space-md);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        background: var(--pure-white);
+      }
+
+      .patient-table-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+      }
+
+      .patient-row {
+        display: flex;
+        align-items: center;
+        padding: var(--space-lg) var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        transition: background var(--transition-fast);
+        cursor: pointer;
+      }
+
+      .patient-row:hover {
+        background: rgba(0, 102, 204, 0.02);
+      }
+
+      .patient-row:last-child {
+        border-bottom: none;
+      }
+
+      .patient-cell {
+        flex: 1;
+      }
+
+      .patient-cell.name {
+        flex: 2;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .patient-avatar-small {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(
+          145deg,
+          var(--primary-blue),
+          var(--primary-blue-dark)
+        );
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+      }
+
+      .patient-info h4 {
+        font-size: 1rem;
+        margin-bottom: 2px;
+      }
+
+      .patient-info .patient-id {
+        font-size: 0.7rem;
+        color: var(--text-light);
+      }
+
+      .patient-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        margin-right: 4px;
+      }
+
+      .patient-tag.emergency {
+        background: rgba(255, 59, 48, 0.1);
+        color: var(--error);
+      }
+
+      .patient-tag.new {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .quick-actions {
+        display: flex;
+        gap: var(--space-xs);
+      }
+
+      .action-btn-small {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: var(--off-white);
+        border-radius: var(--radius-full);
+        color: var(--text-light);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .action-btn-small:hover {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      /* MODAL STYLES - Completely independent from main style.css */
+      /* Using a unique class name and important flags to override */
+      .walkin-registration-modal {
+        display: none !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(5px) !important;
+        z-index: 999999 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .walkin-registration-modal.show {
+        display: flex !important;
+      }
+
+      .walkin-modal-content {
+        background-color: #ffffff !important;
+        width: 90% !important;
+        max-width: 700px !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        border-radius: 24px !important;
+        padding: 28px !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        position: relative !important;
+        margin: 20px !important;
+      }
+
+      .walkin-modal-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 24px !important;
+        padding-bottom: 16px !important;
+        border-bottom: 2px solid #e9ecef !important;
+      }
+
+      .walkin-modal-header h2 {
+        font-size: 24px !important;
+        color: #1a1e2b !important;
+        font-weight: 600 !important;
+        margin: 0 !important;
+      }
+
+      .walkin-modal-header h2 i {
+        color: #0066cc !important;
+        margin-right: 10px !important;
+      }
+
+      .walkin-modal-close {
+        background: none !important;
+        border: none !important;
+        font-size: 24px !important;
+        cursor: pointer !important;
+        color: #6c757d !important;
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.2s ease !important;
+      }
+
+      .walkin-modal-close:hover {
+        background-color: #f8f9fa !important;
+        color: #ff3b30 !important;
+      }
+
+      /* Form styles */
+      .walkin-form-section {
+        margin-bottom: 30px !important;
+        padding-bottom: 24px !important;
+        border-bottom: 2px solid #e9ecef !important;
+      }
+
+      .walkin-form-section:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+      }
+
+      .walkin-form-section h3 {
+        color: #0066cc !important;
+        font-size: 18px !important;
+        margin-bottom: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-weight: 600 !important;
+      }
+
+      .walkin-form-row {
+        display: flex !important;
+        gap: 20px !important;
+        margin-bottom: 20px !important;
+        flex-wrap: wrap !important;
+      }
+
+      .walkin-form-group {
+        margin-bottom: 20px !important;
+        flex: 1 1 200px !important;
+      }
+
+      .walkin-form-label {
+        display: block !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        color: #004c99 !important;
+        margin-bottom: 8px !important;
+      }
+
+      .walkin-required::after {
+        content: "*" !important;
+        color: #ff3b30 !important;
+        margin-left: 4px !important;
+      }
+
+      .walkin-form-control {
+        width: 100% !important;
+        padding: 12px 16px !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 12px !important;
+        font-size: 15px !important;
+        font-family: inherit !important;
+        background-color: #ffffff !important;
+      }
+
+      .walkin-form-control:focus {
+        border-color: #0066cc !important;
+        outline: none !important;
+      }
+
+      textarea.walkin-form-control {
+        min-height: 80px !important;
+        resize: vertical !important;
+      }
+
+      .walkin-checkbox-group {
+        display: flex !important;
+        gap: 20px !important;
+        align-items: center !important;
+        background-color: #f8f9fa !important;
+        padding: 12px 20px !important;
+        border-radius: 12px !important;
+        border: 2px solid #e9ecef !important;
+        flex-wrap: wrap !important;
+      }
+
+      .walkin-checkbox-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+      }
+
+      .walkin-checkbox-item input[type="checkbox"] {
+        width: 18px !important;
+        height: 18px !important;
+        cursor: pointer !important;
+      }
+
+      .walkin-total-fee {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 16px !important;
+        margin: 20px 0 !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+      }
+
+      .walkin-total-fee-amount {
+        background: #002856 !important;
+        color: white !important;
+        padding: 8px 32px !important;
+        border-radius: 50px !important;
+        font-size: 28px !important;
+      }
+
+      .walkin-signature-hardware {
+        display: flex !important;
+        align-items: center !important;
+        gap: 20px !important;
+        background: #f0f7ff !important;
+        padding: 20px !important;
+        border-radius: 16px !important;
+        border: 2px solid #0066cc !important;
+        margin-bottom: 20px !important;
+        flex-wrap: wrap !important;
+      }
+
+      .walkin-hardware-icon {
+        font-size: 40px !important;
+        color: #0066cc !important;
+      }
+
+      .walkin-hardware-info h4 {
+        color: #004c99 !important;
+        margin-bottom: 4px !important;
+      }
+
+      .walkin-hardware-info p {
+        color: #6c757d !important;
+      }
+
+      .walkin-hardware-status {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        color: #34c759 !important;
+        font-weight: 600 !important;
+        margin-top: 4px !important;
+      }
+
+      .walkin-signature-line {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        background: #f8f9fa !important;
+        padding: 20px !important;
+        border-radius: 16px !important;
+        border: 2px solid #e9ecef !important;
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+      }
+
+      .walkin-signature-placeholder {
+        font-family: "Brush Script MT", cursive !important;
+        font-size: 18px !important;
+        color: #666 !important;
+        border-bottom: 2px dashed #0066cc !important;
+        min-width: 200px !important;
+        text-align: center !important;
+      }
+
+      .walkin-signature-placeholder small {
+        font-family: sans-serif !important;
+        font-size: 11px !important;
+        color: #6c757d !important;
+        display: block !important;
+      }
+
+      .walkin-btn {
+        border: none !important;
+        padding: 12px 24px !important;
+        border-radius: 50px !important;
+        font-weight: 600 !important;
+        font-size: 15px !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+      }
+
+      .walkin-btn-primary {
+        background: #0066cc !important;
+        color: white !important;
+      }
+
+      .walkin-btn-primary:hover {
+        background: #004c99 !important;
+      }
+
+      .walkin-btn-secondary {
+        background: #e9ecef !important;
+        color: #1a1e2b !important;
+      }
+
+      .walkin-btn-secondary:hover {
+        background: #d0ddeb !important;
+      }
+
+      #currentDate {
+        font-weight: 600 !important;
+        color: #004c99 !important;
+      }
+
+      /* Prevent body scroll when modal is open */
+      body.modal-open {
+        overflow: hidden !important;
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img
+                src="../../assets/logo.png"
+                alt="Perfections Dental Services"
+              />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Patients</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile">
+              <div class="user-avatar">JD</div>
+              <div class="user-info">
+                <div class="user-name">Dr. Jane Doe</div>
+                <div class="user-role">Receptionist</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patients Header -->
+        <div class="patients-header">
+          <h2 style="font-size: 1.5rem">Patient Management</h2>
+          <button class="btn btn-primary" onclick="showNewPatientModal()">
+            <i class="fas fa-user-plus"></i>
+            Register New Patient
+          </button>
+        </div>
+
+        <!-- Patient Stats -->
+        <div class="patient-stats">
+          <div class="patient-stat-card-blue">
+            <div class="patient-stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="patient-stat-info">
+              <h3>1,247</h3>
+              <p>Total Patients</p>
+            </div>
+          </div>
+
+          <div class="patient-stat-card-green">
+            <div
+              class="patient-stat-icon"
+              style="background: rgba(52, 199, 89, 0.1); color: #34c759"
+            >
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="patient-stat-info">
+              <h3>156</h3>
+              <p>New This Month</p>
+            </div>
+          </div>
+
+          <div class="patient-stat-card-orange">
+            <div
+              class="patient-stat-icon"
+              style="background: rgba(255, 159, 10, 0.1); color: #ff9f0a"
+            >
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="patient-stat-info">
+              <h3>32</h3>
+              <p>Appointments Today</p>
+            </div>
+          </div>
+
+          <div class="patient-stat-card-purple">
+            <div
+              class="patient-stat-icon"
+              style="background: rgba(175, 82, 222, 0.1); color: #af52de"
+            >
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="patient-stat-info">
+              <h3>12</h3>
+              <p>Waiting</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="patient-filters">
+          <div class="filter-input" style="flex: 2">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              placeholder="Search by name, phone, or patient ID..."
+            />
+          </div>
+          <select class="filter-select" style="flex: 1">
+            <option>All Patients</option>
+            <option>Active</option>
+            <option>With Appointments</option>
+            <option>New Patients</option>
+          </select>
+          <select class="filter-select" style="flex: 1">
+            <option>Sort by: Recent</option>
+            <option>Sort by: Name</option>
+            <option>Sort by: Last Visit</option>
+          </select>
+        </div>
+
+        <!-- Patients Table -->
+        <div class="patient-table-container">
+          <div
+            style="
+              padding: var(--space-lg);
+              border-bottom: 1px solid var(--light-gray);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h3>Patient List</h3>
+            <span class="badge badge-info">Showing 1-10 of 1,247</span>
+          </div>
+
+          <!-- Patient Rows -->
+          <div class="patient-row">
+            <div class="patient-cell name">
+              <div class="patient-avatar-small">SJ</div>
+              <div class="patient-info">
+                <h4>Sarah Jones</h4>
+                <div class="patient-id">PAT-00123</div>
+              </div>
+            </div>
+            <div class="patient-cell">
+              <span class="patient-tag">Hypertension</span>
+              <span class="patient-tag emergency">Allergy</span>
+            </div>
+            <div class="patient-cell">Today 9:00 AM</div>
+            <div class="patient-cell quick-actions">
+              <button class="action-btn-small">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="action-btn-small">
+                <i class="fas fa-calendar-plus"></i>
+              </button>
+              <button class="action-btn-small">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="patient-row">
+            <div class="patient-cell name">
+              <div class="patient-avatar-small">MO</div>
+              <div class="patient-info">
+                <h4>Michael Obi</h4>
+                <div class="patient-id">PAT-00456</div>
+              </div>
+            </div>
+            <div class="patient-cell">
+              <span class="patient-tag">Diabetes</span>
+            </div>
+            <div class="patient-cell">Today 9:45 AM</div>
+            <div class="patient-cell quick-actions">
+              <button class="action-btn-small">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="action-btn-small">
+                <i class="fas fa-calendar-plus"></i>
+              </button>
+              <button class="action-btn-small">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div
+            style="
+              padding: var(--space-lg);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-top: 1px solid var(--light-gray);
+            "
+          >
+            <div style="color: var(--text-light); font-size: 0.9rem">
+              Showing 1-5 of 1,247 patients
+            </div>
+            <div style="display: flex; gap: var(--space-xs)">
+              <button class="btn btn-sm btn-secondary" disabled>
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-primary"
+                style="background: #0066cc; color: white"
+              >
+                1
+              </button>
+              <button class="btn btn-sm btn-secondary">2</button>
+              <button class="btn btn-sm btn-secondary">3</button>
+              <button class="btn btn-sm btn-secondary">4</button>
+              <button class="btn btn-sm btn-secondary">5</button>
+              <span>...</span>
+              <button class="btn btn-sm btn-secondary">50</button>
+              <button class="btn btn-sm btn-secondary">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Patient Modal - Walk-in Registration Form -->
+    <!-- CHANGED: Using unique class names to avoid conflicts with main style.css -->
+    <div class="walkin-registration-modal" id="newPatientModal">
+      <div class="walkin-modal-content">
+        <div class="walkin-modal-header">
+          <h2><i class="fas fa-walking"></i> Walk-in Registration</h2>
+          <button class="walkin-modal-close" onclick="hideNewPatientModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <form id="registrationForm">
+          <!-- A. PERSONAL DETAILS SECTION -->
+          <div class="walkin-form-section">
+            <h3><i class="fas fa-user-circle"></i> A. PERSONAL DETAILS</h3>
+
+            <div class="walkin-form-group">
+              <label class="walkin-form-label walkin-required">Full Name</label>
+              <input
+                type="text"
+                class="walkin-form-control"
+                placeholder="Enter full name"
+                required
+              />
+            </div>
+
+            <div class="walkin-form-row">
+              <div class="walkin-form-group">
+                <label class="walkin-form-label walkin-required"
+                  >Date of Birth</label
+                >
+                <input type="date" class="walkin-form-control" required />
+              </div>
+              <div class="walkin-form-group">
+                <label class="walkin-form-label walkin-required">Gender</label>
+                <div class="walkin-checkbox-group">
+                  <label class="walkin-checkbox-item">
+                    <input type="checkbox" name="gender" value="male" /> Male
+                  </label>
+                  <label class="walkin-checkbox-item">
+                    <input type="checkbox" name="gender" value="female" />
+                    Female
+                  </label>
+                  <label class="walkin-checkbox-item">
+                    <input type="checkbox" name="gender" value="other" /> Other
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="walkin-form-row">
+              <div class="walkin-form-group">
+                <label class="walkin-form-label">Marital Status</label>
+                <div class="walkin-checkbox-group">
+                  <label class="walkin-checkbox-item">
+                    <input type="checkbox" name="marital" value="single" />
+                    Single
+                  </label>
+                  <label class="walkin-checkbox-item">
+                    <input type="checkbox" name="marital" value="married" />
+                    Married
+                  </label>
+                  <label class="walkin-checkbox-item">
+                    <input type="checkbox" name="marital" value="other" /> Other
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="walkin-form-group">
+              <label class="walkin-form-label">Address</label>
+              <textarea
+                class="walkin-form-control"
+                placeholder="Enter complete address"
+              ></textarea>
+            </div>
+
+            <div class="walkin-form-row">
+              <div class="walkin-form-group">
+                <label class="walkin-form-label walkin-required"
+                  >Phone Number</label
+                >
+                <input
+                  type="tel"
+                  class="walkin-form-control"
+                  placeholder="+234 XXX XXX XXXX"
+                  required
+                />
+              </div>
+              <div class="walkin-form-group">
+                <label class="walkin-form-label">Email</label>
+                <input
+                  type="email"
+                  class="walkin-form-control"
+                  placeholder="patient@example.com"
+                />
+              </div>
+            </div>
+
+            <div class="walkin-form-group">
+              <label class="walkin-form-label">Occupation</label>
+              <input
+                type="text"
+                class="walkin-form-control"
+                placeholder="Enter occupation"
+              />
+            </div>
+
+            <div class="walkin-form-row">
+              <div class="walkin-form-group">
+                <label class="walkin-form-label"
+                  >Emergency Contact Name & Relationship</label
+                >
+                <input
+                  type="text"
+                  class="walkin-form-control"
+                  placeholder="e.g., John Smith (Brother)"
+                />
+              </div>
+              <div class="walkin-form-group">
+                <label class="walkin-form-label">Emergency Contact Phone</label>
+                <input
+                  type="tel"
+                  class="walkin-form-control"
+                  placeholder="+234 XXX XXX XXXX"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- B. MEDICAL INSURANCE SECTION -->
+          <div class="walkin-form-section">
+            <h3><i class="fas fa-id-card"></i> B. MEDICAL INSURANCE</h3>
+
+            <div class="walkin-form-row">
+              <div class="walkin-form-group">
+                <label class="walkin-form-label">Insurance Provider</label>
+                <input
+                  type="text"
+                  class="walkin-form-control"
+                  placeholder="Enter provider name"
+                />
+              </div>
+              <div class="walkin-form-group">
+                <label class="walkin-form-label">Policy Number</label>
+                <input
+                  type="text"
+                  class="walkin-form-control"
+                  placeholder="Enter policy number"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- CONSENT SECTION -->
+          <div class="walkin-form-section">
+            <h3><i class="fas fa-file-signature"></i> CONSENT</h3>
+
+            <div
+              style="
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 16px;
+                margin-bottom: 20px;
+              "
+            >
+              <p style="margin-bottom: 20px">
+                <i class="fas fa-check-circle" style="color: #34c759"></i> I
+                consent to dental examination, treatment, and the sharing of
+                relevant information with other healthcare providers if
+                necessary. Mindful of all possible complications.
+              </p>
+
+              <div class="walkin-total-fee">
+                <span>Registration Fee:</span>
+                <span class="walkin-total-fee-amount">₦5,000</span>
+              </div>
+            </div>
+
+            <!-- External Digital Signature Machine Integration -->
+            <div class="walkin-signature-hardware">
+              <div class="walkin-hardware-icon">
+                <i class="fas fa-microchip"></i>
+                <i class="fas fa-usb"></i>
+              </div>
+              <div class="walkin-hardware-info">
+                <h4>External Signature Pad Connected</h4>
+                <p>Device: ZKTeco / Topaz Digital Signing Pad</p>
+                <div class="walkin-hardware-status">
+                  <i
+                    class="fas fa-circle"
+                    style="font-size: 0.5rem; color: #34c759"
+                  ></i>
+                  <span>Ready for signature capture</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Signature Line -->
+            <div class="walkin-signature-line">
+              <div style="display: flex; align-items: center; gap: 10px">
+                <i class="fas fa-pen-fancy" style="color: #0066cc"></i>
+                <span style="font-weight: 600">Patient Signature:</span>
+              </div>
+              <div class="walkin-signature-placeholder">
+                [Signed on external device]
+                <small>captured via signature pad</small>
+              </div>
+              <div>
+                <span style="font-weight: 600">Date:</span>
+                <span style="margin-left: 5px" id="currentDate"></span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 16px; margin-top: 28px">
+            <button
+              type="button"
+              class="walkin-btn walkin-btn-secondary"
+              style="flex: 1"
+              onclick="hideNewPatientModal()"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="walkin-btn walkin-btn-primary"
+              style="flex: 2"
+              onclick="handleRegistration()"
+            >
+              <i class="fas fa-pen-to-square"></i> Complete Registration
+              (₦5,000)
+            </button>
+          </div>
+          <p
+            style="
+              text-align: center;
+              margin-top: 16px;
+              font-size: 0.8rem;
+              color: #6c757d;
+            "
+          >
+            <i class="fas fa-info-circle"></i> After submitting, sign on the
+            external pad when prompted
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Ensure DOM is fully loaded before attaching events
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM loaded, modal initialized");
+
+        // Set today's date
+        const today = new Date();
+        const formatted =
+          today.getFullYear() +
+          "-" +
+          String(today.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(today.getDate()).padStart(2, "0");
+        const dateElement = document.getElementById("currentDate");
+        if (dateElement) {
+          dateElement.textContent = formatted;
+        }
+      });
+
+      function showNewPatientModal() {
+        console.log("Opening modal");
+        const modal = document.getElementById("newPatientModal");
+        if (modal) {
+          modal.classList.add("show");
+          document.body.classList.add("modal-open");
+
+          // Update date in case it changed
+          const today = new Date();
+          const formatted =
+            today.getFullYear() +
+            "-" +
+            String(today.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(today.getDate()).padStart(2, "0");
+          document.getElementById("currentDate").textContent = formatted;
+        } else {
+          console.error("Modal element not found");
+        }
+      }
+
+      function hideNewPatientModal() {
+        console.log("Closing modal");
+        const modal = document.getElementById("newPatientModal");
+        if (modal) {
+          modal.classList.remove("show");
+          document.body.classList.remove("modal-open");
+        }
+      }
+
+      function toggleSidebar() {
+        document.querySelector(".sidebar")?.classList.toggle("collapsed");
+      }
+
+      function handleRegistration() {
+        console.log("Processing registration");
+        alert(
+          "Please sign on the external digital signature pad when prompted.",
+        );
+
+        // Simulate signature capture
+        setTimeout(() => {
+          if (
+            confirm("Signature captured successfully. Complete registration?")
+          ) {
+            alert("Patient registered successfully!");
+            hideNewPatientModal();
+
+            // Optional: Reset form
+            const form = document.getElementById("registrationForm");
+            if (form) form.reset();
+          }
+        }, 1000);
+      }
+
+      // Handle gender checkboxes (only one can be selected)
+      document.addEventListener("change", function (e) {
+        if (e.target.name === "gender") {
+          document.querySelectorAll('input[name="gender"]').forEach((cb) => {
+            if (cb !== e.target) cb.checked = false;
+          });
+        }
+        if (e.target.name === "marital") {
+          document.querySelectorAll('input[name="marital"]').forEach((cb) => {
+            if (cb !== e.target) cb.checked = false;
+          });
+        }
+      });
+
+      // Close modal on escape key
+      window.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          const modal = document.getElementById("newPatientModal");
+          if (modal && modal.classList.contains("show")) {
+            hideNewPatientModal();
+          }
+        }
+      });
+
+      // Close modal when clicking outside
+      window.addEventListener("click", function (e) {
+        const modal = document.getElementById("newPatientModal");
+        if (e.target === modal) {
+          hideNewPatientModal();
+        }
+      });
+    </script>
+  </body>
+</html>

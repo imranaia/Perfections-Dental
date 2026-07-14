@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Prescribe — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .patient-pick-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.2s; }
+      .patient-pick-row:hover { background: rgba(4,80,160,0.06); }
+      .patient-pick-row.selected { background: #eaf4ff; border: 1.5px solid var(--blue-mid); }
+      .med-card { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--light-border); background: rgba(255,255,255,0.4); margin-bottom: 10px; }
+      .med-card.locked { opacity: 0.6; }
+      .med-icon { width: 38px; height: 38px; border-radius: 10px; background: #eaf4ff; color: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .med-info { flex: 1; min-width: 0; }
+      .med-name { font-weight: 700; font-size: 0.86rem; color: var(--dark); }
+      .med-sub { font-size: 0.76rem; color: var(--mid-gray); }
+      .cart-item { border: 1px solid var(--light-border); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px; background: rgba(255,255,255,0.5); }
+      .cart-item-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+      .cart-item-fields { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .cart-item-fields input { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--light-border); font-size: 0.82rem; background: rgba(255,255,255,0.7); }
+      .remove-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; }
+      .selected-patient-banner { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: var(--radius-md); background: var(--green-light); margin-bottom: 16px; }
+      .section-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--mid-gray); font-weight: 700; margin: 14px 0 8px; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Nurse</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="my-tasks.html"><i class="fas fa-list-check"></i> My Tasks</a>
+        <a class="glass-nav-link" href="my-assists.html"><i class="fas fa-hand-holding-medical"></i> My Assists</a>
+        <a class="glass-nav-link" href="procedures.html"><i class="fas fa-syringe"></i> Procedures</a>
+        <a class="glass-nav-link active" href="prescribe.html"><i class="fas fa-pills"></i> Prescribe</a>
+        <a class="glass-nav-link" href="notes.html"><i class="fas fa-notes-medical"></i> Notes & Vitals</a>
+        <a class="glass-nav-link" href="records.html"><i class="fas fa-file-waveform"></i> Records</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1>Prescribe Medication</h1>
+          <span class="glass-badge info"><i class="fas fa-shield-heart"></i> Nurse-eligible items only — sends to Reception</span>
+        </div>
+
+        <div class="glass-grid glass-grid-2">
+          <div class="glass-card">
+            <h3><i class="fas fa-user"></i> Select Patient</h3>
+            <div class="glass-field" style="margin-top:12px;">
+              <input type="text" id="patientSearch" class="glass-input" placeholder="Search by name, patient number, or phone…" />
+            </div>
+            <div id="patientList" style="max-height:320px; overflow-y:auto;"></div>
+          </div>
+
+          <div class="glass-card">
+            <h3><i class="fas fa-pills"></i> Medications</h3>
+            <div class="section-label">Nurse-Eligible</div>
+            <div id="eligibleList"></div>
+            <div class="section-label">Requires Doctor's Sign-Off</div>
+            <div id="restrictedList"></div>
+          </div>
+        </div>
+
+        <div class="glass-card" style="margin-top:20px;">
+          <h3><i class="fas fa-cart-shopping"></i> Prescription</h3>
+          <div id="selectedPatientBanner"></div>
+          <div id="cartList" style="margin-top:6px;"></div>
+          <div id="cartEmpty" class="glass-empty"><i class="fas fa-prescription-bottle-medical"></i>No medications added yet</div>
+          <div class="glass-field" style="margin-top:16px;">
+            <label>Notes for reception (optional)</label>
+            <textarea id="rxNotes" class="glass-textarea" placeholder="Any special instructions…"></textarea>
+          </div>
+          <button class="glass-btn glass-btn-primary" id="submitBtn" style="margin-top:10px;" disabled>
+            <i class="fas fa-paper-plane"></i> Send to Reception
+          </button>
+          <div id="submitMessage" style="margin-top:12px; font-size:0.85rem;"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let selectedPatient = null;
+      let cart = [];
+
+      async function loadPatients(search = '') {
+        const { patients } = await api(`/nurse/prescribe/patients${search ? '?search=' + encodeURIComponent(search) : ''}`);
+        const list = document.getElementById('patientList');
+        list.innerHTML = patients.length ? patients.map(p => `
+          <div class="patient-pick-row ${selectedPatient?.id === p.id ? 'selected' : ''}" data-id="${p.id}" data-name="${p.full_name}" data-number="${p.patient_number || ''}">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;flex-shrink:0;">
+              ${p.initials}
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:0.86rem;">${p.full_name}</div>
+              <div style="font-size:0.75rem;color:var(--mid-gray);">${p.patient_number || ''} ${p.phone ? '· ' + p.phone : ''}</div>
+            </div>
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-user"></i>No patients found — try a search</div>';
+
+        list.querySelectorAll('.patient-pick-row').forEach(row => {
+          row.addEventListener('click', () => {
+            selectedPatient = { id: Number(row.dataset.id), name: row.dataset.name, patient_number: row.dataset.number };
+            renderSelectedBanner();
+            loadPatients(document.getElementById('patientSearch').value);
+            updateSubmitState();
+          });
+        });
+      }
+
+      function renderSelectedBanner() {
+        const banner = document.getElementById('selectedPatientBanner');
+        if (!selectedPatient) { banner.innerHTML = ''; return; }
+        banner.innerHTML = `
+          <div class="selected-patient-banner">
+            <i class="fas fa-user-check" style="color:var(--green-dark);font-size:1.2rem;"></i>
+            <div><strong>${selectedPatient.name}</strong> ${selectedPatient.patient_number ? '· ' + selectedPatient.patient_number : ''}</div>
+          </div>`;
+      }
+
+      async function loadMeds() {
+        const { medications } = await api('/nurse/prescribe/medications');
+        document.getElementById('eligibleList').innerHTML = medications.nurse_eligible.map(m => `
+          <div class="med-card">
+            <div class="med-icon"><i class="fas fa-pills"></i></div>
+            <div class="med-info">
+              <div class="med-name">${m.name}</div>
+              <div class="med-sub">₦${m.price.toLocaleString()} / ${m.unit} · ${m.stock} in stock</div>
+            </div>
+            <button class="glass-btn glass-btn-ghost add-med-btn" data-id="${m.id}" data-name="${m.name}"><i class="fas fa-plus"></i></button>
+          </div>
+        `).join('') || '<div class="glass-empty"><i class="fas fa-pills"></i>None available</div>';
+
+        document.getElementById('restrictedList').innerHTML = medications.restricted.map(m => `
+          <div class="med-card locked">
+            <div class="med-icon"><i class="fas fa-lock"></i></div>
+            <div class="med-info">
+              <div class="med-name">${m.name}</div>
+              <div class="med-sub">Doctor's prescription required</div>
+            </div>
+          </div>
+        `).join('') || '<div class="glass-empty"><i class="fas fa-lock"></i>None</div>';
+
+        document.querySelectorAll('.add-med-btn').forEach(btn => {
+          btn.addEventListener('click', () => addToCart(Number(btn.dataset.id), btn.dataset.name));
+        });
+      }
+
+      function addToCart(id, name) {
+        if (cart.some(i => i.id === id)) return;
+        cart.push({ id, name, dosage: '', frequency: '', duration: '', quantity: 1 });
+        renderCart();
+      }
+
+      function renderCart() {
+        document.getElementById('cartEmpty').style.display = cart.length ? 'none' : 'block';
+        document.getElementById('cartList').innerHTML = cart.map((item, i) => `
+          <div class="cart-item">
+            <div class="cart-item-head">
+              <strong>${item.name}</strong>
+              <button class="remove-btn" data-i="${i}"><i class="fas fa-trash"></i></button>
+            </div>
+            <div class="cart-item-fields">
+              <input placeholder="Dosage (e.g. 500mg)" value="${item.dosage}" data-i="${i}" data-field="dosage" />
+              <input placeholder="Frequency (e.g. 3x daily)" value="${item.frequency}" data-i="${i}" data-field="frequency" />
+              <input placeholder="Duration (e.g. 5 days)" value="${item.duration}" data-i="${i}" data-field="duration" />
+              <input type="number" min="1" placeholder="Qty" value="${item.quantity}" data-i="${i}" data-field="quantity" />
+            </div>
+          </div>
+        `).join('');
+
+        document.querySelectorAll('.cart-item input').forEach(inp => {
+          inp.addEventListener('input', () => {
+            const i = Number(inp.dataset.i);
+            cart[i][inp.dataset.field] = inp.dataset.field === 'quantity' ? Number(inp.value) : inp.value;
+          });
+        });
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+          btn.addEventListener('click', () => { cart.splice(Number(btn.dataset.i), 1); renderCart(); updateSubmitState(); });
+        });
+        updateSubmitState();
+      }
+
+      function updateSubmitState() {
+        document.getElementById('submitBtn').disabled = !(selectedPatient && cart.length);
+      }
+
+      document.getElementById('submitBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('submitMessage');
+        msg.textContent = '';
+        try {
+          const result = await api('/nurse/prescribe/send-to-reception', {
+            method: 'POST',
+            body: JSON.stringify({
+              patient_id: selectedPatient.id,
+              notes: document.getElementById('rxNotes').value.trim(),
+              items: cart.map(i => ({
+                inventory_item_id: i.id, dosage: i.dosage, frequency: i.frequency,
+                duration: i.duration, quantity: i.quantity || 1,
+              })),
+            }),
+          });
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = `Sent to reception — prescription ${result.prescription.prescription_number}.`;
+          cart = [];
+          selectedPatient = null;
+          renderCart();
+          renderSelectedBanner();
+          document.getElementById('rxNotes').value = '';
+        } catch (err) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = err.message;
+        }
+      });
+
+      let searchDebounce;
+      document.getElementById('patientSearch').addEventListener('input', (e) => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => loadPatients(e.target.value), 250);
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        renderCart();
+        await Promise.all([loadPatients(), loadMeds()]);
+      }
+      init();
+    </script>
+  </body>
+</html>

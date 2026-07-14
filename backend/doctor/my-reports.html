@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>My Reports - Doctor - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .reports-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .report-period {
+        display: flex;
+        gap: var(--space-xs);
+        background: var(--pure-white);
+        padding: var(--space-xs);
+        border-radius: var(--radius-full);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .period-btn {
+        padding: var(--space-sm) var(--space-lg);
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .period-btn.active {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .report-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-lg);
+      }
+
+      .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .report-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      /* Enhanced Mini Stats Cards */
+      .stats-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+      }
+
+      .stat-mini-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        transition: all var(--transition-base);
+        border-left: 4px solid transparent;
+      }
+
+      .stat-mini-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .stat-mini-card.blue {
+        border-left-color: var(--primary-blue);
+      }
+
+      .stat-mini-card.green {
+        border-left-color: var(--success);
+      }
+
+      .stat-mini-card.orange {
+        border-left-color: var(--warning);
+      }
+
+      .stat-mini-card.purple {
+        border-left-color: var(--purple);
+      }
+
+      .stat-mini-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+      }
+
+      .stat-mini-icon.blue {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .stat-mini-icon.green {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .stat-mini-icon.orange {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .stat-mini-icon.purple {
+        background: rgba(175, 82, 222, 0.1);
+        color: var(--purple);
+      }
+
+      .stat-mini-content {
+        flex: 1;
+      }
+
+      .stat-mini-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        line-height: 1.2;
+        margin-bottom: 2px;
+      }
+
+      .stat-mini-label {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-bottom: 2px;
+      }
+
+      .stat-mini-trend {
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+      }
+
+      .stat-mini-trend.positive {
+        color: var(--success);
+      }
+
+      .stat-mini-trend.neutral {
+        color: var(--text-light);
+      }
+
+      .procedure-breakdown {
+        margin-top: var(--space-md);
+      }
+
+      .procedure-row {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+      }
+
+      .procedure-name {
+        flex: 1;
+        font-weight: 500;
+      }
+
+      .procedure-count {
+        width: 80px;
+        text-align: right;
+        font-weight: 600;
+      }
+
+      .procedure-bar {
+        width: 200px;
+        height: 8px;
+        background: var(--light-gray);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+
+      .procedure-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary-blue),
+          var(--primary-green)
+        );
+        border-radius: var(--radius-full);
+      }
+
+      .export-options {
+        display: flex;
+        gap: var(--space-sm);
+        justify-content: flex-end;
+      }
+
+      /* Profit margin bar style (already exists but ensuring it's defined) */
+      .profit-margin-bar {
+        height: 8px;
+        background: var(--light-gray);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+        margin: var(--space-xs) 0;
+      }
+
+      .profit-margin-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--primary-blue),
+          var(--primary-green)
+        );
+        border-radius: var(--radius-full);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">My Reports</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Reports Header -->
+        <div class="reports-header">
+          <h2 style="font-size: 1.5rem">
+            Dr. Sarah Smith - Performance Summary
+          </h2>
+          <div class="report-period">
+            <button class="period-btn active">This Month</button>
+            <button class="period-btn">Last Month</button>
+            <button class="period-btn">This Quarter</button>
+            <button class="period-btn">This Year</button>
+          </div>
+        </div>
+
+        <!-- Enhanced Mini Stats with Cards -->
+        <div class="stats-mini-grid">
+          <!-- Patients Stat -->
+          <div class="stat-mini-card blue">
+            <div class="stat-mini-icon blue">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-mini-content">
+              <div class="stat-mini-value">124</div>
+              <div class="stat-mini-label">Patients</div>
+              <div class="stat-mini-trend positive">
+                <i class="fas fa-arrow-up"></i> +12 vs last month
+              </div>
+            </div>
+          </div>
+
+          <!-- Procedures Stat -->
+          <div class="stat-mini-card green">
+            <div class="stat-mini-icon green">
+              <i class="fas fa-procedures"></i>
+            </div>
+            <div class="stat-mini-content">
+              <div class="stat-mini-value">156</div>
+              <div class="stat-mini-label">Procedures</div>
+              <div class="stat-mini-trend positive">
+                <i class="fas fa-arrow-up"></i> +18% vs last month
+              </div>
+            </div>
+          </div>
+
+          <!-- Revenue Stat -->
+          <div class="stat-mini-card orange">
+            <div class="stat-mini-icon orange">
+              <i class="fas fa-naira-sign"></i>
+            </div>
+            <div class="stat-mini-content">
+              <div class="stat-mini-value">₦1.8M</div>
+              <div class="stat-mini-label">Revenue</div>
+              <div class="stat-mini-trend positive">
+                <i class="fas fa-arrow-up"></i> +8% vs last month
+              </div>
+            </div>
+          </div>
+
+          <!-- Rating Stat -->
+          <div class="stat-mini-card purple">
+            <div class="stat-mini-icon purple">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-mini-content">
+              <div class="stat-mini-value">4.9</div>
+              <div class="stat-mini-label">Rating</div>
+              <div class="stat-mini-trend neutral">
+                <span class="rating-stars" style="font-size: 0.7rem"
+                  >★★★★★</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient Demographics Report -->
+        <div class="report-card">
+          <div class="report-header">
+            <div class="report-title">Patient Demographics</div>
+            <div class="export-options">
+              <button class="btn btn-sm btn-secondary">
+                <i class="fas fa-chart-bar"></i> Chart
+              </button>
+              <button class="btn btn-sm btn-secondary">
+                <i class="fas fa-download"></i> Export
+              </button>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: var(--space-xl);
+            "
+          >
+            <div>
+              <h4 style="margin-bottom: var(--space-md)">Age Distribution</h4>
+              <div style="margin-bottom: var(--space-sm)">
+                <div style="display: flex; justify-content: space-between">
+                  <span>0-18 years</span>
+                  <span style="font-weight: 600">12%</span>
+                </div>
+                <div class="profit-margin-bar">
+                  <div class="profit-margin-fill" style="width: 12%"></div>
+                </div>
+              </div>
+              <div style="margin-bottom: var(--space-sm)">
+                <div style="display: flex; justify-content: space-between">
+                  <span>19-35 years</span>
+                  <span style="font-weight: 600">34%</span>
+                </div>
+                <div class="profit-margin-bar">
+                  <div class="profit-margin-fill" style="width: 34%"></div>
+                </div>
+              </div>
+              <div style="margin-bottom: var(--space-sm)">
+                <div style="display: flex; justify-content: space-between">
+                  <span>36-50 years</span>
+                  <span style="font-weight: 600">38%</span>
+                </div>
+                <div class="profit-margin-bar">
+                  <div class="profit-margin-fill" style="width: 38%"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between">
+                  <span>51+ years</span>
+                  <span style="font-weight: 600">16%</span>
+                </div>
+                <div class="profit-margin-bar">
+                  <div class="profit-margin-fill" style="width: 16%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 style="margin-bottom: var(--space-md)">Gender & Type</h4>
+              <div style="margin-bottom: var(--space-md)">
+                <div style="display: flex; gap: var(--space-xl)">
+                  <div><span style="font-weight: 600">42%</span> Male</div>
+                  <div><span style="font-weight: 600">58%</span> Female</div>
+                </div>
+              </div>
+              <div>
+                <div style="display: flex; gap: var(--space-xl)">
+                  <div>
+                    <span style="font-weight: 600; color: var(--success)"
+                      >68%</span
+                    >
+                    Returning
+                  </div>
+                  <div>
+                    <span style="font-weight: 600; color: var(--primary-blue)"
+                      >32%</span
+                    >
+                    New
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Procedure Breakdown -->
+        <div class="report-card">
+          <div class="report-header">
+            <div class="report-title">Procedure Breakdown</div>
+            <div class="export-options">
+              <button class="btn btn-sm btn-secondary">
+                <i class="fas fa-chart-pie"></i> View Details
+              </button>
+            </div>
+          </div>
+
+          <div class="procedure-breakdown">
+            <div class="procedure-row">
+              <span class="procedure-name">Teeth Cleaning</span>
+              <span class="procedure-count">52</span>
+              <div class="procedure-bar">
+                <div class="procedure-fill" style="width: 85%"></div>
+              </div>
+              <span
+                style="width: 80px; text-align: right; color: var(--text-light)"
+                >₦780K</span
+              >
+            </div>
+
+            <div class="procedure-row">
+              <span class="procedure-name">Fillings</span>
+              <span class="procedure-count">38</span>
+              <div class="procedure-bar">
+                <div class="procedure-fill" style="width: 62%"></div>
+              </div>
+              <span
+                style="width: 80px; text-align: right; color: var(--text-light)"
+                >₦456K</span
+              >
+            </div>
+
+            <div class="procedure-row">
+              <span class="procedure-name">Extractions</span>
+              <span class="procedure-count">24</span>
+              <div class="procedure-bar">
+                <div class="procedure-fill" style="width: 39%"></div>
+              </div>
+              <span
+                style="width: 80px; text-align: right; color: var(--text-light)"
+                >₦336K</span
+              >
+            </div>
+
+            <div class="procedure-row">
+              <span class="procedure-name">Root Canals</span>
+              <span class="procedure-count">12</span>
+              <div class="procedure-bar">
+                <div class="procedure-fill" style="width: 20%"></div>
+              </div>
+              <span
+                style="width: 80px; text-align: right; color: var(--text-light)"
+                >₦180K</span
+              >
+            </div>
+
+            <div class="procedure-row">
+              <span class="procedure-name">Crowns</span>
+              <span class="procedure-count">8</span>
+              <div class="procedure-bar">
+                <div class="procedure-fill" style="width: 13%"></div>
+              </div>
+              <span
+                style="width: 80px; text-align: right; color: var(--text-light)"
+                >₦96K</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Trends -->
+        <div class="report-card">
+          <div class="report-header">
+            <div class="report-title">Monthly Trends - 2026</div>
+            <div class="export-options">
+              <button class="btn btn-sm btn-secondary">
+                <i class="fas fa-calendar"></i> Compare
+              </button>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              align-items: flex-end;
+              gap: var(--space-md);
+              height: 200px;
+            "
+          >
+            <div style="flex: 1; text-align: center">
+              <div
+                style="
+                  height: 120px;
+                  background: linear-gradient(
+                    to top,
+                    var(--primary-blue),
+                    #a3c9ff
+                  );
+                  border-radius: var(--radius-md) var(--radius-md) 0 0;
+                "
+              ></div>
+              <span style="font-size: 0.8rem">Jan</span>
+              <div style="font-size: 0.7rem; color: var(--text-light)">
+                ₦145K
+              </div>
+            </div>
+            <div style="flex: 1; text-align: center">
+              <div
+                style="
+                  height: 135px;
+                  background: linear-gradient(
+                    to top,
+                    var(--primary-blue),
+                    #a3c9ff
+                  );
+                  border-radius: var(--radius-md) var(--radius-md) 0 0;
+                "
+              ></div>
+              <span style="font-size: 0.8rem">Feb</span>
+              <div style="font-size: 0.7rem; color: var(--text-light)">
+                ₦162K
+              </div>
+            </div>
+            <div style="flex: 1; text-align: center">
+              <div
+                style="
+                  height: 150px;
+                  background: linear-gradient(
+                    to top,
+                    var(--primary-blue),
+                    #a3c9ff
+                  );
+                  border-radius: var(--radius-md) var(--radius-md) 0 0;
+                "
+              ></div>
+              <span style="font-size: 0.8rem">Mar</span>
+              <div style="font-size: 0.7rem; color: var(--text-light)">
+                ₦180K
+              </div>
+            </div>
+            <div style="flex: 1; text-align: center">
+              <div
+                style="
+                  height: 142px;
+                  background: linear-gradient(
+                    to top,
+                    var(--primary-blue),
+                    #a3c9ff
+                  );
+                  border-radius: var(--radius-md) var(--radius-md) 0 0;
+                "
+              ></div>
+              <span style="font-size: 0.8rem">Apr</span>
+              <div style="font-size: 0.7rem; color: var(--text-light)">
+                ₦170K
+              </div>
+            </div>
+            <div style="flex: 1; text-align: center">
+              <div
+                style="
+                  height: 165px;
+                  background: linear-gradient(
+                    to top,
+                    var(--primary-blue),
+                    #a3c9ff
+                  );
+                  border-radius: var(--radius-md) var(--radius-md) 0 0;
+                "
+              ></div>
+              <span style="font-size: 0.8rem">May</span>
+              <div style="font-size: 0.7rem; color: var(--text-light)">
+                ₦198K
+              </div>
+            </div>
+            <div style="flex: 1; text-align: center">
+              <div
+                style="
+                  height: 180px;
+                  background: linear-gradient(
+                    to top,
+                    var(--primary-blue),
+                    #a3c9ff
+                  );
+                  border-radius: var(--radius-md) var(--radius-md) 0 0;
+                "
+              ></div>
+              <span style="font-size: 0.8rem">Jun</span>
+              <div style="font-size: 0.7rem; color: var(--text-light)">
+                ₦216K
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient Satisfaction -->
+        <div class="report-card">
+          <div class="report-header">
+            <div class="report-title">Patient Satisfaction</div>
+            <div class="rating-stars">★★★★★</div>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(5, 1fr);
+              gap: var(--space-md);
+            "
+          >
+            <div style="text-align: center">
+              <div
+                style="font-size: 2rem; font-weight: 700; color: var(--success)"
+              >
+                78%
+              </div>
+              <div style="font-size: 0.8rem">5 Stars</div>
+            </div>
+            <div style="text-align: center">
+              <div style="font-size: 2rem; font-weight: 700">15%</div>
+              <div style="font-size: 0.8rem">4 Stars</div>
+            </div>
+            <div style="text-align: center">
+              <div style="font-size: 2rem; font-weight: 700">5%</div>
+              <div style="font-size: 0.8rem">3 Stars</div>
+            </div>
+            <div style="text-align: center">
+              <div style="font-size: 2rem; font-weight: 700">1%</div>
+              <div style="font-size: 0.8rem">2 Stars</div>
+            </div>
+            <div style="text-align: center">
+              <div style="font-size: 2rem; font-weight: 700">1%</div>
+              <div style="font-size: 0.8rem">1 Star</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Period buttons
+      document.querySelectorAll(".period-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document
+            .querySelectorAll(".period-btn")
+            .forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Performance — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0 0 20px; }
+      .rank-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--light-border); }
+      .rank-row:last-child { border-bottom: none; }
+      .rank-num { width: 26px; height: 26px; border-radius: 50%; background: #eaf4ff; color: var(--blue); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.78rem; flex-shrink: 0; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Superadmin</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="doctors.html"><i class="fas fa-user-doctor"></i> Doctors</a>
+        <a class="glass-nav-link" href="nurses.html"><i class="fas fa-user-nurse"></i> Nurses</a>
+        <a class="glass-nav-link" href="reception.html"><i class="fas fa-desk"></i> Reception Staff</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="financial.html"><i class="fas fa-sack-dollar"></i> Financial</a>
+        <a class="glass-nav-link" href="analytics.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a class="glass-nav-link active" href="performance.html"><i class="fas fa-ranking-star"></i> Performance</a>
+        <a class="glass-nav-link" href="access-control.html"><i class="fas fa-shield-halved"></i> Access Control</a>
+        <a class="glass-nav-link" href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>Performance</h1></div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:20px;">
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-star"></i></div><div><div class="glass-stat-num" id="kpiRating">–</div><div class="glass-stat-label">Avg. Rating</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon green"><i class="fas fa-calendar-check"></i></div><div><div class="glass-stat-num" id="kpiAttendance">–</div><div class="glass-stat-label">Attendance Rate</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon gold"><i class="fas fa-syringe"></i></div><div><div class="glass-stat-num" id="kpiProcedures">–</div><div class="glass-stat-label">Avg. Procedures</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-sack-dollar"></i></div><div><div class="glass-stat-num" id="kpiRevenue">–</div><div class="glass-stat-label">Avg. Revenue</div></div></div>
+        </div>
+
+        <div class="glass-grid glass-grid-2">
+          <div class="glass-card">
+            <h3><i class="fas fa-user-doctor"></i> Top Doctors</h3>
+            <div id="doctorRank" style="margin-top:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-user-nurse"></i> Top Nurses</h3>
+            <div id="nurseRank" style="margin-top:10px;"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/superadmin/performance';
+      async function api(path) {
+        const res = await fetch(API + path, { credentials: 'include' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+
+        const { kpi } = await api('/kpi');
+        document.getElementById('kpiRating').textContent = kpi.avg_rating ?? '–';
+        document.getElementById('kpiAttendance').textContent = (kpi.attendance_rate ?? 0) + '%';
+        document.getElementById('kpiProcedures').textContent = kpi.avg_procedures ?? 0;
+        document.getElementById('kpiRevenue').textContent = '₦' + Math.round(kpi.avg_revenue ?? 0).toLocaleString();
+
+        const { doctors } = await api('/doctors');
+        document.getElementById('doctorRank').innerHTML = doctors.length ? doctors.map(d => `
+          <div class="rank-row">
+            <div class="rank-num">${d.rank}</div>
+            <div style="flex:1"><div style="font-weight:700;">${d.name}</div><div style="font-size:0.76rem;color:var(--mid-gray);">${d.specialty || ''} · ${d.ratingStars || ''}</div></div>
+            <div style="text-align:right;"><div style="font-weight:700;">${d.patients ?? 0} pts</div><div style="font-size:0.75rem;color:var(--mid-gray);">${d.procedures ?? 0} procedures</div></div>
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-user-doctor"></i>No data yet</div>';
+
+        const { nurses } = await api('/nurses');
+        document.getElementById('nurseRank').innerHTML = nurses.length ? nurses.map(n => `
+          <div class="rank-row">
+            <div class="rank-num">${n.rank}</div>
+            <div style="flex:1"><div style="font-weight:700;">${n.name}</div><div style="font-size:0.76rem;color:var(--mid-gray);">${n.specialty || ''} · ${n.ratingStars || ''}</div></div>
+            <div style="text-align:right;"><div style="font-weight:700;">${n.assists ?? 0}</div><div style="font-size:0.75rem;color:var(--mid-gray);">assists</div></div>
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-user-nurse"></i>No data yet</div>';
+      }
+      init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1836 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Inventory - Reception - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      /* ========== OVERRIDES ========== */
+      .filter-input {
+        display: flex;
+        align-items: center;
+        background: var(--pure-white);
+        border-radius: var(--radius-full);
+        padding: var(--space-xs) var(--space-md);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--light-gray);
+        transition: all var(--transition-fast);
+      }
+
+      .filter-input:focus-within {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+      }
+
+      .filter-input i {
+        color: var(--text-light);
+        margin-right: var(--space-sm);
+        font-size: 1rem;
+      }
+
+      .filter-input input {
+        border: none;
+        padding: var(--space-sm) 0;
+        width: 100%;
+        font-size: 0.95rem;
+        background: transparent;
+      }
+
+      .filter-input input:focus {
+        outline: none;
+      }
+
+      .filter-input input::placeholder {
+        color: var(--text-light);
+        opacity: 0.7;
+      }
+
+      /* Modal Overrides */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      .form-section {
+        margin-bottom: var(--space-lg);
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        border: 1px solid var(--light-gray);
+      }
+
+      .form-section h4 {
+        margin-bottom: var(--space-md);
+        color: var(--primary-blue);
+        font-size: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: var(--space-md);
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: var(--space-xs);
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: var(--space-sm) var(--space-md);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        margin-top: var(--space-xs);
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      /* Delete Modal */
+      .delete-modal {
+        max-width: 400px;
+      }
+
+      .delete-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 59, 48, 0.1);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--space-lg);
+        color: var(--error);
+        font-size: 2.5rem;
+      }
+
+      .delete-warning {
+        text-align: center;
+        color: var(--text-light);
+        margin-bottom: var(--space-lg);
+      }
+
+      .delete-warning strong {
+        color: var(--error);
+        font-size: 1.1rem;
+      }
+
+      /* Toast Notification */
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md) var(--space-lg);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 2000;
+        border-left: 4px solid var(--success);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.error {
+        border-left-color: var(--error);
+      }
+
+      .toast.warning {
+        border-left-color: var(--warning);
+      }
+
+      .toast-icon {
+        font-size: 1.2rem;
+      }
+
+      .toast.success .toast-icon {
+        color: var(--success);
+      }
+
+      .toast.error .toast-icon {
+        color: var(--error);
+      }
+
+      .toast-message {
+        font-size: 0.95rem;
+      }
+
+      .toast-close {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        font-size: 1rem;
+        margin-left: var(--space-sm);
+      }
+
+      /* Order Modal */
+      .order-summary {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+      }
+
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+      }
+
+      .order-item:last-child {
+        border-bottom: none;
+      }
+
+      .order-total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+        text-align: right;
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
+        border-top: 2px solid var(--light-gray);
+      }
+
+      /* Inventory specific styles */
+      .inventory-alerts {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+      }
+
+      .alert-box {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        border-left: 4px solid;
+      }
+
+      .alert-box.critical {
+        border-left-color: var(--error);
+        transition: all var(--transition-base);
+      }
+
+      .alert-box.warning {
+        border-left-color: var(--warning);
+        transition: all var(--transition-base);
+      }
+
+      .alert-box.warning:hover,
+      .alert-box.critical:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .alert-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-md);
+      }
+
+      .alert-header i {
+        font-size: 1.5rem;
+      }
+
+      .alert-header.critical i {
+        color: var(--error);
+      }
+
+      .alert-header.warning i {
+        color: var(--warning);
+      }
+
+      .alert-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .alert-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+      }
+
+      .alert-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-info h4 {
+        font-size: 1rem;
+        margin-bottom: 2px;
+      }
+
+      .item-info p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .item-action {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .stock-badge {
+        padding: 4px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .stock-badge.critical {
+        background: rgba(255, 59, 48, 0.1);
+        color: var(--error);
+      }
+
+      .stock-badge.warning {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .stock-badge.good {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .inventory-filters {
+        display: flex;
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .category-pills {
+        display: flex;
+        gap: var(--space-sm);
+        flex-wrap: wrap;
+      }
+
+      .category-pill {
+        padding: var(--space-sm) var(--space-lg);
+        background: var(--pure-white);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .category-pill:hover {
+        border-color: var(--primary-blue);
+      }
+
+      .category-pill.active {
+        background: var(--primary-blue);
+        border-color: var(--primary-blue);
+        color: white;
+      }
+
+      .inventory-table-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+      }
+
+      .stock-indicator {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .stock-bar {
+        width: 80px;
+        height: 6px;
+        background: var(--light-gray);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+
+      .stock-fill {
+        height: 100%;
+        border-radius: var(--radius-full);
+      }
+
+      .stock-fill.good {
+        background: var(--success);
+      }
+      .stock-fill.warning {
+        background: var(--warning);
+      }
+      .stock-fill.critical {
+        background: var(--error);
+      }
+
+      .expiry-badge {
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .expiry-badge.critical {
+        background: rgba(255, 59, 48, 0.1);
+        color: var(--error);
+      }
+
+      .expiry-badge.warning {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .expiry-badge.safe {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .quick-order {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+      }
+
+      .action-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-full);
+        border: none;
+        background: var(--off-white);
+        color: var(--text-dark);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .action-icon:hover {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .action-icon.delete:hover {
+        background: var(--error);
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .table th {
+        text-align: left;
+        padding: var(--space-md);
+        background: var(--off-white);
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+      }
+
+      .table td {
+        padding: var(--space-md);
+        border-bottom: 1px solid var(--light-gray);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img
+                src="../../assets/logo.png"
+                alt="Perfections Dental Services"
+              />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Inventory Management</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Inventory Alerts -->
+        <div class="inventory-alerts" id="inventoryAlerts"></div>
+
+        <!-- Filters -->
+        <div class="inventory-filters">
+          <div class="filter-input" style="flex: 2">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              placeholder="Search medications by name, category, or manufacturer..."
+              id="searchInput"
+              onkeyup="filterInventory()"
+            />
+          </div>
+          <div class="category-pills" id="categoryPills"></div>
+          <button class="btn btn-primary" onclick="openAddItemModal()">
+            <i class="fas fa-plus"></i>
+            Add Item
+          </button>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="inventory-table-container">
+          <div
+            style="
+              padding: var(--space-lg);
+              border-bottom: 1px solid var(--light-gray);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h3>Medication Inventory</h3>
+            <span class="badge badge-info" id="totalItems">Total Items: 0</span>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Medication</th>
+                <th>Category</th>
+                <th>Current Stock</th>
+                <th>Min Threshold</th>
+                <th>Status</th>
+                <th>Expiry Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody"></tbody>
+          </table>
+
+          <!-- Quick Order Section -->
+          <div
+            style="
+              padding: var(--space-lg);
+              border-top: 2px solid var(--light-gray);
+            "
+          >
+            <div class="quick-order">
+              <h4 style="margin-bottom: var(--space-md)">Quick Order</h4>
+              <div
+                style="
+                  display: flex;
+                  gap: var(--space-md);
+                  align-items: flex-end;
+                  flex-wrap: wrap;
+                "
+              >
+                <div style="flex: 2; min-width: 250px">
+                  <label class="form-label">Select Item</label>
+                  <select
+                    class="form-control"
+                    id="quickOrderSelect"
+                    onchange="updateQuickOrderPrice()"
+                  >
+                    <option value="">-- Select Item --</option>
+                  </select>
+                </div>
+                <div style="flex: 1; min-width: 150px">
+                  <label class="form-label">Quantity</label>
+                  <input
+                    type="number"
+                    id="quickOrderQuantity"
+                    value="50"
+                    min="1"
+                    class="form-control"
+                    onchange="updateQuickOrderPrice()"
+                  />
+                </div>
+                <div style="flex: 1; min-width: 150px">
+                  <label class="form-label">Total Price</label>
+                  <div
+                    style="
+                      padding: var(--space-md);
+                      font-weight: 700;
+                      color: var(--primary-blue);
+                    "
+                    id="quickOrderTotal"
+                  >
+                    ₦0
+                  </div>
+                </div>
+                <button class="btn btn-primary" onclick="openOrderModal()">
+                  <i class="fas fa-shopping-cart"></i>
+                  Add to Order
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
+    <div class="modal-overlay" id="itemModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title" id="itemModalTitle">Add New Item</span>
+          <button class="modal-close" onclick="closeItemModal()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="itemForm">
+            <div class="form-section">
+              <h4>Basic Information</h4>
+              <div class="form-group">
+                <label
+                  >Item Name <span style="color: var(--error)">*</span></label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="itemName"
+                  placeholder="e.g., Amoxicillin 500mg"
+                  required
+                />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label
+                    >Category <span style="color: var(--error)">*</span></label
+                  >
+                  <select class="form-control" id="itemCategory" required>
+                    <option value="">Select Category</option>
+                    <option value="Antibiotics">Antibiotics</option>
+                    <option value="Pain Relief">Pain Relief</option>
+                    <option value="Anesthetics">Anesthetics</option>
+                    <option value="Antiseptics">Antiseptics</option>
+                    <option value="Analgesics">Analgesics</option>
+                    <option value="Mouthwash">Mouthwash</option>
+                    <option value="Supplies">Supplies</option>
+                    <option value="Equipment">Equipment</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Manufacturer</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="itemManufacturer"
+                    placeholder="e.g., Pfizer"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Unit</label>
+                  <select class="form-control" id="itemUnit">
+                    <option value="tablets">Tablets</option>
+                    <option value="bottles">Bottles</option>
+                    <option value="vials">Vials</option>
+                    <option value="boxes">Boxes</option>
+                    <option value="packs">Packs</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Price per Unit (₦)</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="itemPrice"
+                    value="0"
+                    min="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4>Stock Information</h4>
+              <div class="form-row">
+                <div class="form-group">
+                  <label
+                    >Current Stock
+                    <span style="color: var(--error)">*</span></label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="itemStock"
+                    value="0"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label
+                    >Minimum Threshold
+                    <span style="color: var(--error)">*</span></label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="itemMinStock"
+                    value="10"
+                    min="0"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Maximum Stock</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="itemMaxStock"
+                    value="100"
+                    min="0"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Location/Rack</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="itemLocation"
+                    placeholder="e.g., A-12"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4>Expiry Information</h4>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Expiry Date</label>
+                  <input type="date" class="form-control" id="itemExpiry" />
+                </div>
+
+                <div class="form-group">
+                  <label>Batch/Lot Number</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="itemBatch"
+                    placeholder="e.g., BATCH-001"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="checkbox-group">
+                  <input type="checkbox" id="itemActive" checked />
+                  <label for="itemActive"
+                    >Active Item (visible in inventory)</label
+                  >
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="checkbox-group">
+                  <input type="checkbox" id="itemPrescription" checked />
+                  <label for="itemPrescription">Requires Prescription</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4>Additional Information</h4>
+              <div class="form-group">
+                <label>Description</label>
+                <textarea
+                  class="form-control"
+                  id="itemDescription"
+                  rows="3"
+                  placeholder="Item description..."
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Notes</label>
+                <textarea
+                  class="form-control"
+                  id="itemNotes"
+                  rows="2"
+                  placeholder="Any special notes..."
+                ></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeItemModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveItem()">
+            Save Item
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Modal -->
+    <div class="modal-overlay" id="orderModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Create Purchase Order</span>
+          <button class="modal-close" onclick="closeOrderModal()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-section">
+            <h4>Order Details</h4>
+            <div class="form-group">
+              <label>Supplier</label>
+              <select class="form-control" id="orderSupplier">
+                <option value="">Select Supplier</option>
+                <option value="1">MedPlus Pharmaceuticals</option>
+                <option value="2">HealthCare Distributors</option>
+                <option value="3">Dental Supply Co.</option>
+                <option value="4">Global Medical Solutions</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Order Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="orderDate"
+                  value="2026-03-02"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Expected Delivery</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="orderDelivery"
+                  value="2026-03-09"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Order Reference</label>
+              <input
+                type="text"
+                class="form-control"
+                id="orderReference"
+                value="PO-2026-001"
+              />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>Order Items</h4>
+            <div class="order-summary" id="orderSummary"></div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Add More Items</label>
+                <select class="form-control" id="orderAddItem">
+                  <option value="">-- Select Item --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>&nbsp;</label>
+                <button
+                  class="btn btn-secondary"
+                  style="width: 100%"
+                  onclick="addItemToOrder()"
+                >
+                  Add Item
+                </button>
+              </div>
+            </div>
+
+            <div class="order-total" id="orderTotal">Total: ₦0</div>
+          </div>
+
+          <div class="form-section">
+            <h4>Payment Information</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Payment Method</label>
+                <select class="form-control" id="orderPayment">
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="Credit Card">Credit Card</option>
+                  <option value="Cash">Cash</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Payment Terms</label>
+                <select class="form-control" id="orderTerms">
+                  <option value="Due on Receipt">Due on Receipt</option>
+                  <option value="Net 15">Net 15</option>
+                  <option value="Net 30">Net 30</option>
+                  <option value="Net 45">Net 45</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>Notes</h4>
+            <textarea
+              class="form-control"
+              id="orderNotes"
+              rows="3"
+              placeholder="Order instructions or notes..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeOrderModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="submitOrder()">
+            Submit Order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal-container delete-modal">
+        <div class="modal-header">
+          <span class="modal-title">Confirm Delete</span>
+          <button class="modal-close" onclick="closeDeleteModal()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="delete-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="delete-warning">
+            <p>
+              Are you sure you want to delete
+              <strong id="deleteItemName">this item</strong>?
+            </p>
+            <p>This action cannot be undone.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeDeleteModal()">
+            Cancel
+          </button>
+          <button
+            class="btn btn-error"
+            style="background: var(--error); color: white"
+            onclick="confirmDelete()"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+      <div class="toast-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="toast-message" id="toastMessage">
+        Action completed successfully
+      </div>
+      <button class="toast-close" onclick="hideToast()">&times;</button>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Sample Inventory Data
+      let inventory = [
+        {
+          id: 1,
+          name: "Amoxicillin 500mg",
+          category: "Antibiotics",
+          manufacturer: "Pfizer",
+          stock: 12,
+          minStock: 20,
+          maxStock: 100,
+          unit: "tablets",
+          price: 500,
+          expiry: "2026-08-15",
+          batch: "BATCH-001",
+          location: "A-12",
+          active: true,
+          prescription: true,
+          description: "Antibiotic for bacterial infections",
+          notes: "Store at room temperature",
+        },
+        {
+          id: 2,
+          name: "Ibuprofen 400mg",
+          category: "Pain Relief",
+          manufacturer: "GSK",
+          stock: 28,
+          minStock: 20,
+          maxStock: 150,
+          unit: "tablets",
+          price: 200,
+          expiry: "2026-10-20",
+          batch: "BATCH-002",
+          location: "A-13",
+          active: true,
+          prescription: false,
+          description: "Anti-inflammatory pain reliever",
+          notes: "",
+        },
+        {
+          id: 3,
+          name: "Lidocaine 2%",
+          category: "Anesthetics",
+          manufacturer: "AstraZeneca",
+          stock: 5,
+          minStock: 10,
+          maxStock: 50,
+          unit: "vials",
+          price: 800,
+          expiry: "2026-03-30",
+          batch: "BATCH-003",
+          location: "B-01",
+          active: true,
+          prescription: true,
+          description: "Local anesthetic",
+          notes: "Refrigerate",
+        },
+        {
+          id: 4,
+          name: "Paracetamol 500mg",
+          category: "Pain Relief",
+          manufacturer: "Emzor",
+          stock: 145,
+          minStock: 50,
+          maxStock: 200,
+          unit: "tablets",
+          price: 100,
+          expiry: "2026-04-01",
+          batch: "BATCH-004",
+          location: "A-14",
+          active: true,
+          prescription: false,
+          description: "Fever and pain relief",
+          notes: "",
+        },
+        {
+          id: 5,
+          name: "Metronidazole 400mg",
+          category: "Antibiotics",
+          manufacturer: "May & Baker",
+          stock: 32,
+          minStock: 50,
+          maxStock: 150,
+          unit: "tablets",
+          price: 450,
+          expiry: "2026-05-15",
+          batch: "BATCH-005",
+          location: "A-15",
+          active: true,
+          prescription: true,
+          description: "Antibiotic for dental infections",
+          notes: "",
+        },
+        {
+          id: 6,
+          name: "Chlorhexidine 0.2%",
+          category: "Antiseptics",
+          manufacturer: "GlaxoSmithKline",
+          stock: 8,
+          minStock: 10,
+          maxStock: 30,
+          unit: "bottles",
+          price: 1200,
+          expiry: "2026-03-15",
+          batch: "BATCH-006",
+          location: "C-01",
+          active: true,
+          prescription: false,
+          description: "Antiseptic mouthwash",
+          notes: "Do not dilute",
+        },
+      ];
+
+      // Categories
+      const categories = [
+        "All",
+        "Antibiotics",
+        "Pain Relief",
+        "Anesthetics",
+        "Antiseptics",
+        "Analgesics",
+        "Mouthwash",
+        "Supplies",
+        "Equipment",
+      ];
+
+      // State
+      let currentItemId = null;
+      let deleteId = null;
+      let currentCategory = "All";
+      let searchTerm = "";
+      let orderItems = [];
+
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", function () {
+        loadCategoryPills();
+        loadInventory();
+        loadAlerts();
+        loadQuickOrderSelect();
+      });
+
+      // Load category pills
+      function loadCategoryPills() {
+        const container = document.getElementById("categoryPills");
+        let html = "";
+
+        categories.forEach((cat) => {
+          html += `<span class="category-pill ${cat === "All" ? "active" : ""}" onclick="filterByCategory('${cat}')">${cat}</span>`;
+        });
+
+        container.innerHTML = html;
+      }
+
+      // Load inventory table
+      function loadInventory() {
+        const tbody = document.getElementById("inventoryTableBody");
+        let filteredInventory = inventory;
+
+        // Apply category filter
+        if (currentCategory !== "All") {
+          filteredInventory = filteredInventory.filter(
+            (item) => item.category === currentCategory,
+          );
+        }
+
+        // Apply search filter
+        if (searchTerm) {
+          filteredInventory = filteredInventory.filter(
+            (item) =>
+              item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.manufacturer
+                ?.toLowerCase()
+                .includes(searchTerm.toLowerCase()),
+          );
+        }
+
+        let html = "";
+
+        filteredInventory.forEach((item) => {
+          const stockPercentage = (item.stock / item.maxStock) * 100;
+          const stockStatus =
+            item.stock <= item.minStock
+              ? "critical"
+              : item.stock <= item.minStock * 1.5
+                ? "warning"
+                : "good";
+
+          const daysToExpiry = getDaysToExpiry(item.expiry);
+          const expiryStatus =
+            daysToExpiry <= 30
+              ? "critical"
+              : daysToExpiry <= 90
+                ? "warning"
+                : "safe";
+
+          html += `
+            <tr>
+              <td>
+                <div style="font-weight: 600">${item.name}</div>
+                <div style="font-size: 0.8rem">${item.manufacturer || ""}</div>
+              </td>
+              <td>${item.category}</td>
+              <td>
+                <div class="stock-indicator">
+                  <span style="color: ${stockStatus === "critical" ? "var(--error)" : stockStatus === "warning" ? "var(--warning)" : "inherit"}; font-weight: 600">${item.stock}</span>
+                  <div class="stock-bar">
+                    <div class="stock-fill ${stockStatus}" style="width: ${Math.min(stockPercentage, 100)}%"></div>
+                  </div>
+                </div>
+              </td>
+              <td>${item.minStock}</td>
+              <td>
+                <span class="badge badge-${stockStatus === "critical" ? "error" : stockStatus === "warning" ? "warning" : "success"}">
+                  ${stockStatus === "critical" ? "Critical" : stockStatus === "warning" ? "Low" : "Good"}
+                </span>
+              </td>
+              <td>
+                <span class="expiry-badge ${expiryStatus}">
+                  ${item.expiry || "No expiry"}
+                  ${item.expiry ? `(${daysToExpiry} days)` : ""}
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; gap: var(--space-xs)">
+                  <button class="action-icon" onclick="editItem(${item.id})" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="action-icon" onclick="openQuickOrder(${item.id})" title="Order">
+                    <i class="fas fa-shopping-cart"></i>
+                  </button>
+                  <button class="action-icon delete" onclick="openDeleteModal(${item.id}, '${item.name}')" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = html;
+        document.getElementById("totalItems").innerHTML =
+          `Total Items: ${filteredInventory.length}`;
+      }
+
+      // Load alerts
+      function loadAlerts() {
+        const container = document.getElementById("inventoryAlerts");
+
+        const criticalItems = inventory.filter(
+          (item) => item.stock <= item.minStock,
+        );
+        const expiringItems = inventory.filter((item) => {
+          const days = getDaysToExpiry(item.expiry);
+          return days <= 30 && days > 0;
+        });
+
+        let criticalHtml = "";
+        criticalItems.slice(0, 3).forEach((item) => {
+          criticalHtml += `
+            <div class="alert-item">
+              <div class="item-info">
+                <h4>${item.name}</h4>
+                <p>Current: ${item.stock} | Min: ${item.minStock}</p>
+              </div>
+              <div class="item-action">
+                <span class="stock-badge critical">${item.minStock - item.stock} deficit</span>
+                <button class="btn btn-sm btn-error" style="background: var(--error); color: white;" onclick="openQuickOrder(${item.id})">
+                  Order
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        let expiringHtml = "";
+        expiringItems.slice(0, 3).forEach((item) => {
+          const days = getDaysToExpiry(item.expiry);
+          expiringHtml += `
+            <div class="alert-item">
+              <div class="item-info">
+                <h4>${item.name}</h4>
+                <p>Current: ${item.stock} • Expires: ${formatDate(item.expiry)}</p>
+              </div>
+              <div class="item-action">
+                <span class="stock-badge ${days <= 15 ? "critical" : "warning"}">${days} days</span>
+                <button class="btn btn-sm btn-warning" style="background: var(--warning); color: white;" onclick="useFirst(${item.id})">
+                  Use First
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = `
+          <!-- Critical Alerts -->
+          <div class="alert-box critical">
+            <div class="alert-header critical">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span class="alert-title">Critical Low Stock</span>
+            </div>
+            ${criticalHtml || '<div style="padding: var(--space-sm); color: var(--text-light);">No critical items</div>'}
+          </div>
+
+          <!-- Expiry Alerts -->
+          <div class="alert-box warning">
+            <div class="alert-header warning">
+              <i class="fas fa-clock"></i>
+              <span class="alert-title">Expiring Soon</span>
+            </div>
+            ${expiringHtml || '<div style="padding: var(--space-sm); color: var(--text-light);">No expiring items</div>'}
+          </div>
+        `;
+      }
+
+      // Load quick order select
+      function loadQuickOrderSelect() {
+        const select = document.getElementById("quickOrderSelect");
+        let html = '<option value="">-- Select Item --</option>';
+
+        inventory.forEach((item) => {
+          const status =
+            item.stock <= item.minStock
+              ? "Critical"
+              : item.stock <= item.minStock * 1.5
+                ? "Low"
+                : "Good";
+          html += `<option value="${item.id}" data-price="${item.price || 0}">${item.name} - ${status} (${item.stock} left)</option>`;
+        });
+
+        select.innerHTML = html;
+      }
+
+      // Filter functions
+      function filterByCategory(category) {
+        currentCategory = category;
+
+        document.querySelectorAll(".category-pill").forEach((pill) => {
+          pill.classList.remove("active");
+        });
+
+        event.target.classList.add("active");
+
+        loadInventory();
+      }
+
+      function filterInventory() {
+        searchTerm = document.getElementById("searchInput").value;
+        loadInventory();
+      }
+
+      // Helper functions
+      function getDaysToExpiry(expiryDate) {
+        if (!expiryDate) return 999;
+        const today = new Date();
+        const expiry = new Date(expiryDate);
+        const diffTime = expiry - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "No expiry";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+      }
+
+      // Quick Order functions
+      function updateQuickOrderPrice() {
+        const select = document.getElementById("quickOrderSelect");
+        const quantity = document.getElementById("quickOrderQuantity").value;
+        const selectedOption = select.options[select.selectedIndex];
+
+        if (selectedOption && selectedOption.value) {
+          const price = parseFloat(selectedOption.dataset.price || 0);
+          const total = price * quantity;
+          document.getElementById("quickOrderTotal").innerHTML =
+            `₦${total.toLocaleString()}`;
+        } else {
+          document.getElementById("quickOrderTotal").innerHTML = "₦0";
+        }
+      }
+
+      function openQuickOrder(itemId) {
+        const select = document.getElementById("quickOrderSelect");
+        select.value = itemId;
+        updateQuickOrderPrice();
+
+        // Scroll to quick order section
+        document
+          .querySelector(".quick-order")
+          .scrollIntoView({ behavior: "smooth" });
+
+        showToast("Item added to quick order", "success");
+      }
+
+      // Modal functions
+      function openAddItemModal() {
+        currentItemId = null;
+        document.getElementById("itemModalTitle").innerText = "Add New Item";
+        document.getElementById("itemForm").reset();
+        document.getElementById("itemStock").value = 0;
+        document.getElementById("itemMinStock").value = 10;
+        document.getElementById("itemMaxStock").value = 100;
+        document.getElementById("itemActive").checked = true;
+        document.getElementById("itemPrescription").checked = true;
+        document.getElementById("itemModal").classList.add("active");
+      }
+
+      function closeItemModal() {
+        document.getElementById("itemModal").classList.remove("active");
+        currentItemId = null;
+      }
+
+      function editItem(id) {
+        const item = inventory.find((i) => i.id === id);
+        if (item) {
+          currentItemId = id;
+          document.getElementById("itemModalTitle").innerText = "Edit Item";
+          document.getElementById("itemName").value = item.name;
+          document.getElementById("itemCategory").value = item.category;
+          document.getElementById("itemManufacturer").value =
+            item.manufacturer || "";
+          document.getElementById("itemUnit").value = item.unit || "tablets";
+          document.getElementById("itemPrice").value = item.price || 0;
+          document.getElementById("itemStock").value = item.stock;
+          document.getElementById("itemMinStock").value = item.minStock;
+          document.getElementById("itemMaxStock").value = item.maxStock || 100;
+          document.getElementById("itemLocation").value = item.location || "";
+          document.getElementById("itemExpiry").value = item.expiry || "";
+          document.getElementById("itemBatch").value = item.batch || "";
+          document.getElementById("itemActive").checked = item.active;
+          document.getElementById("itemPrescription").checked =
+            item.prescription;
+          document.getElementById("itemDescription").value =
+            item.description || "";
+          document.getElementById("itemNotes").value = item.notes || "";
+
+          document.getElementById("itemModal").classList.add("active");
+        }
+      }
+
+      function saveItem() {
+        const name = document.getElementById("itemName").value;
+        const category = document.getElementById("itemCategory").value;
+        const manufacturer = document.getElementById("itemManufacturer").value;
+        const unit = document.getElementById("itemUnit").value;
+        const price = parseFloat(document.getElementById("itemPrice").value);
+        const stock = parseInt(document.getElementById("itemStock").value);
+        const minStock = parseInt(
+          document.getElementById("itemMinStock").value,
+        );
+        const maxStock = parseInt(
+          document.getElementById("itemMaxStock").value,
+        );
+        const location = document.getElementById("itemLocation").value;
+        const expiry = document.getElementById("itemExpiry").value;
+        const batch = document.getElementById("itemBatch").value;
+        const active = document.getElementById("itemActive").checked;
+        const prescription =
+          document.getElementById("itemPrescription").checked;
+        const description = document.getElementById("itemDescription").value;
+        const notes = document.getElementById("itemNotes").value;
+
+        // Validation
+        if (
+          !name ||
+          !category ||
+          stock === undefined ||
+          minStock === undefined
+        ) {
+          showToast("Please fill all required fields", "error");
+          return;
+        }
+
+        if (currentItemId) {
+          // Update existing item
+          const index = inventory.findIndex((i) => i.id === currentItemId);
+          if (index !== -1) {
+            inventory[index] = {
+              ...inventory[index],
+              name,
+              category,
+              manufacturer,
+              unit,
+              price,
+              stock,
+              minStock,
+              maxStock,
+              location,
+              expiry,
+              batch,
+              active,
+              prescription,
+              description,
+              notes,
+            };
+          }
+          showToast("Item updated successfully");
+        } else {
+          // Add new item
+          const newItem = {
+            id: inventory.length + 1,
+            name,
+            category,
+            manufacturer,
+            unit,
+            price,
+            stock,
+            minStock,
+            maxStock,
+            location,
+            expiry,
+            batch,
+            active,
+            prescription,
+            description,
+            notes,
+          };
+          inventory.push(newItem);
+          showToast("Item added successfully");
+        }
+
+        // Refresh views
+        loadInventory();
+        loadAlerts();
+        loadQuickOrderSelect();
+        closeItemModal();
+      }
+
+      // Order Modal functions
+      function openOrderModal() {
+        const itemId = document.getElementById("quickOrderSelect").value;
+        const quantity = document.getElementById("quickOrderQuantity").value;
+
+        if (!itemId) {
+          showToast("Please select an item", "error");
+          return;
+        }
+
+        const item = inventory.find((i) => i.id == itemId);
+        if (!item) return;
+
+        orderItems = [
+          {
+            id: item.id,
+            name: item.name,
+            quantity: parseInt(quantity),
+            price: item.price || 0,
+            total: (item.price || 0) * quantity,
+          },
+        ];
+
+        updateOrderSummary();
+        loadOrderAddItems();
+
+        document.getElementById("orderDate").value = new Date()
+          .toISOString()
+          .split("T")[0];
+        document.getElementById("orderReference").value =
+          `PO-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
+
+        document.getElementById("orderModal").classList.add("active");
+      }
+
+      function closeOrderModal() {
+        document.getElementById("orderModal").classList.remove("active");
+        orderItems = [];
+      }
+
+      function updateOrderSummary() {
+        const container = document.getElementById("orderSummary");
+        let html = "";
+        let total = 0;
+
+        orderItems.forEach((item, index) => {
+          total += item.total;
+          html += `
+            <div class="order-item">
+              <div>
+                <div style="font-weight: 500">${item.name}</div>
+                <div style="font-size: 0.8rem">Qty: ${item.quantity} × ₦${item.price.toLocaleString()}</div>
+              </div>
+              <div style="font-weight: 600">₦${item.total.toLocaleString()}</div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+        document.getElementById("orderTotal").innerHTML =
+          `Total: ₦${total.toLocaleString()}`;
+      }
+
+      function loadOrderAddItems() {
+        const select = document.getElementById("orderAddItem");
+        let html = '<option value="">-- Select Item --</option>';
+
+        inventory.forEach((item) => {
+          if (!orderItems.some((i) => i.id === item.id)) {
+            html += `<option value="${item.id}" data-price="${item.price || 0}">${item.name} - ₦${item.price?.toLocaleString() || 0}</option>`;
+          }
+        });
+
+        select.innerHTML = html;
+      }
+
+      function addItemToOrder() {
+        const select = document.getElementById("orderAddItem");
+        const itemId = select.value;
+
+        if (!itemId) return;
+
+        const item = inventory.find((i) => i.id == itemId);
+        if (item) {
+          orderItems.push({
+            id: item.id,
+            name: item.name,
+            quantity: 1,
+            price: item.price || 0,
+            total: item.price || 0,
+          });
+
+          updateOrderSummary();
+          loadOrderAddItems();
+        }
+      }
+
+      function submitOrder() {
+        const supplier = document.getElementById("orderSupplier").value;
+        const orderDate = document.getElementById("orderDate").value;
+        const deliveryDate = document.getElementById("orderDelivery").value;
+        const reference = document.getElementById("orderReference").value;
+
+        if (!supplier) {
+          showToast("Please select a supplier", "error");
+          return;
+        }
+
+        if (orderItems.length === 0) {
+          showToast("Please add items to order", "error");
+          return;
+        }
+
+        // Calculate total
+        const total = orderItems.reduce((sum, item) => sum + item.total, 0);
+
+        // Here you would typically send this to a server
+        console.log("Order submitted:", {
+          supplier,
+          orderDate,
+          deliveryDate,
+          reference,
+          items: orderItems,
+          total,
+          payment: document.getElementById("orderPayment").value,
+          terms: document.getElementById("orderTerms").value,
+          notes: document.getElementById("orderNotes").value,
+        });
+
+        showToast(
+          `Order submitted successfully! Total: ₦${total.toLocaleString()}`,
+        );
+        closeOrderModal();
+      }
+
+      // Delete functions
+      function openDeleteModal(id, name) {
+        deleteId = id;
+        document.getElementById("deleteItemName").innerText = name;
+        document.getElementById("deleteModal").classList.add("active");
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.remove("active");
+        deleteId = null;
+      }
+
+      function confirmDelete() {
+        if (deleteId) {
+          const index = inventory.findIndex((i) => i.id === deleteId);
+          if (index !== -1) {
+            inventory.splice(index, 1);
+            showToast("Item deleted successfully");
+
+            // Refresh views
+            loadInventory();
+            loadAlerts();
+            loadQuickOrderSelect();
+          }
+        }
+        closeDeleteModal();
+      }
+
+      // Use First (for expiring items)
+      function useFirst(id) {
+        const item = inventory.find((i) => i.id === id);
+        if (item) {
+          showToast(`Flagged for priority use: ${item.name}`, "warning");
+        }
+      }
+
+      // Toast functions
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toast.querySelector(".toast-icon i");
+
+        toastMessage.innerText = message;
+        toast.className = "toast show " + type;
+
+        if (type === "success") {
+          toastIcon.className = "fas fa-check-circle";
+        } else if (type === "error") {
+          toastIcon.className = "fas fa-exclamation-circle";
+        } else if (type === "warning") {
+          toastIcon.className = "fas fa-exclamation-triangle";
+        }
+
+        setTimeout(() => {
+          hideToast();
+        }, 3000);
+      }
+
+      function hideToast() {
+        document.getElementById("toast").classList.remove("show");
+      }
+
+      // Category pills event listeners (replaced with onclick in HTML)
+    </script>
+  </body>
+</html>

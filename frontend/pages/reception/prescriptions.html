@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Prescriptions to Dispense — Reception</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .rx-card { margin-bottom: 18px; }
+      .rx-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+      .rx-item-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px dashed var(--light-border); font-size: 0.88rem; }
+      .rx-item-row:last-child { border-bottom: none; }
+      .stock-low { color: var(--danger); font-weight: 700; }
+      .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+      .filter-tabs button {
+        padding: 8px 18px; border-radius: var(--radius-pill); border: 1.5px solid var(--light-border);
+        background: rgba(255,255,255,0.5); font-size: 0.82rem; font-weight: 700; color: var(--mid-gray); cursor: pointer;
+      }
+      .filter-tabs button.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Reception</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="appointments.html"><i class="fas fa-calendar-days"></i> Appointments</a>
+        <a class="glass-nav-link" href="patients.html"><i class="fas fa-users"></i> Patients</a>
+        <a class="glass-nav-link active" href="prescriptions.html"><i class="fas fa-pills"></i> Prescriptions</a>
+        <a class="glass-nav-link" href="invoices.html"><i class="fas fa-file-invoice"></i> Invoices</a>
+        <a class="glass-nav-link" href="payments.html"><i class="fas fa-credit-card"></i> Payments</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1>Prescriptions</h1>
+          <span class="glass-badge info"><i class="fas fa-shield-heart"></i> Reception is the single dispensing point — no separate pharmacy</span>
+        </div>
+
+        <div class="filter-tabs">
+          <button class="active" data-status="pending_dispense">Pending Dispense</button>
+          <button data-status="dispensed">Dispensed</button>
+          <button data-status="all">All</button>
+        </div>
+
+        <div id="rxList"></div>
+      </main>
+    </div>
+
+    <script>
+      const API = '/api/reception/prescriptions';
+      let currentStatus = 'pending_dispense';
+
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      function renderPrescriptions(list) {
+        const wrap = document.getElementById('rxList');
+        if (!list.length) {
+          wrap.innerHTML = '<div class="glass-empty"><i class="fas fa-pills"></i>Nothing here right now</div>';
+          return;
+        }
+        wrap.innerHTML = list.map((p) => `
+          <div class="glass-card rx-card">
+            <div class="rx-head">
+              <div>
+                <h3 style="margin:0;">${p.prescription_number} <span class="glass-badge neutral">${p.prescribed_by_role}</span></h3>
+                <p style="margin:4px 0 0;">${p.patient_name} · ${p.patient_phone || 'no phone on file'} · prescribed by ${p.prescribed_by_name}</p>
+              </div>
+              <span class="glass-badge ${p.status === 'dispensed' ? 'success' : 'warning'}">${p.status.replace('_', ' ')}</span>
+            </div>
+            <div style="margin-top:14px;">
+              ${p.items.map((it) => `
+                <div class="rx-item-row">
+                  <span>${it.item_name} — ${it.dosage || ''} ${it.frequency || ''} (${it.duration || ''})</span>
+                  <span class="${it.current_stock < it.quantity ? 'stock-low' : ''}">
+                    ×${it.quantity} <small>(${it.current_stock} in stock)</small>
+                  </span>
+                </div>
+              `).join('')}
+            </div>
+            ${p.status === 'pending_dispense' ? `
+              <button class="glass-btn glass-btn-success dispense-btn" data-id="${p.id}" style="margin-top:16px;">
+                <i class="fas fa-check-double"></i> Dispense &amp; Bill
+              </button>
+            ` : ''}
+          </div>
+        `).join('');
+
+        document.querySelectorAll('.dispense-btn').forEach((btn) => {
+          btn.addEventListener('click', () => dispense(btn.dataset.id, btn));
+        });
+      }
+
+      async function dispense(id, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Dispensing…';
+        try {
+          const data = await api(`/${id}/dispense`, { method: 'POST' });
+          alert(`Dispensed. Invoice ${data.invoice.invoice_number} raised for ₦${data.invoice.total.toLocaleString()}.`);
+          load();
+        } catch (err) {
+          alert(err.message);
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-check-double"></i> Dispense & Bill';
+        }
+      }
+
+      async function load() {
+        const { prescriptions } = await api(`/?status=${currentStatus}`);
+        renderPrescriptions(prescriptions);
+      }
+
+      document.querySelectorAll('.filter-tabs button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-tabs button').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentStatus = btn.dataset.status;
+          load();
+        });
+      });
+
+      load();
+    </script>
+  </body>
+</html>

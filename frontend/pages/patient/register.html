@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Create Patient Account — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      body.login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+      .login-wrap { width: 100%; max-width: 460px; padding: 36px; }
+      .login-title { text-align: center; font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--blue-dark); margin-bottom: 4px; }
+      .login-sub { text-align: center; color: var(--mid-gray); font-size: 0.85rem; margin-bottom: 24px; }
+      .glass-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+      .message { padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; font-size: 0.86rem; border-left: 3px solid; display: none; }
+      .message.show { display: block; }
+      .error-message { background: var(--danger-light); color: var(--danger); border-left-color: var(--danger); }
+      .success-message { background: var(--green-light); color: var(--green-dark); border-left-color: var(--green); }
+      .switch-link { display: block; text-align: center; margin-top: 18px; font-size: 0.85rem; color: var(--blue); text-decoration: none; font-weight: 600; }
+    </style>
+  </head>
+  <body class="glass-app login-page">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="login-wrap glass-strong">
+      <div class="login-title">Create Your Patient Account</div>
+      <div class="login-sub">Already registered at the clinic? Use the same phone number and we'll link your record.</div>
+
+      <div id="errorMessage" class="message error-message"></div>
+      <div id="successMessage" class="message success-message"></div>
+
+      <form id="registerForm">
+        <div class="glass-grid-2">
+          <div class="glass-field">
+            <label>First name</label>
+            <input type="text" id="first_name" class="glass-input" required />
+          </div>
+          <div class="glass-field">
+            <label>Last name</label>
+            <input type="text" id="last_name" class="glass-input" required />
+          </div>
+        </div>
+        <div class="glass-field">
+          <label>Phone number</label>
+          <input type="text" id="phone" class="glass-input" placeholder="+234 800 000 0000" required />
+        </div>
+        <div class="glass-field">
+          <label>Email (optional)</label>
+          <input type="email" id="email" class="glass-input" />
+        </div>
+        <div class="glass-field">
+          <label>Password</label>
+          <input type="password" id="password" class="glass-input" minlength="4" required />
+        </div>
+        <button type="submit" class="glass-btn glass-btn-success" style="width:100%; padding:13px;">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+      </form>
+
+      <a class="switch-link" href="/pages/patient/login.html">Already have an account? Sign in</a>
+    </div>
+
+    <script>
+      const form = document.getElementById('registerForm');
+      const errorMsg = document.getElementById('errorMessage');
+      const successMsg = document.getElementById('successMessage');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorMsg.classList.remove('show');
+        successMsg.classList.remove('show');
+
+        const payload = {
+          first_name: document.getElementById('first_name').value.trim(),
+          last_name: document.getElementById('last_name').value.trim(),
+          phone: document.getElementById('phone').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          password: document.getElementById('password').value,
+        };
+
+        try {
+          const res = await fetch('/api/patient/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            successMsg.textContent = 'Account created! Redirecting…';
+            successMsg.classList.add('show');
+            setTimeout(() => (window.location.href = data.redirect), 500);
+          } else {
+            errorMsg.textContent = data.error || 'Could not create account';
+            errorMsg.classList.add('show');
+          }
+        } catch (err) {
+          errorMsg.textContent = 'Network error — please check the server is running.';
+          errorMsg.classList.add('show');
+        }
+      });
+    </script>
+  </body>
+</html>

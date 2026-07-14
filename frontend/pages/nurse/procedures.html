@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Procedures — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0 0 20px; }
+      .proc-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--light-border); }
+      .proc-row:last-child { border-bottom: none; }
+      .avatar-sm { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg,var(--blue),var(--blue-mid)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.78rem; flex-shrink: 0; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Nurse</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="my-tasks.html"><i class="fas fa-list-check"></i> My Tasks</a>
+        <a class="glass-nav-link" href="my-assists.html"><i class="fas fa-hand-holding-medical"></i> My Assists</a>
+        <a class="glass-nav-link active" href="procedures.html"><i class="fas fa-syringe"></i> Procedures</a>
+        <a class="glass-nav-link" href="prescribe.html"><i class="fas fa-pills"></i> Prescribe</a>
+        <a class="glass-nav-link" href="notes.html"><i class="fas fa-notes-medical"></i> Notes & Vitals</a>
+        <a class="glass-nav-link" href="records.html"><i class="fas fa-file-waveform"></i> Records</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>Procedures</h1></div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:20px;">
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-calendar-day"></i></div><div><div class="glass-stat-num" id="statToday">–</div><div class="glass-stat-label">Today</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon green"><i class="fas fa-check-circle"></i></div><div><div class="glass-stat-num" id="statCompletedToday">–</div><div class="glass-stat-label">Completed Today</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon gold"><i class="fas fa-clock"></i></div><div><div class="glass-stat-num" id="statUpcoming">–</div><div class="glass-stat-label">Upcoming</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-calendar-week"></i></div><div><div class="glass-stat-num" id="statWeek">–</div><div class="glass-stat-label">This Week</div></div></div>
+        </div>
+
+        <div class="glass-card"><div id="procList"></div></div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/nurse/procedures';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      async function loadProcedures() {
+        const data = await api('/');
+        document.getElementById('statToday').textContent = data.stats.today_count ?? 0;
+        document.getElementById('statCompletedToday').textContent = data.stats.completed_today ?? 0;
+        document.getElementById('statUpcoming').textContent = data.stats.upcoming_count ?? 0;
+        document.getElementById('statWeek').textContent = data.stats.week_count ?? 0;
+
+        const list = document.getElementById('procList');
+        list.innerHTML = data.procedures.length ? data.procedures.map(p => `
+          <div class="proc-row">
+            <div class="avatar-sm">${(p.patient_name || '??').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
+            <div style="flex:1">
+              <div style="font-weight:700;">${p.patient_name || ''}</div>
+              <div style="font-size:0.78rem;color:var(--mid-gray);">${p.procedure_name || p.type || 'Procedure'} · ${p.time || ''}</div>
+            </div>
+            <span class="glass-badge ${p.status === 'completed' ? 'success' : p.status === 'in_progress' ? 'info' : 'warning'}">${p.status}</span>
+            ${p.status === 'scheduled' || p.status === 'waiting' ? `<button class="glass-btn glass-btn-ghost start-btn" data-id="${p.appointment_id}" style="padding:6px 14px;">Start</button>` : ''}
+            ${p.status === 'in_progress' ? `<button class="glass-btn glass-btn-primary complete-btn" data-id="${p.appointment_id}" style="padding:6px 14px;">Complete</button>` : ''}
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-syringe"></i>No procedures scheduled</div>';
+
+        list.querySelectorAll('.start-btn').forEach(btn => btn.addEventListener('click', () => setStatus(btn.dataset.id, 'start')));
+        list.querySelectorAll('.complete-btn').forEach(btn => btn.addEventListener('click', () => setStatus(btn.dataset.id, 'complete')));
+      }
+
+      async function setStatus(appointmentId, action) {
+        try {
+          await api(`/appointment/${appointmentId}/${action}`, { method: 'PUT', body: JSON.stringify({}) });
+          loadProcedures();
+        } catch (e) { alert(e.message); }
+      }
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await loadProcedures();
+      }
+      init();
+    </script>
+  </body>
+</html>

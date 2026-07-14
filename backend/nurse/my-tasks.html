@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>My Tasks - Nurse - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .tasks-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .task-filters {
+        display: flex;
+        gap: var(--space-sm);
+        background: var(--pure-white);
+        padding: var(--space-xs);
+        border-radius: var(--radius-full);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .task-filter-btn {
+        padding: var(--space-sm) var(--space-lg);
+        border: none;
+        background: transparent;
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .task-filter-btn:hover {
+        background: var(--off-white);
+      }
+
+      .task-filter-btn.active {
+        background: var(--warning);
+        color: white;
+      }
+
+      .task-filter-btn.active:hover {
+        background: var(--warning);
+        opacity: 0.9;
+      }
+
+      .tasks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: var(--space-lg);
+      }
+
+      .task-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-base);
+        border-left: 4px solid transparent;
+        cursor: pointer;
+      }
+
+      .task-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .task-card.urgent {
+        border-left-color: var(--error);
+      }
+
+      .task-card.high {
+        border-left-color: var(--warning);
+      }
+
+      .task-card.medium {
+        border-left-color: var(--primary-blue);
+      }
+
+      .task-card.low {
+        border-left-color: var(--success);
+      }
+
+      .task-card.completed {
+        opacity: 0.7;
+        background: var(--off-white);
+      }
+
+      .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-md);
+      }
+
+      .task-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .task-priority {
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .priority-urgent {
+        background: rgba(255, 59, 48, 0.1);
+        color: var(--error);
+      }
+
+      .priority-high {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .priority-medium {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .priority-low {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .task-due {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        margin-bottom: var(--space-sm);
+        font-size: 0.9rem;
+      }
+
+      .task-due.overdue {
+        color: var(--error);
+      }
+
+      .task-description {
+        color: var(--text-light);
+        margin-bottom: var(--space-md);
+        line-height: 1.5;
+      }
+
+      .task-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--space-md);
+        border-top: 1px solid var(--light-gray);
+      }
+
+      .task-assignee {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+      }
+
+      .task-actions {
+        display: flex;
+        gap: var(--space-xs);
+      }
+
+      .progress-indicator {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .progress-bar-small {
+        width: 80px;
+        height: 6px;
+        background: var(--light-gray);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: var(--warning);
+        border-radius: var(--radius-full);
+      }
+
+      .daily-checklist {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px solid var(--light-gray);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .checklist-item:hover {
+        background: rgba(255, 159, 10, 0.05);
+        border-radius: var(--radius-md);
+        padding-left: var(--space-sm);
+      }
+
+      .checklist-item:last-child {
+        border-bottom: none;
+      }
+
+      .checklist-checkbox {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--warning);
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+      }
+
+      .checklist-checkbox.checked {
+        background: var(--warning);
+      }
+
+      .checklist-checkbox.checked i {
+        opacity: 1 !important;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      .task-detail-item {
+        display: flex;
+        margin-bottom: var(--space-sm);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+      }
+
+      .task-detail-label {
+        width: 100px;
+        font-weight: 600;
+        color: var(--text-light);
+      }
+
+      .task-detail-value {
+        flex: 1;
+      }
+
+      .subtask-list {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin: var(--space-md) 0;
+      }
+
+      .subtask-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-xs) 0;
+      }
+
+      .subtask-checkbox {
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--warning);
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all var(--transition-fast);
+      }
+
+      .subtask-checkbox.checked {
+        background: var(--warning);
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md) var(--space-lg);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 2000;
+        border-left: 4px solid var(--success);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.warning {
+        border-left-color: var(--warning);
+      }
+
+      .toast.error {
+        border-left-color: var(--error);
+      }
+
+      .toast-icon {
+        font-size: 1.2rem;
+      }
+
+      .toast.success .toast-icon {
+        color: var(--success);
+      }
+
+      .toast.warning .toast-icon {
+        color: var(--warning);
+      }
+
+      .toast.error .toast-icon {
+        color: var(--error);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading My Tasks...</p>
+    </div>
+
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">My Tasks</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile" onclick="navigateToProfile()"></div>
+          </div>
+        </div>
+
+        <!-- Tasks Header -->
+        <div class="tasks-header">
+          <h2 style="font-size: 1.5rem">Today's Tasks</h2>
+          <div class="task-filters">
+            <button
+              class="task-filter-btn active"
+              onclick="filterTasks('all', this)"
+            >
+              All
+            </button>
+            <button
+              class="task-filter-btn"
+              onclick="filterTasks('urgent', this)"
+            >
+              Urgent
+            </button>
+            <button
+              class="task-filter-btn"
+              onclick="filterTasks('today', this)"
+            >
+              Today
+            </button>
+            <button
+              class="task-filter-btn"
+              onclick="filterTasks('upcoming', this)"
+            >
+              Upcoming
+            </button>
+            <button
+              class="task-filter-btn"
+              onclick="filterTasks('completed', this)"
+            >
+              Completed
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Overview -->
+        <div
+          style="
+            display: flex;
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            align-items: center;
+            flex-wrap: wrap;
+          "
+        >
+          <div class="progress-indicator">
+            <span style="font-weight: 600">Daily Progress</span>
+            <div class="progress-bar-small">
+              <div
+                class="progress-fill"
+                id="progressFill"
+                style="width: 45%"
+              ></div>
+            </div>
+            <span style="color: var(--text-light)" id="progressText"
+              >5/11 tasks</span
+            >
+          </div>
+          <div style="color: var(--text-light)" id="urgentCount">
+            <i class="fas fa-clock" style="color: var(--warning)"></i> 3 urgent
+            tasks
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="refreshTasks()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+
+        <!-- Daily Checklist -->
+        <div class="daily-checklist">
+          <h3 style="margin-bottom: var(--space-md)">
+            Daily Opening Checklist
+          </h3>
+
+          <div
+            class="checklist-item"
+            onclick="toggleChecklistItem(this, 'Sterilize all instruments')"
+          >
+            <div
+              class="checklist-checkbox checked"
+              onclick="
+                event.stopPropagation();
+                toggleChecklist(this);
+              "
+            >
+              <i class="fas fa-check" style="opacity: 1"></i>
+            </div>
+            <div style="flex: 1">
+              <div style="font-weight: 500">Sterilize all instruments</div>
+              <div style="font-size: 0.8rem; color: var(--text-light)">
+                Rooms 1, 2, 3
+              </div>
+            </div>
+            <span class="badge badge-success">Completed</span>
+          </div>
+
+          <div
+            class="checklist-item"
+            onclick="toggleChecklistItem(this, 'Check inventory levels')"
+          >
+            <div
+              class="checklist-checkbox"
+              onclick="
+                event.stopPropagation();
+                toggleChecklist(this);
+              "
+            >
+              <i class="fas fa-check" style="opacity: 0"></i>
+            </div>
+            <div style="flex: 1">
+              <div style="font-weight: 500">Check inventory levels</div>
+              <div style="font-size: 0.8rem; color: var(--text-light)">
+                Anesthetics, gloves, masks
+              </div>
+            </div>
+            <span class="badge badge-warning">Pending</span>
+          </div>
+
+          <div
+            class="checklist-item"
+            onclick="toggleChecklistItem(this, 'Prepare treatment trays')"
+          >
+            <div
+              class="checklist-checkbox"
+              onclick="
+                event.stopPropagation();
+                toggleChecklist(this);
+              "
+            >
+              <i class="fas fa-check" style="opacity: 0"></i>
+            </div>
+            <div style="flex: 1">
+              <div style="font-weight: 500">Prepare treatment trays</div>
+              <div style="font-size: 0.8rem; color: var(--text-light)">
+                For Dr. Smith's 9:00 AM
+              </div>
+            </div>
+            <span class="badge badge-warning">Pending</span>
+          </div>
+
+          <div
+            class="checklist-item"
+            onclick="toggleChecklistItem(this, 'Calibrate equipment')"
+          >
+            <div
+              class="checklist-checkbox"
+              onclick="
+                event.stopPropagation();
+                toggleChecklist(this);
+              "
+            >
+              <i class="fas fa-check" style="opacity: 0"></i>
+            </div>
+            <div style="flex: 1">
+              <div style="font-weight: 500">Calibrate equipment</div>
+              <div style="font-size: 0.8rem; color: var(--text-light)">
+                X-ray machine, autoclave
+              </div>
+            </div>
+            <span class="badge badge-error">Overdue</span>
+          </div>
+        </div>
+
+        <!-- Tasks Grid -->
+        <div class="tasks-grid" id="tasksGrid">
+          <!-- Urgent Task -->
+          <div
+            class="task-card urgent"
+            onclick="
+              openTaskDetails(
+                'Prepare Emergency Tray',
+                'urgent',
+                'overdue',
+                'Prepare extraction tray for emergency patient. Forceps, elevators, gauze, local anesthesia.',
+                'Dr. Smith',
+                'Emergency',
+                this,
+              )
+            "
+          >
+            <div class="task-header">
+              <span class="task-title">Prepare Emergency Tray</span>
+              <span class="task-priority priority-urgent">URGENT</span>
+            </div>
+            <div class="task-due overdue">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Due: 10 minutes ago</span>
+            </div>
+            <div class="task-description">
+              Prepare extraction tray for emergency patient. Forceps, elevators,
+              gauze, local anesthesia.
+            </div>
+            <div class="task-meta" onclick="event.stopPropagation()">
+              <div class="task-assignee">
+                <i class="fas fa-user" style="color: var(--warning)"></i>
+                <span>Dr. Smith requested</span>
+              </div>
+              <div class="task-actions">
+                <button
+                  class="btn btn-sm btn-primary"
+                  onclick="startTask('Prepare Emergency Tray', event)"
+                >
+                  Start
+                </button>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="viewTaskDetails('Prepare Emergency Tray', event)"
+                >
+                  Details
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- High Priority -->
+          <div
+            class="task-card high"
+            onclick="
+              openTaskDetails(
+                'Sterilize Room 2',
+                'high',
+                '30 min',
+                'After Dr. Smith\'s procedure, sterilize all surfaces and prepare for next patient.',
+                'Post-procedure',
+                'Cleaning',
+                this,
+              )
+            "
+          >
+            <div class="task-header">
+              <span class="task-title">Sterilize Room 2</span>
+              <span class="task-priority priority-high">HIGH</span>
+            </div>
+            <div class="task-due">
+              <i class="fas fa-clock"></i>
+              <span>Due: 11:30 AM (30 min)</span>
+            </div>
+            <div class="task-description">
+              After Dr. Smith's procedure, sterilize all surfaces and prepare
+              for next patient.
+            </div>
+            <div class="task-meta" onclick="event.stopPropagation()">
+              <div class="task-assignee">
+                <i class="fas fa-procedures"></i>
+                <span>Post-procedure</span>
+              </div>
+              <div class="task-actions">
+                <button
+                  class="btn btn-sm btn-primary"
+                  onclick="startTask('Sterilize Room 2', event)"
+                >
+                  Prepare
+                </button>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="viewTaskDetails('Sterilize Room 2', event)"
+                >
+                  View
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medium Priority -->
+          <div
+            class="task-card medium"
+            onclick="
+              openTaskDetails(
+                'Inventory Check',
+                'medium',
+                'Today 5:00 PM',
+                'Count and log all controlled substances. Report low stock items.',
+                'Pharmacy',
+                'Inventory',
+                this,
+              )
+            "
+          >
+            <div class="task-header">
+              <span class="task-title">Inventory Check</span>
+              <span class="task-priority priority-medium">MEDIUM</span>
+            </div>
+            <div class="task-due">
+              <i class="fas fa-calendar"></i>
+              <span>Due: Today 5:00 PM</span>
+            </div>
+            <div class="task-description">
+              Count and log all controlled substances. Report low stock items.
+            </div>
+            <div class="task-meta" onclick="event.stopPropagation()">
+              <div class="task-assignee">
+                <i class="fas fa-pills"></i>
+                <span>Pharmacy</span>
+              </div>
+              <div class="task-actions">
+                <button
+                  class="btn btn-sm btn-primary"
+                  onclick="startTask('Inventory Check', event)"
+                >
+                  Start
+                </button>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="viewTaskDetails('Inventory Check', event)"
+                >
+                  Details
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Low Priority -->
+          <div
+            class="task-card low"
+            onclick="
+              openTaskDetails(
+                'Update Patient Records',
+                'low',
+                'Tomorrow',
+                'Enter today\'s procedure notes for Mr. Ade and Baby Grace.',
+                'Documentation',
+                'Admin',
+                this,
+              )
+            "
+          >
+            <div class="task-header">
+              <span class="task-title">Update Patient Records</span>
+              <span class="task-priority priority-low">LOW</span>
+            </div>
+            <div class="task-due">
+              <i class="fas fa-calendar"></i>
+              <span>Due: Tomorrow</span>
+            </div>
+            <div class="task-description">
+              Enter today's procedure notes for Mr. Ade and Baby Grace.
+            </div>
+            <div class="task-meta" onclick="event.stopPropagation()">
+              <div class="task-assignee">
+                <i class="fas fa-notes-medical"></i>
+                <span>Documentation</span>
+              </div>
+              <div class="task-actions">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="startTask('Update Patient Records', event)"
+                >
+                  Start
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Another High Priority -->
+          <div
+            class="task-card high"
+            onclick="
+              openTaskDetails(
+                'Prepare Root Canal Tray',
+                'high',
+                '2:00 PM',
+                'For Dr. Jones\' 2:30 PM root canal. Files, gutta-percha, sealer, rubber dam.',
+                'Dr. Jones',
+                'Procedure',
+                this,
+              )
+            "
+          >
+            <div class="task-header">
+              <span class="task-title">Prepare Root Canal Tray</span>
+              <span class="task-priority priority-high">HIGH</span>
+            </div>
+            <div class="task-due">
+              <i class="fas fa-clock"></i>
+              <span>Due: 2:00 PM</span>
+            </div>
+            <div class="task-description">
+              For Dr. Jones' 2:30 PM root canal. Files, gutta-percha, sealer,
+              rubber dam.
+            </div>
+            <div class="task-meta" onclick="event.stopPropagation()">
+              <div class="task-assignee">
+                <i class="fas fa-user-md"></i>
+                <span>Dr. Jones</span>
+              </div>
+              <div class="task-actions">
+                <button
+                  class="btn btn-sm btn-primary"
+                  onclick="startTask('Prepare Root Canal Tray', event)"
+                >
+                  Prepare
+                </button>
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="viewTaskDetails('Prepare Root Canal Tray', event)"
+                >
+                  List
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medium Priority -->
+          <div
+            class="task-card medium"
+            onclick="
+              openTaskDetails(
+                'Restock Supplies',
+                'medium',
+                'Today',
+                'Restock gloves (size 7, 7.5), masks, and gauze in all rooms.',
+                'Supply Room',
+                'Inventory',
+                this,
+              )
+            "
+          >
+            <div class="task-header">
+              <span class="task-title">Restock Supplies</span>
+              <span class="task-priority priority-medium">MEDIUM</span>
+            </div>
+            <div class="task-due">
+              <i class="fas fa-calendar"></i>
+              <span>Due: Today</span>
+            </div>
+            <div class="task-description">
+              Restock gloves (size 7, 7.5), masks, and gauze in all rooms.
+            </div>
+            <div class="task-meta" onclick="event.stopPropagation()">
+              <div class="task-assignee">
+                <i class="fas fa-boxes"></i>
+                <span>Supply Room</span>
+              </div>
+              <div class="task-actions">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="startTask('Restock Supplies', event)"
+                >
+                  Start
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Details Modal -->
+    <div class="modal-overlay" id="taskModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Task Details</span>
+          <button class="modal-close" onclick="closeModal('taskModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="task-detail-item">
+            <span class="task-detail-label">Task:</span>
+            <span class="task-detail-value" id="modalTaskTitle"
+              >Prepare Emergency Tray</span
+            >
+          </div>
+          <div class="task-detail-item">
+            <span class="task-detail-label">Priority:</span>
+            <span class="task-detail-value" id="modalTaskPriority">Urgent</span>
+          </div>
+          <div class="task-detail-item">
+            <span class="task-detail-label">Due:</span>
+            <span class="task-detail-value" id="modalTaskDue"
+              >10 minutes ago</span
+            >
+          </div>
+          <div class="task-detail-item">
+            <span class="task-detail-label">Assigned:</span>
+            <span class="task-detail-value" id="modalTaskAssignee"
+              >Dr. Smith</span
+            >
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Description</h4>
+          <p
+            style="color: var(--text-light); margin-bottom: var(--space-md)"
+            id="modalTaskDescription"
+          >
+            Prepare extraction tray for emergency patient. Forceps, elevators,
+            gauze, local anesthesia.
+          </p>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Subtasks</h4>
+          <div class="subtask-list" id="modalSubtasks">
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.7rem"
+                ></i>
+              </div>
+              <span>Gather forceps and elevators</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.7rem"
+                ></i>
+              </div>
+              <span>Prepare local anesthesia</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.7rem"
+                ></i>
+              </div>
+              <span>Arrange gauze and suction</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.7rem"
+                ></i>
+              </div>
+              <span>Verify with Dr. Smith</span>
+            </div>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Notes</h4>
+          <textarea
+            class="textarea-field"
+            id="taskNotes"
+            rows="3"
+            placeholder="Add notes about this task..."
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('taskModal')">
+            Close
+          </button>
+          <button class="btn btn-primary" onclick="completeTask()">
+            Mark Complete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+      <div class="toast-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="toast-message" id="toastMessage">
+        Action completed successfully
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Navigation functions
+      function navigateToProfile() {
+        window.location.href = "profile.html";
+      }
+
+      // Task filter
+      function filterTasks(filter, btn) {
+        // Update active class
+        document
+          .querySelectorAll(".task-filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const tasks = document.querySelectorAll(".task-card");
+
+        tasks.forEach((task) => {
+          if (filter === "all") {
+            task.style.display = "block";
+          } else if (filter === "urgent") {
+            if (task.classList.contains("urgent")) {
+              task.style.display = "block";
+            } else {
+              task.style.display = "none";
+            }
+          } else if (filter === "today") {
+            // Simple filter - just show all non-completed for demo
+            task.style.display = "block";
+          } else if (filter === "completed") {
+            if (task.classList.contains("completed")) {
+              task.style.display = "block";
+            } else {
+              task.style.display = "none";
+            }
+          } else if (filter === "upcoming") {
+            // Show tasks with future dates
+            const due = task.querySelector(".task-due span").textContent;
+            if (
+              due.includes("Tomorrow") ||
+              (due.includes("PM") && !due.includes("ago"))
+            ) {
+              task.style.display = "block";
+            } else {
+              task.style.display = "none";
+            }
+          }
+        });
+
+        showToast(`Filtered by: ${filter}`, "info");
+      }
+
+      // Checklist functions
+      function toggleChecklist(checkbox) {
+        checkbox.classList.toggle("checked");
+        const icon = checkbox.querySelector("i");
+        const item = checkbox.closest(".checklist-item");
+        const badge = item.querySelector(".badge");
+
+        if (checkbox.classList.contains("checked")) {
+          icon.style.opacity = "1";
+          badge.textContent = "Completed";
+          badge.classList.remove("badge-warning", "badge-error");
+          badge.classList.add("badge-success");
+        } else {
+          icon.style.opacity = "0";
+          badge.textContent = "Pending";
+          badge.classList.remove("badge-success", "badge-error");
+          badge.classList.add("badge-warning");
+        }
+
+        updateProgress();
+        showToast("Checklist updated", "success");
+      }
+
+      function toggleChecklistItem(item, taskName) {
+        // This is triggered when clicking on the item (not the checkbox)
+        const checkbox = item.querySelector(".checklist-checkbox");
+        toggleChecklist(checkbox);
+      }
+
+      // Task functions
+      function openTaskDetails(
+        title,
+        priority,
+        due,
+        description,
+        assignee,
+        category,
+        element,
+      ) {
+        document.getElementById("modalTaskTitle").textContent = title;
+        document.getElementById("modalTaskPriority").textContent =
+          priority.toUpperCase();
+        document.getElementById("modalTaskDue").textContent = due;
+        document.getElementById("modalTaskDescription").textContent =
+          description;
+        document.getElementById("modalTaskAssignee").textContent = assignee;
+        document.getElementById("taskNotes").value = "";
+
+        // Set different subtasks based on task
+        const subtasksContainer = document.getElementById("modalSubtasks");
+
+        if (title.includes("Emergency")) {
+          subtasksContainer.innerHTML = `
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Gather forceps and elevators</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Prepare local anesthesia</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Arrange gauze and suction</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Verify with Dr. Smith</span>
+            </div>
+          `;
+        } else if (title.includes("Root Canal")) {
+          subtasksContainer.innerHTML = `
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Gather files (15-40)</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Prepare gutta-percha points</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Mix sealer</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Set up rubber dam</span>
+            </div>
+          `;
+        } else {
+          subtasksContainer.innerHTML = `
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Prepare materials</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Check inventory</span>
+            </div>
+            <div class="subtask-item">
+              <div class="subtask-checkbox" onclick="toggleSubtask(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.7rem;"></i></div>
+              <span>Document completion</span>
+            </div>
+          `;
+        }
+
+        openModal("taskModal");
+      }
+
+      function toggleSubtask(checkbox) {
+        checkbox.classList.toggle("checked");
+        const icon = checkbox.querySelector("i");
+        if (checkbox.classList.contains("checked")) {
+          icon.style.opacity = "1";
+        } else {
+          icon.style.opacity = "0";
+        }
+      }
+
+      function startTask(taskName, event) {
+        event.stopPropagation();
+        showToast(`Starting task: ${taskName}`, "success");
+        closeModal("taskModal");
+      }
+
+      function viewTaskDetails(taskName, event) {
+        event.stopPropagation();
+        // This would open details, but we already have the modal
+        showToast(`Viewing details for: ${taskName}`, "info");
+      }
+
+      function completeTask() {
+        const taskName = document.getElementById("modalTaskTitle").textContent;
+        closeModal("taskModal");
+
+        // Find and mark the task card as completed
+        const taskCards = document.querySelectorAll(".task-card");
+        taskCards.forEach((card) => {
+          const title = card.querySelector(".task-title").textContent;
+          if (title === taskName) {
+            card.classList.add("completed");
+          }
+        });
+
+        updateProgress();
+        showToast(`Task completed: ${taskName}`, "success");
+      }
+
+      // Progress update
+      function updateProgress() {
+        const totalChecklist =
+          document.querySelectorAll(".checklist-item").length;
+        const completedChecklist = document.querySelectorAll(
+          ".checklist-checkbox.checked",
+        ).length;
+
+        const totalTasks = document.querySelectorAll(".task-card").length;
+        const completedTasks = document.querySelectorAll(
+          ".task-card.completed",
+        ).length;
+
+        const total = totalChecklist + totalTasks;
+        const completed = completedChecklist + completedTasks;
+        const percentage = Math.round((completed / total) * 100);
+
+        document.getElementById("progressFill").style.width = percentage + "%";
+        document.getElementById("progressText").textContent =
+          `${completed}/${total} tasks`;
+
+        // Update urgent count
+        const urgentTasks =
+          document.querySelectorAll(".task-card.urgent").length;
+        document.getElementById("urgentCount").innerHTML =
+          `<i class="fas fa-clock" style="color: var(--warning)"></i> ${urgentTasks} urgent tasks`;
+      }
+
+      function refreshTasks() {
+        showToast("Refreshing tasks...", "info");
+        setTimeout(() => {
+          showToast("Tasks refreshed", "success");
+        }, 1000);
+      }
+
+      // Modal functions
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toast.querySelector(".toast-icon i");
+
+        toastMessage.innerText = message;
+        toast.className = "toast show " + type;
+
+        if (type === "success") {
+          toastIcon.className = "fas fa-check-circle";
+        } else if (type === "warning") {
+          toastIcon.className = "fas fa-exclamation-triangle";
+        } else if (type === "error") {
+          toastIcon.className = "fas fa-exclamation-circle";
+        } else if (type === "info") {
+          toastIcon.className = "fas fa-info-circle";
+        }
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+
+      // Sidebar toggle
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      // Initialize loading screen and progress
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.body.classList.remove("loading-active");
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+
+        // Initialize progress
+        updateProgress();
+      });
+    </script>
+  </body>
+</html>

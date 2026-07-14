@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>My Patients — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+      .avatar-md { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,var(--blue),var(--blue-mid)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+      .pager { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 18px; }
+      .pager button { padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid var(--light-border); background: rgba(255,255,255,0.5); cursor: pointer; }
+      .pager button:disabled { opacity: 0.4; cursor: not-allowed; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Doctor</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a>
+        <a class="glass-nav-link active" href="my-patients.html"><i class="fas fa-users"></i> My Patients</a>
+        <a class="glass-nav-link" href="consult.html"><i class="fas fa-stethoscope"></i> Consultation</a>
+        <a class="glass-nav-link" href="prescribe.html"><i class="fas fa-pills"></i> Prescribe</a>
+        <a class="glass-nav-link" href="records.html"><i class="fas fa-file-waveform"></i> Records</a>
+        <a class="glass-nav-link" href="my-reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>My Patients</h1></div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:20px;">
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-users"></i></div><div><div class="glass-stat-num" id="statTotal">–</div><div class="glass-stat-label">Total Patients</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon green"><i class="fas fa-calendar-check"></i></div><div><div class="glass-stat-num" id="statToday">–</div><div class="glass-stat-label">Today's Appointments</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon gold"><i class="fas fa-notes-medical"></i></div><div><div class="glass-stat-num" id="statActive">–</div><div class="glass-stat-label">Active Treatments</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon red"><i class="fas fa-clock"></i></div><div><div class="glass-stat-num" id="statFollowups">–</div><div class="glass-stat-label">Pending Follow-ups</div></div></div>
+        </div>
+
+        <div class="toolbar">
+          <input type="text" id="searchInput" class="glass-input" placeholder="Search patients…" style="width:260px;" />
+        </div>
+
+        <div class="glass-card">
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead><tr><th>Patient</th><th>Age/Gender</th><th>Phone</th><th>Last Visit</th><th></th></tr></thead>
+              <tbody id="patientRows"></tbody>
+            </table>
+          </div>
+          <div class="pager" id="pager"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/doctor/patients';
+      async function api(path) {
+        const res = await fetch(API + path, { credentials: 'include' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let page = 1;
+
+      async function loadStats() {
+        const { stats } = await api('/stats');
+        document.getElementById('statTotal').textContent = stats.total_patients ?? 0;
+        document.getElementById('statToday').textContent = stats.today_appointments ?? 0;
+        document.getElementById('statActive').textContent = stats.active_treatments ?? 0;
+        document.getElementById('statFollowups').textContent = stats.pending_followups ?? 0;
+      }
+
+      async function loadPatients() {
+        const search = document.getElementById('searchInput').value;
+        const params = new URLSearchParams({ page, per_page: 10 });
+        if (search) params.set('search', search);
+        const data = await api(`/?${params}`);
+        const rows = document.getElementById('patientRows');
+        rows.innerHTML = data.patients.length ? data.patients.map(p => `
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar-md">${(p.full_name || p.name || '??').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
+              <div><div style="font-weight:700;">${p.full_name || p.name}</div><div style="font-size:0.75rem;color:var(--mid-gray);">${p.patient_number || ''}</div></div></div></td>
+            <td>${p.age ?? '—'} / ${p.gender || '—'}</td>
+            <td>${p.phone || '—'}</td>
+            <td>${p.last_visit || '—'}</td>
+            <td><a class="glass-btn glass-btn-ghost" href="records.html?patient=${p.id}" style="padding:6px 12px;"><i class="fas fa-file-waveform"></i> Records</a></td>
+          </tr>
+        `).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--mid-gray);padding:30px;">No patients found</td></tr>';
+
+        document.getElementById('pager').innerHTML = `
+          <button ${page <= 1 ? 'disabled' : ''} id="prevPage"><i class="fas fa-chevron-left"></i></button>
+          <span style="font-size:0.85rem;color:var(--mid-gray);">Page ${data.page} of ${data.total_pages}</span>
+          <button ${page >= data.total_pages ? 'disabled' : ''} id="nextPage"><i class="fas fa-chevron-right"></i></button>`;
+        document.getElementById('prevPage')?.addEventListener('click', () => { page--; loadPatients(); });
+        document.getElementById('nextPage')?.addEventListener('click', () => { page++; loadPatients(); });
+      }
+
+      let t;
+      document.getElementById('searchInput').addEventListener('input', () => { page = 1; clearTimeout(t); t = setTimeout(loadPatients, 300); });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await Promise.all([loadStats(), loadPatients()]);
+      }
+      init();
+    </script>
+  </body>
+</html>

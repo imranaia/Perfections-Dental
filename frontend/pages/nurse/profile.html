@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>My Profile — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0 0 20px; }
+      .profile-header { display: flex; align-items: center; gap: 18px; margin-bottom: 20px; }
+      .avatar-lg { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg,var(--blue),var(--blue-mid)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.4rem; }
+      .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Nurse</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="my-tasks.html"><i class="fas fa-list-check"></i> My Tasks</a>
+        <a class="glass-nav-link" href="my-assists.html"><i class="fas fa-hand-holding-medical"></i> My Assists</a>
+        <a class="glass-nav-link" href="procedures.html"><i class="fas fa-syringe"></i> Procedures</a>
+        <a class="glass-nav-link" href="prescribe.html"><i class="fas fa-pills"></i> Prescribe</a>
+        <a class="glass-nav-link" href="notes.html"><i class="fas fa-notes-medical"></i> Notes & Vitals</a>
+        <a class="glass-nav-link" href="records.html"><i class="fas fa-file-waveform"></i> Records</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link active" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>My Profile</h1></div>
+
+        <div class="glass-grid glass-grid-2">
+          <div class="glass-card">
+            <div class="profile-header">
+              <div class="avatar-lg" id="avatarInitials">–</div>
+              <div><h3 id="profileName" style="margin:0;">–</h3><p id="profileRole" style="margin:2px 0 0;"></p></div>
+            </div>
+            <div class="form-row-2">
+              <div class="glass-field"><label>First name</label><input id="f_first_name" class="glass-input" /></div>
+              <div class="glass-field"><label>Last name</label><input id="f_last_name" class="glass-input" /></div>
+            </div>
+            <div class="form-row-2">
+              <div class="glass-field"><label>Phone</label><input id="f_phone" class="glass-input" /></div>
+              <div class="glass-field"><label>License number</label><input id="f_license" class="glass-input" /></div>
+            </div>
+            <div class="form-row-2">
+              <div class="glass-field"><label>Position</label><input id="f_position" class="glass-input" /></div>
+              <div class="glass-field"><label>Years of experience</label><input type="number" id="f_experience" class="glass-input" /></div>
+            </div>
+            <div class="form-row-2">
+              <div class="glass-field"><label>Emergency contact name</label><input id="f_ec_name" class="glass-input" /></div>
+              <div class="glass-field"><label>Emergency contact phone</label><input id="f_ec_phone" class="glass-input" /></div>
+            </div>
+            <button class="glass-btn glass-btn-primary" id="saveBtn"><i class="fas fa-check"></i> Save Changes</button>
+            <div id="saveMessage" style="margin-top:10px; font-size:0.85rem;"></div>
+          </div>
+
+          <div class="glass-card">
+            <h3><i class="fas fa-lock"></i> Change Password</h3>
+            <div class="glass-field" style="margin-top:12px;"><label>Current password</label><input type="password" id="currentPassword" class="glass-input" /></div>
+            <div class="glass-field"><label>New password</label><input type="password" id="newPassword" class="glass-input" /></div>
+            <button class="glass-btn glass-btn-ghost" id="changePassBtn"><i class="fas fa-key"></i> Update Password</button>
+            <div id="passMessage" style="margin-top:10px; font-size:0.85rem;"></div>
+
+            <h3 style="margin-top:24px;"><i class="fas fa-id-badge"></i> Employment</h3>
+            <div id="employmentInfo" style="margin-top:10px; font-size:0.88rem; line-height:2;"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/nurse/profile';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let loadedProfile = null;
+
+      async function loadProfile() {
+        const { profile: p } = await api('/');
+        loadedProfile = p;
+        document.getElementById('avatarInitials').textContent = p.initials || '';
+        document.getElementById('profileName').textContent = p.full_name || '';
+        document.getElementById('profileRole').textContent = `${p.employee_id || ''}`;
+        document.getElementById('f_first_name').value = p.first_name || '';
+        document.getElementById('f_last_name').value = p.last_name || '';
+        document.getElementById('f_phone').value = p.phone || '';
+        document.getElementById('f_license').value = p.license_number || '';
+        document.getElementById('f_position').value = p.position || '';
+        document.getElementById('f_experience').value = p.experience_years || '';
+        document.getElementById('f_ec_name').value = p.emergency_contact?.name || '';
+        document.getElementById('f_ec_phone').value = p.emergency_contact?.phone || '';
+        document.getElementById('employmentInfo').innerHTML = `
+          <div><strong>Email:</strong> ${p.email || '—'}</div>
+          <div><strong>Date joined:</strong> ${p.date_joined || '—'}</div>`;
+      }
+
+      document.getElementById('saveBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('saveMessage');
+        try {
+          await api('/', {
+            method: 'PUT',
+            body: JSON.stringify({
+              first_name: document.getElementById('f_first_name').value.trim(),
+              last_name: document.getElementById('f_last_name').value.trim(),
+              phone: document.getElementById('f_phone').value.trim(),
+              license_number: document.getElementById('f_license').value.trim(),
+              position: document.getElementById('f_position').value.trim(),
+              skills: loadedProfile?.skills || [],
+              experience_years: Number(document.getElementById('f_experience').value) || 0,
+              emergency_contact_name: document.getElementById('f_ec_name').value.trim(),
+              emergency_contact_phone: document.getElementById('f_ec_phone').value.trim(),
+            }),
+          });
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = 'Profile updated!';
+          loadProfile();
+        } catch (e) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = e.message;
+        }
+      });
+
+      document.getElementById('changePassBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('passMessage');
+        try {
+          await api('/change-password', {
+            method: 'POST',
+            body: JSON.stringify({
+              current_password: document.getElementById('currentPassword').value,
+              new_password: document.getElementById('newPassword').value,
+            }),
+          });
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = 'Password updated!';
+          document.getElementById('currentPassword').value = '';
+          document.getElementById('newPassword').value = '';
+        } catch (e) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = e.message;
+        }
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await loadProfile();
+      }
+      init();
+    </script>
+  </body>
+</html>

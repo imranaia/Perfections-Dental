@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Financial — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0 0 20px; }
+      .list-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--light-border); font-size: 0.88rem; }
+      .list-row:last-child { border-bottom: none; }
+      .bars { display: flex; align-items: flex-end; gap: 10px; height: 140px; margin-top: 16px; }
+      .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; height: 100%; }
+      .bar-fill { width: 100%; max-width: 36px; background: linear-gradient(180deg, var(--blue-mid), var(--blue)); border-radius: 6px 6px 0 0; }
+      .bar-label { font-size: 0.7rem; color: var(--mid-gray); }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Superadmin</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="doctors.html"><i class="fas fa-user-doctor"></i> Doctors</a>
+        <a class="glass-nav-link" href="nurses.html"><i class="fas fa-user-nurse"></i> Nurses</a>
+        <a class="glass-nav-link" href="reception.html"><i class="fas fa-desk"></i> Reception Staff</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link active" href="financial.html"><i class="fas fa-sack-dollar"></i> Financial</a>
+        <a class="glass-nav-link" href="analytics.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a class="glass-nav-link" href="performance.html"><i class="fas fa-ranking-star"></i> Performance</a>
+        <a class="glass-nav-link" href="access-control.html"><i class="fas fa-shield-halved"></i> Access Control</a>
+        <a class="glass-nav-link" href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>Financial</h1></div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:20px;">
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-sack-dollar"></i></div><div><div class="glass-stat-num" id="statRevenue">–</div><div class="glass-stat-label" id="periodLabel">Revenue</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon green"><i class="fas fa-receipt"></i></div><div><div class="glass-stat-num" id="statTransactions">–</div><div class="glass-stat-label">Transactions</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon gold"><i class="fas fa-ticket"></i></div><div><div class="glass-stat-num" id="statAvgTicket">–</div><div class="glass-stat-label">Avg. Ticket</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-star"></i></div><div><div class="glass-stat-num" id="statTopService">–</div><div class="glass-stat-label">Top Service</div></div></div>
+        </div>
+
+        <div class="glass-grid glass-grid-2">
+          <div class="glass-card">
+            <h3><i class="fas fa-chart-column"></i> 7-Day Revenue Forecast</h3>
+            <div class="bars" id="forecastBars"></div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-hourglass-half"></i> Pending Discount Approvals</h3>
+            <div id="discountList" style="margin-top:10px;"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/superadmin/financial';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      async function loadSummary() {
+        const { summary: s } = await api('/summary');
+        document.getElementById('statRevenue').textContent = '₦' + (s.total_revenue ?? 0).toLocaleString();
+        document.getElementById('periodLabel').textContent = s.period_label || 'Revenue';
+        document.getElementById('statTransactions').textContent = s.total_transactions ?? 0;
+        document.getElementById('statAvgTicket').textContent = '₦' + Math.round(s.average_ticket ?? 0).toLocaleString();
+        document.getElementById('statTopService').textContent = s.top_service || '—';
+      }
+
+      async function loadForecast() {
+        const { forecast } = await api('/forecast');
+        const max = Math.max(...forecast.map(f => f.amount), 1);
+        document.getElementById('forecastBars').innerHTML = forecast.map(f => `
+          <div class="bar-col"><div class="bar-fill" style="height:${Math.max((f.amount / max) * 100, 3)}%"></div><div class="bar-label">${f.day.slice(0, 3)}</div></div>
+        `).join('');
+      }
+
+      async function loadDiscounts() {
+        const { discounts } = await api('/discounts/pending');
+        const list = document.getElementById('discountList');
+        list.innerHTML = discounts.length ? discounts.map(d => `
+          <div class="list-row">
+            <div><strong>${d.requested_by || ''}</strong> · ${d.reason || ''}</div>
+            <div style="display:flex;gap:6px;">
+              <button class="glass-btn glass-btn-success approve-btn" data-appt="${d.appointment_id}" style="padding:5px 10px;"><i class="fas fa-check"></i></button>
+              <button class="glass-btn glass-btn-danger reject-btn" data-appt="${d.appointment_id}" style="padding:5px 10px;"><i class="fas fa-xmark"></i></button>
+            </div>
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-check-circle"></i>No pending discount requests</div>';
+
+        list.querySelectorAll('.approve-btn').forEach(btn => btn.addEventListener('click', () => decide(btn.dataset.appt, 'approve')));
+        list.querySelectorAll('.reject-btn').forEach(btn => btn.addEventListener('click', () => decide(btn.dataset.appt, 'reject')));
+      }
+
+      async function decide(apptId, action) {
+        try {
+          await api(`/discounts/${apptId}/approve`, { method: 'POST', body: JSON.stringify({ approved: action === 'approve' }) });
+          loadDiscounts();
+        } catch (e) { alert(e.message); }
+      }
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await Promise.all([loadSummary(), loadForecast(), loadDiscounts()]);
+      }
+      init();
+    </script>
+  </body>
+</html>

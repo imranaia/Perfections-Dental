@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>My Care — Perfections Dental Patient Portal</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .tab-panel { display: none; }
+      .tab-panel.active { display: block; }
+      .slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; margin-top: 14px; }
+      .slot-btn {
+        padding: 9px 6px; border-radius: var(--radius-sm); border: 1.5px solid var(--light-border);
+        background: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 700; color: var(--dark);
+        cursor: pointer; transition: all 0.2s var(--ease);
+      }
+      .slot-btn:hover:not(:disabled) { border-color: var(--blue-mid); background: #eaf4ff; }
+      .slot-btn.selected { background: var(--blue); color: #fff; border-color: var(--blue); }
+      .slot-btn:disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+      .rx-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--light-border); font-size: 0.86rem; }
+      .rx-item:last-child { border-bottom: none; }
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="#">
+          <div class="glass-brand-mark"><i class="fas fa-tooth" style="color:#fff"></i></div>
+          <div class="glass-brand-words"><strong>My Care</strong><small>Patient Portal</small></div>
+        </a>
+        <a class="glass-nav-link active" data-tab="overview"><i class="fas fa-house"></i> Overview</a>
+        <a class="glass-nav-link" data-tab="book"><i class="fas fa-calendar-plus"></i> Book Appointment</a>
+        <a class="glass-nav-link" data-tab="records"><i class="fas fa-file-waveform"></i> Medical Records</a>
+        <a class="glass-nav-link" data-tab="prescriptions"><i class="fas fa-pills"></i> Medications</a>
+        <a class="glass-nav-link" data-tab="billing"><i class="fas fa-receipt"></i> Billing</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" id="logoutBtn"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1 id="greeting">Welcome</h1>
+          <span class="glass-badge info"><i class="fas fa-id-card"></i> <span id="patientCode"></span></span>
+        </div>
+
+        <!-- OVERVIEW -->
+        <section class="tab-panel active" id="tab-overview">
+          <div class="glass-grid glass-grid-3" style="margin-bottom:22px;">
+            <div class="glass-card glass-stat">
+              <div class="glass-stat-icon"><i class="fas fa-calendar-check"></i></div>
+              <div><div class="glass-stat-num" id="statUpcoming">–</div><div class="glass-stat-label">Upcoming Visits</div></div>
+            </div>
+            <div class="glass-card glass-stat">
+              <div class="glass-stat-icon green"><i class="fas fa-pills"></i></div>
+              <div><div class="glass-stat-num" id="statActiveRx">–</div><div class="glass-stat-label">Active Prescriptions</div></div>
+            </div>
+            <div class="glass-card glass-stat">
+              <div class="glass-stat-icon gold"><i class="fas fa-file-invoice-dollar"></i></div>
+              <div><div class="glass-stat-num" id="statUnpaid">–</div><div class="glass-stat-label">Unpaid Invoices</div></div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-notes-medical"></i> Health Snapshot</h3>
+            <div id="healthSnapshot" style="margin-top:12px; font-size:0.88rem; color:var(--mid-gray); line-height:1.8;"></div>
+          </div>
+        </section>
+
+        <!-- BOOK APPOINTMENT -->
+        <section class="tab-panel" id="tab-book">
+          <div class="glass-card">
+            <h3><i class="fas fa-calendar-plus"></i> Request an Appointment</h3>
+            <p>Slots are first-come, first-served — once you pick an open slot it's confirmed instantly.</p>
+            <div class="glass-grid glass-grid-2" style="margin-top:18px;">
+              <div class="glass-field">
+                <label>Doctor</label>
+                <select id="doctorSelect" class="glass-select"></select>
+              </div>
+              <div class="glass-field">
+                <label>Date</label>
+                <input type="date" id="dateSelect" class="glass-input" />
+              </div>
+            </div>
+            <div class="glass-field">
+              <label>Reason for visit</label>
+              <input type="text" id="reasonInput" class="glass-input" placeholder="e.g. Toothache, routine checkup" />
+            </div>
+            <div id="slotsWrap">
+              <div id="slotMessage" style="color:var(--mid-gray); font-size:0.85rem;">Pick a doctor and date to see open slots.</div>
+              <div class="slot-grid" id="slotGrid"></div>
+            </div>
+            <button class="glass-btn glass-btn-primary" id="confirmBookBtn" style="margin-top:18px;" disabled>
+              <i class="fas fa-check"></i> Confirm Booking
+            </button>
+            <div id="bookMessage" style="margin-top:12px; font-size:0.85rem;"></div>
+          </div>
+
+          <div class="glass-card" style="margin-top:20px;">
+            <h3><i class="fas fa-clock-rotate-left"></i> My Requests</h3>
+            <div class="glass-table-wrap"><table class="glass-table" id="requestsTable">
+              <thead><tr><th>Date</th><th>Time</th><th>Doctor</th><th>Status</th></tr></thead>
+              <tbody></tbody>
+            </table></div>
+          </div>
+        </section>
+
+        <!-- RECORDS -->
+        <section class="tab-panel" id="tab-records">
+          <div class="glass-grid glass-grid-2">
+            <div class="glass-card">
+              <h3><i class="fas fa-user"></i> My Details</h3>
+              <div id="profileDetails" style="font-size:0.88rem; line-height:2;"></div>
+            </div>
+            <div class="glass-card">
+              <h3><i class="fas fa-triangle-exclamation"></i> Allergies & Conditions</h3>
+              <div id="clinicalDetails" style="font-size:0.88rem; line-height:2;"></div>
+            </div>
+          </div>
+          <div class="glass-card" style="margin-top:20px;">
+            <h3><i class="fas fa-calendar-days"></i> Appointment History</h3>
+            <div class="glass-table-wrap"><table class="glass-table" id="apptHistoryTable">
+              <thead><tr><th>Date</th><th>Doctor</th><th>Service</th><th>Status</th></tr></thead>
+              <tbody></tbody>
+            </table></div>
+          </div>
+        </section>
+
+        <!-- PRESCRIPTIONS -->
+        <section class="tab-panel" id="tab-prescriptions">
+          <div id="prescriptionsList"></div>
+        </section>
+
+        <!-- BILLING -->
+        <section class="tab-panel" id="tab-billing">
+          <div class="glass-card">
+            <h3><i class="fas fa-receipt"></i> Invoices</h3>
+            <div class="glass-table-wrap"><table class="glass-table" id="invoicesTable">
+              <thead><tr><th>Invoice #</th><th>Date</th><th>Total</th><th>Paid</th><th>Status</th></tr></thead>
+              <tbody></tbody>
+            </table></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const API = '/api/patient';
+
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      // ── Tab switching ──
+      document.querySelectorAll('.glass-nav-link[data-tab]').forEach((link) => {
+        link.addEventListener('click', () => {
+          document.querySelectorAll('.glass-nav-link[data-tab]').forEach((l) => l.classList.remove('active'));
+          link.classList.add('active');
+          const tab = link.dataset.tab;
+          document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+          document.getElementById('tab-' + tab).classList.add('active');
+        });
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        await api('/auth/logout', { method: 'POST' });
+        window.location.href = '/pages/patient/login.html';
+      });
+
+      // ── Bootstrap ──
+      async function init() {
+        const session = await api('/auth/session');
+        if (!session.authenticated) {
+          window.location.href = '/pages/patient/login.html';
+          return;
+        }
+        document.getElementById('greeting').textContent = 'Welcome, ' + session.patient.first_name;
+        document.getElementById('patientCode').textContent = session.patient.patient_code || '';
+
+        loadProfile();
+        loadAppointments();
+        loadPrescriptions();
+        loadInvoices();
+        loadDoctors();
+        loadMyRequests();
+
+        const dateInput = document.getElementById('dateSelect');
+        const tomorrow = new Date(Date.now() + 86400000);
+        dateInput.value = tomorrow.toISOString().slice(0, 10);
+        dateInput.min = new Date().toISOString().slice(0, 10);
+      }
+
+      async function loadProfile() {
+        const { patient } = await api('/records/profile');
+        document.getElementById('profileDetails').innerHTML = `
+          <div><strong>Name:</strong> ${patient.first_name} ${patient.last_name}</div>
+          <div><strong>Phone:</strong> ${patient.phone || '—'}</div>
+          <div><strong>Email:</strong> ${patient.email || '—'}</div>
+          <div><strong>DOB:</strong> ${patient.dob || '—'}</div>
+          <div><strong>Gender:</strong> ${patient.gender || '—'}</div>`;
+        document.getElementById('clinicalDetails').innerHTML = `
+          <div><strong>Allergies:</strong> ${patient.allergies || 'None recorded'}</div>
+          <div><strong>Chronic conditions:</strong> ${patient.chronic_conditions || 'None recorded'}</div>
+          <div><strong>Current medications:</strong> ${patient.current_medications || 'None recorded'}</div>
+          <div><strong>Medical alerts:</strong> ${patient.medical_alerts || 'None'}</div>`;
+        document.getElementById('healthSnapshot').innerHTML = `
+          <div><strong>Allergies:</strong> ${patient.allergies || 'None recorded'}</div>
+          <div><strong>Current medications:</strong> ${patient.current_medications || 'None recorded'}</div>`;
+      }
+
+      async function loadAppointments() {
+        const { appointments } = await api('/records/appointments');
+        const upcoming = appointments.filter((a) => new Date(a.appointment_date) > new Date() && a.status !== 'cancelled');
+        document.getElementById('statUpcoming').textContent = upcoming.length;
+        const tbody = document.querySelector('#apptHistoryTable tbody');
+        tbody.innerHTML = appointments.length ? appointments.map((a) => `
+          <tr><td>${a.appointment_date}</td><td>Dr. ${a.doctor_name}</td><td>${a.service_name || '—'}</td>
+          <td><span class="glass-badge info">${a.status}</span></td></tr>
+        `).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--mid-gray)">No appointments yet</td></tr>';
+      }
+
+      async function loadPrescriptions() {
+        const { prescriptions } = await api('/records/prescriptions');
+        document.getElementById('statActiveRx').textContent =
+          prescriptions.filter((p) => p.status === 'pending_dispense').length;
+
+        const wrap = document.getElementById('prescriptionsList');
+        wrap.innerHTML = prescriptions.length ? prescriptions.map((p) => `
+          <div class="glass-card" style="margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h3 style="margin:0;">${p.prescription_number}</h3>
+              <span class="glass-badge ${p.status === 'dispensed' ? 'success' : 'warning'}">
+                ${p.status === 'dispensed' ? 'Dispensed' : 'Awaiting pickup at reception'}
+              </span>
+            </div>
+            <p style="margin:6px 0 12px;">Prescribed by ${p.prescribed_by_name} on ${p.created_at}</p>
+            ${p.items.map((it) => `
+              <div class="rx-item"><span>${it.name} — ${it.dosage || ''} ${it.frequency || ''}</span><span>×${it.quantity}</span></div>
+            `).join('')}
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-pills"></i>No prescriptions yet</div>';
+      }
+
+      async function loadInvoices() {
+        const { invoices } = await api('/records/invoices');
+        document.getElementById('statUnpaid').textContent = invoices.filter((i) => i.status !== 'paid').length;
+        const tbody = document.querySelector('#invoicesTable tbody');
+        tbody.innerHTML = invoices.length ? invoices.map((i) => `
+          <tr><td>${i.invoice_number}</td><td>${i.invoice_date}</td><td>₦${i.total.toLocaleString()}</td>
+          <td>₦${i.amount_paid.toLocaleString()}</td>
+          <td><span class="glass-badge ${i.status === 'paid' ? 'success' : 'warning'}">${i.status}</span></td></tr>
+        `).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--mid-gray)">No invoices yet</td></tr>';
+      }
+
+      async function loadMyRequests() {
+        const { requests } = await api('/appointments/my-requests');
+        const tbody = document.querySelector('#requestsTable tbody');
+        tbody.innerHTML = requests.length ? requests.map((r) => `
+          <tr><td>${r.requested_date}</td><td>${r.requested_time}</td><td>${r.doctor_name || '—'}</td>
+          <td><span class="glass-badge ${r.status === 'confirmed' ? 'success' : r.status === 'rejected' ? 'danger' : 'info'}">${r.status}</span></td></tr>
+        `).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--mid-gray)">No requests yet</td></tr>';
+      }
+
+      let selectedDoctorId = null;
+      async function loadDoctors() {
+        const { doctors } = await api('/appointments/doctors');
+        const select = document.getElementById('doctorSelect');
+        select.innerHTML = doctors.map((d) => `<option value="${d.id}">${d.name}${d.specialization ? ' — ' + d.specialization : ''}</option>`).join('');
+        if (doctors.length) {
+          selectedDoctorId = doctors[0].id;
+          loadSlots();
+        }
+        select.addEventListener('change', () => { selectedDoctorId = select.value; loadSlots(); });
+      }
+
+      document.getElementById('dateSelect').addEventListener('change', loadSlots);
+
+      let selectedSlot = null;
+      async function loadSlots() {
+        selectedSlot = null;
+        document.getElementById('confirmBookBtn').disabled = true;
+        const date = document.getElementById('dateSelect').value;
+        if (!selectedDoctorId || !date) return;
+        const { slots } = await api(`/appointments/available-slots?doctor_id=${selectedDoctorId}&date=${date}`);
+        document.getElementById('slotMessage').textContent = slots.some((s) => s.available)
+          ? 'Tap an open slot to select it.' : 'No open slots this day — try another date.';
+        document.getElementById('slotGrid').innerHTML = slots.map((s) => `
+          <button type="button" class="slot-btn" data-dt="${s.datetime}" ${s.available ? '' : 'disabled'}>${s.time}</button>
+        `).join('');
+        document.querySelectorAll('.slot-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.slot-btn').forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedSlot = btn.dataset.dt;
+            document.getElementById('confirmBookBtn').disabled = false;
+          });
+        });
+      }
+
+      document.getElementById('confirmBookBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('bookMessage');
+        msg.textContent = '';
+        try {
+          await api('/appointments/book', {
+            method: 'POST',
+            body: JSON.stringify({
+              doctor_id: selectedDoctorId,
+              datetime: selectedSlot,
+              reason: document.getElementById('reasonInput').value.trim(),
+            }),
+          });
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = 'Appointment confirmed!';
+          loadSlots();
+          loadAppointments();
+          loadMyRequests();
+        } catch (err) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = err.message;
+          loadSlots();
+        }
+      });
+
+      init();
+    </script>
+  </body>
+</html>

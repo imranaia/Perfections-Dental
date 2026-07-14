@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>My Patients - Doctor - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      /* Enhanced Filter Bar Styling */
+      .filter-bar {
+        display: flex;
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        background: var(--pure-white);
+        padding: var(--space-md);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+      }
+
+      .search-wrapper {
+        flex: 2;
+        position: relative;
+        min-width: 280px;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: var(--space-md);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        font-size: 1rem;
+        z-index: 2;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: var(--space-md) var(--space-md) var(--space-md) 45px;
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+        background: var(--off-white);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        background: var(--pure-white);
+      }
+
+      .search-input::placeholder {
+        color: var(--text-light);
+        font-style: italic;
+      }
+
+      .search-clear {
+        position: absolute;
+        right: var(--space-md);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        cursor: pointer;
+        display: none;
+        font-size: 1.1rem;
+      }
+
+      .search-clear:hover {
+        color: var(--error);
+      }
+
+      .search-input:not(:placeholder-shown) + .search-clear {
+        display: block;
+      }
+
+      .filter-select-wrapper {
+        flex: 1;
+        position: relative;
+        min-width: 160px;
+      }
+
+      .filter-select {
+        width: 100%;
+        padding: var(--space-md) var(--space-lg);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        font-size: 0.95rem;
+        background: var(--off-white);
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        transition: all var(--transition-fast);
+        color: var(--text-dark);
+      }
+
+      .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        background: var(--pure-white);
+      }
+
+      .filter-select-wrapper::after {
+        content: "\f078";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        right: var(--space-md);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        pointer-events: none;
+        font-size: 0.8rem;
+      }
+
+      /* Quick Stats */
+      .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .stat-pill {
+        background: var(--pure-white);
+        border-radius: var(--radius-full);
+        padding: var(--space-sm) var(--space-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transition: all var(--transition-base);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .stat-pill:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .stat-pill.total {
+        border: 2px solid;
+        border-color: var(--primary-blue);
+      }
+      .stat-pill.today {
+        border: 2px solid;
+        border-color: var(--success);
+      }
+      .stat-pill.pending {
+        border: 2px solid;
+        border-color: var(--warning);
+      }
+      .stat-pill.followup {
+        border: 2px solid;
+        border-color: var(--purple);
+      }
+
+      .stat-pill i {
+        color: var(--primary-blue);
+      }
+
+      .stat-pill.today i {
+        color: var(--success);
+      }
+
+      .stat-pill.pending i {
+        color: var(--warning);
+      }
+
+      .stat-pill.followup i {
+        color: var(--purple);
+      }
+
+      /* Patient Card Styling */
+      .patient-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-base);
+        border: 1px solid transparent;
+        margin-bottom: var(--space-md);
+        position: relative;
+      }
+
+      .patient-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-blue);
+      }
+
+      .patient-card-header {
+        padding: var(--space-lg);
+        background: linear-gradient(
+          145deg,
+          var(--primary-blue),
+          var(--primary-blue-dark)
+        );
+        color: white;
+        position: relative;
+      }
+
+      .patient-avatar-large {
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        margin-bottom: var(--space-md);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        box-shadow: var(--shadow-md);
+      }
+
+      .patient-status-badge {
+        position: absolute;
+        top: var(--space-md);
+        right: var(--space-md);
+        padding: var(--space-xs) var(--space-md);
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+      }
+
+      .patient-card-body {
+        padding: var(--space-lg);
+      }
+
+      .patient-meta {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+        margin: var(--space-md) 0;
+      }
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        font-size: 0.9rem;
+        color: var(--text-dark);
+      }
+
+      .meta-item i {
+        width: 20px;
+        color: var(--primary-blue);
+        font-size: 1rem;
+      }
+
+      .medical-alert {
+        background: rgba(255, 59, 48, 0.1);
+        border-left: 4px solid var(--error);
+        padding: var(--space-md);
+        border-radius: var(--radius-md);
+        margin: var(--space-md) 0;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .treatment-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+        margin-bottom: var(--space-md);
+      }
+
+      .treatment-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: all var(--transition-fast);
+      }
+
+      .treatment-tag:hover {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .next-appointment {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid var(--light-gray);
+      }
+
+      .appointment-date {
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+
+      .btn-start {
+        background: var(--primary-blue);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        padding: var(--space-sm) var(--space-lg);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+      }
+
+      .btn-start:hover {
+        background: var(--primary-blue-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-start i {
+        font-size: 0.8rem;
+      }
+
+      /* Pagination Styling */
+      .pagination-container {
+        padding: var(--space-lg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--light-gray);
+        margin-top: var(--space-xl);
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .pagination-info {
+        color: var(--text-light);
+        font-size: 0.9rem;
+      }
+
+      .pagination-controls {
+        display: flex;
+        gap: var(--space-xs);
+      }
+
+      .page-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: var(--radius-full);
+        background: var(--off-white);
+        color: var(--text-dark);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+      }
+
+      .page-btn:hover:not(:disabled) {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .page-btn.active {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: var(--space-xxl);
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+      }
+
+      .empty-state i {
+        font-size: 4rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-lg);
+      }
+
+      .empty-state h3 {
+        margin-bottom: var(--space-sm);
+        color: var(--text-dark);
+      }
+
+      .empty-state p {
+        color: var(--text-light);
+        margin-bottom: var(--space-lg);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .quick-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .patient-meta {
+          grid-template-columns: 1fr;
+        }
+
+        .next-appointment {
+          flex-direction: column;
+          gap: var(--space-md);
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">My Patients</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+          <div class="stat-pill total">
+            <i class="fas fa-users"></i>
+            <span><strong>24</strong> Total Patients</span>
+          </div>
+          <div class="stat-pill today">
+            <i class="fas fa-calendar-check"></i>
+            <span><strong>8</strong> Today's Appointments</span>
+          </div>
+          <div class="stat-pill pending">
+            <i class="fas fa-clock"></i>
+            <span><strong>4</strong> Pending Follow-ups</span>
+          </div>
+          <div class="stat-pill followup">
+            <i class="fas fa-flag"></i>
+            <span><strong>12</strong> Active Treatments</span>
+          </div>
+        </div>
+
+        <!-- Enhanced Search and Filters -->
+        <div class="filter-bar">
+          <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search patients by name, phone, ID, or treatment..."
+              id="searchInput"
+              onkeyup="searchPatients()"
+            />
+            <span class="search-clear" onclick="clearSearch()">
+              <i class="fas fa-times-circle"></i>
+            </span>
+          </div>
+
+          <div class="filter-select-wrapper">
+            <select
+              class="filter-select"
+              id="statusFilter"
+              onchange="filterPatients()"
+            >
+              <option value="all">All Patients</option>
+              <option value="active">Active</option>
+              <option value="appointments">With Appointments</option>
+              <option value="followup">Need Follow-up</option>
+              <option value="new">New Patients</option>
+            </select>
+          </div>
+
+          <div class="filter-select-wrapper">
+            <select
+              class="filter-select"
+              id="sortFilter"
+              onchange="sortPatients()"
+            >
+              <option value="recent">Sort by: Most Recent</option>
+              <option value="name">Sort by: Name</option>
+              <option value="next">Sort by: Next Visit</option>
+              <option value="oldest">Sort by: Oldest First</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Patients List -->
+        <div class="patients-list" id="patientsList">
+          <!-- Patient Card 1 -->
+          <div
+            class="patient-card"
+            data-status="active appointments"
+            data-name="Sarah Jones"
+            data-date="2026-03-15"
+          >
+            <div class="patient-card-header">
+              <div class="patient-avatar-large">SJ</div>
+              <span class="patient-status-badge"
+                ><i
+                  class="fas fa-circle"
+                  style="font-size: 0.5rem; margin-right: 4px"
+                ></i>
+                In Clinic</span
+              >
+              <h3 style="font-size: 1.3rem; margin-bottom: 4px">Sarah Jones</h3>
+              <div
+                style="
+                  display: flex;
+                  gap: var(--space-md);
+                  font-size: 0.9rem;
+                  opacity: 0.9;
+                "
+              >
+                <span><i class="fas fa-female"></i> Female, 34</span>
+                <span><i class="fas fa-id-card"></i> PAT-00123</span>
+              </div>
+            </div>
+
+            <div class="patient-card-body">
+              <div class="patient-meta">
+                <div class="meta-item">
+                  <i class="fas fa-phone"></i>
+                  <span>+234 812 345 6789</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-envelope"></i>
+                  <span>sarah.j@email.com</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-calendar"></i>
+                  <span>Last Visit: Mar 10, 2026</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-clock"></i>
+                  <span class="appointment-date">Next: Today 9:00 AM</span>
+                </div>
+              </div>
+
+              <div class="medical-alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <div><strong>Allergies:</strong> Penicillin, Latex</div>
+              </div>
+
+              <div class="treatment-tags">
+                <span class="treatment-tag">Hypertension</span>
+                <span class="treatment-tag">Diabetes Type 2</span>
+                <span class="treatment-tag">Cracked Tooth #29</span>
+              </div>
+
+              <div class="next-appointment">
+                <div>
+                  <span style="color: var(--text-light); font-size: 0.9rem"
+                    >Today's Procedure:</span
+                  >
+                  <span
+                    style="
+                      font-weight: 600;
+                      margin-left: var(--space-sm);
+                      color: var(--primary-blue);
+                    "
+                    >Crown Consultation</span
+                  >
+                </div>
+                <button
+                  class="btn-start"
+                  onclick="navigateTo('consult.html?patient=SJ')"
+                >
+                  <i class="fas fa-play"></i> Start
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patient Card 2 -->
+          <div
+            class="patient-card"
+            data-status="active appointments"
+            data-name="Michael Obi"
+            data-date="2026-03-15"
+          >
+            <div class="patient-card-header">
+              <div class="patient-avatar-large">MO</div>
+              <span class="patient-status-badge"
+                ><i
+                  class="fas fa-circle"
+                  style="
+                    font-size: 0.5rem;
+                    margin-right: 4px;
+                    color: var(--warning);
+                  "
+                ></i>
+                Waiting</span
+              >
+              <h3 style="font-size: 1.3rem; margin-bottom: 4px">Michael Obi</h3>
+              <div
+                style="
+                  display: flex;
+                  gap: var(--space-md);
+                  font-size: 0.9rem;
+                  opacity: 0.9;
+                "
+              >
+                <span><i class="fas fa-male"></i> Male, 45</span>
+                <span><i class="fas fa-id-card"></i> PAT-00456</span>
+              </div>
+            </div>
+
+            <div class="patient-card-body">
+              <div class="patient-meta">
+                <div class="meta-item">
+                  <i class="fas fa-phone"></i>
+                  <span>+234 813 456 7890</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-envelope"></i>
+                  <span>michael.obi@email.com</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-calendar"></i>
+                  <span>Last Visit: Mar 5, 2026</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-clock"></i>
+                  <span class="appointment-date">Next: Today 9:45 AM</span>
+                </div>
+              </div>
+
+              <div class="treatment-tags">
+                <span class="treatment-tag">Root Canal #19</span>
+                <span class="treatment-tag">Follow-up</span>
+                <span class="treatment-tag">Post-op Care</span>
+              </div>
+
+              <div class="next-appointment">
+                <div>
+                  <span style="color: var(--text-light); font-size: 0.9rem"
+                    >Today's Procedure:</span
+                  >
+                  <span
+                    style="
+                      font-weight: 600;
+                      margin-left: var(--space-sm);
+                      color: var(--primary-blue);
+                    "
+                    >Root Canal - Final</span
+                  >
+                </div>
+                <button
+                  class="btn-start"
+                  onclick="navigateTo('consult.html?patient=MO')"
+                >
+                  <i class="fas fa-play"></i> Start
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patient Card 3 -->
+          <div
+            class="patient-card"
+            data-status="new appointments"
+            data-name="Ada Eze"
+            data-date="2026-03-15"
+          >
+            <div class="patient-card-header">
+              <div class="patient-avatar-large">AE</div>
+              <span
+                class="patient-status-badge"
+                style="background: var(--success)"
+                ><i
+                  class="fas fa-circle"
+                  style="font-size: 0.5rem; margin-right: 4px"
+                ></i>
+                New Patient</span
+              >
+              <h3 style="font-size: 1.3rem; margin-bottom: 4px">Ada Eze</h3>
+              <div
+                style="
+                  display: flex;
+                  gap: var(--space-md);
+                  font-size: 0.9rem;
+                  opacity: 0.9;
+                "
+              >
+                <span><i class="fas fa-female"></i> Female, 28</span>
+                <span><i class="fas fa-id-card"></i> PAT-00789</span>
+              </div>
+            </div>
+
+            <div class="patient-card-body">
+              <div class="patient-meta">
+                <div class="meta-item">
+                  <i class="fas fa-phone"></i>
+                  <span>+234 814 567 8901</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-envelope"></i>
+                  <span>ada.eze@email.com</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-calendar"></i>
+                  <span>Last Visit: Mar 1, 2026</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-clock"></i>
+                  <span class="appointment-date">Next: Today 10:30 AM</span>
+                </div>
+              </div>
+
+              <div class="medical-alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <div><strong>Pregnancy:</strong> Second trimester</div>
+              </div>
+
+              <div class="treatment-tags">
+                <span class="treatment-tag">New Patient</span>
+                <span class="treatment-tag">Comprehensive Exam</span>
+                <span class="treatment-tag">X-Rays</span>
+              </div>
+
+              <div class="next-appointment">
+                <div>
+                  <span style="color: var(--text-light); font-size: 0.9rem"
+                    >Today's Procedure:</span
+                  >
+                  <span
+                    style="
+                      font-weight: 600;
+                      margin-left: var(--space-sm);
+                      color: var(--primary-blue);
+                    "
+                    >New Patient Exam</span
+                  >
+                </div>
+                <button
+                  class="btn-start"
+                  onclick="navigateTo('consult.html?patient=AE')"
+                >
+                  <i class="fas fa-play"></i> Start
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patient Card 4 -->
+          <div
+            class="patient-card"
+            data-status="active followup"
+            data-name="Tunde Okafor"
+            data-date="2026-03-15"
+          >
+            <div class="patient-card-header">
+              <div class="patient-avatar-large">TO</div>
+              <span
+                class="patient-status-badge"
+                style="background: var(--warning)"
+                ><i
+                  class="fas fa-circle"
+                  style="font-size: 0.5rem; margin-right: 4px"
+                ></i>
+                Follow-up</span
+              >
+              <h3 style="font-size: 1.3rem; margin-bottom: 4px">
+                Tunde Okafor
+              </h3>
+              <div
+                style="
+                  display: flex;
+                  gap: var(--space-md);
+                  font-size: 0.9rem;
+                  opacity: 0.9;
+                "
+              >
+                <span><i class="fas fa-male"></i> Male, 52</span>
+                <span><i class="fas fa-id-card"></i> PAT-00345</span>
+              </div>
+            </div>
+
+            <div class="patient-card-body">
+              <div class="patient-meta">
+                <div class="meta-item">
+                  <i class="fas fa-phone"></i>
+                  <span>+234 815 678 9012</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-envelope"></i>
+                  <span>tunde.o@email.com</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-calendar"></i>
+                  <span>Last Visit: Feb 28, 2026</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-clock"></i>
+                  <span class="appointment-date">Next: Today 11:45 AM</span>
+                </div>
+              </div>
+
+              <div class="medical-alert">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                  <strong>Medical History:</strong> Hypertension, Arthritis
+                </div>
+              </div>
+
+              <div class="treatment-tags">
+                <span class="treatment-tag">Deep Cleaning</span>
+                <span class="treatment-tag">Gum Disease</span>
+                <span class="treatment-tag">Perio Maintenance</span>
+              </div>
+
+              <div class="next-appointment">
+                <div>
+                  <span style="color: var(--text-light); font-size: 0.9rem"
+                    >Today's Procedure:</span
+                  >
+                  <span
+                    style="
+                      font-weight: 600;
+                      margin-left: var(--space-sm);
+                      color: var(--primary-blue);
+                    "
+                    >Deep Cleaning</span
+                  >
+                </div>
+                <button
+                  class="btn-start"
+                  onclick="navigateTo('consult.html?patient=TO')"
+                >
+                  <i class="fas fa-play"></i> Start
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div class="empty-state" id="emptyState" style="display: none">
+          <i class="fas fa-user-slash"></i>
+          <h3>No Patients Found</h3>
+          <p>
+            No patients match your search criteria. Try adjusting your filters.
+          </p>
+          <button class="btn btn-primary" onclick="clearAllFilters()">
+            <i class="fas fa-times"></i> Clear Filters
+          </button>
+        </div>
+
+        <!-- Enhanced Pagination -->
+        <div class="pagination-container">
+          <div class="pagination-info" id="paginationInfo">
+            Showing 1-4 of 24 patients
+          </div>
+          <div class="pagination-controls">
+            <button
+              class="page-btn"
+              onclick="changePage('prev')"
+              id="prevBtn"
+              disabled
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="page-btn active" onclick="changePage(1)">1</button>
+            <button class="page-btn" onclick="changePage(2)">2</button>
+            <button class="page-btn" onclick="changePage(3)">3</button>
+            <button class="page-btn" onclick="changePage(4)">4</button>
+            <button class="page-btn" onclick="changePage('next')" id="nextBtn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Search functionality
+      function searchPatients() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const patients = document.querySelectorAll(".patient-card");
+        let visibleCount = 0;
+
+        patients.forEach((patient) => {
+          const patientText = patient.textContent.toLowerCase();
+          if (patientText.includes(searchTerm)) {
+            patient.style.display = "block";
+            visibleCount++;
+          } else {
+            patient.style.display = "none";
+          }
+        });
+
+        // Show/hide empty state
+        const emptyState = document.getElementById("emptyState");
+        if (visibleCount === 0) {
+          emptyState.style.display = "block";
+        } else {
+          emptyState.style.display = "none";
+        }
+
+        // Update pagination info
+        document.getElementById("paginationInfo").textContent =
+          `Showing 1-${visibleCount} of ${visibleCount} patients`;
+      }
+
+      function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        searchPatients();
+      }
+
+      function filterPatients() {
+        const filter = document.getElementById("statusFilter").value;
+        const patients = document.querySelectorAll(".patient-card");
+        let visibleCount = 0;
+
+        patients.forEach((patient) => {
+          const status = patient.dataset.status || "";
+          if (filter === "all" || status.includes(filter)) {
+            patient.style.display = "block";
+            visibleCount++;
+          } else {
+            patient.style.display = "none";
+          }
+        });
+
+        // Update pagination info
+        document.getElementById("paginationInfo").textContent =
+          `Showing 1-${visibleCount} of ${visibleCount} patients`;
+      }
+
+      function sortPatients() {
+        const sortBy = document.getElementById("sortFilter").value;
+        const patientsList = document.getElementById("patientsList");
+        const patients = Array.from(document.querySelectorAll(".patient-card"));
+
+        patients.sort((a, b) => {
+          if (sortBy === "name") {
+            return a.dataset.name.localeCompare(b.dataset.name);
+          } else if (sortBy === "next" || sortBy === "recent") {
+            return new Date(b.dataset.date) - new Date(a.dataset.date);
+          } else if (sortBy === "oldest") {
+            return new Date(a.dataset.date) - new Date(b.dataset.date);
+          }
+          return 0;
+        });
+
+        // Reorder DOM
+        patients.forEach((patient) => patientsList.appendChild(patient));
+      }
+
+      function clearAllFilters() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("statusFilter").value = "all";
+        document.getElementById("sortFilter").value = "recent";
+        searchPatients();
+        sortPatients();
+      }
+
+      function changePage(page) {
+        // Pagination functionality would go here
+        const pageBtns = document.querySelectorAll(".page-btn");
+        pageBtns.forEach((btn) => btn.classList.remove("active"));
+
+        if (page === "prev") {
+          // Handle previous page
+        } else if (page === "next") {
+          // Handle next page
+        } else {
+          event.target.classList.add("active");
+        }
+      }
+
+      function navigateTo(url) {
+        window.location.href = url;
+      }
+
+      // Initialize tooltips or any other features
+      document.addEventListener("DOMContentLoaded", function () {
+        // Any initialization code
+      });
+    </script>
+  </body>
+</html>

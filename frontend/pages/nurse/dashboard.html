@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Nurse Dashboard — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .list-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--light-border); }
+      .list-row:last-child { border-bottom: none; }
+      .list-row-title { font-weight: 700; color: var(--dark); font-size: 0.88rem; }
+      .list-row-sub { font-size: 0.78rem; color: var(--mid-gray); }
+      .priority-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+      .priority-high { background: var(--danger); }
+      .priority-medium { background: var(--gold); }
+      .priority-low { background: var(--green); }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Nurse</small></div>
+        </a>
+        <a class="glass-nav-link active" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="my-tasks.html"><i class="fas fa-list-check"></i> My Tasks</a>
+        <a class="glass-nav-link" href="my-assists.html"><i class="fas fa-hand-holding-medical"></i> My Assists</a>
+        <a class="glass-nav-link" href="procedures.html"><i class="fas fa-syringe"></i> Procedures</a>
+        <a class="glass-nav-link" href="prescribe.html"><i class="fas fa-pills"></i> Prescribe</a>
+        <a class="glass-nav-link" href="notes.html"><i class="fas fa-notes-medical"></i> Notes & Vitals</a>
+        <a class="glass-nav-link" href="records.html"><i class="fas fa-file-waveform"></i> Records</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1 id="greeting">Welcome back</h1>
+          <span class="glass-badge info" id="todayBadge"></span>
+        </div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:22px;">
+          <div class="glass-card glass-stat">
+            <div class="glass-stat-icon"><i class="fas fa-hand-holding-medical"></i></div>
+            <div><div class="glass-stat-num" id="statAssists">–</div><div class="glass-stat-label">Assists Today</div></div>
+          </div>
+          <div class="glass-card glass-stat">
+            <div class="glass-stat-icon gold"><i class="fas fa-list-check"></i></div>
+            <div><div class="glass-stat-num" id="statPending">–</div><div class="glass-stat-label">Pending Tasks</div></div>
+          </div>
+          <div class="glass-card glass-stat">
+            <div class="glass-stat-icon green"><i class="fas fa-check-circle"></i></div>
+            <div><div class="glass-stat-num" id="statCompleted">–</div><div class="glass-stat-label">Completed Tasks</div></div>
+          </div>
+          <div class="glass-card glass-stat">
+            <div class="glass-stat-icon"><i class="fas fa-star"></i></div>
+            <div><div class="glass-stat-num" id="statRating">–</div><div class="glass-stat-label">Avg. Rating</div></div>
+          </div>
+        </div>
+
+        <div class="glass-grid glass-grid-2">
+          <div class="glass-card">
+            <h3><i class="fas fa-list-check"></i> My Tasks</h3>
+            <div id="tasksList" style="margin-top:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-hand-holding-medical"></i> Today's Assists</h3>
+            <div id="assistsList" style="margin-top:10px;"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api';
+      async function api(path) {
+        const res = await fetch(API + path, { credentials: 'include' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await logout();
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        document.getElementById('greeting').textContent = `Welcome back, ${user.first_name}`;
+        document.getElementById('todayBadge').innerHTML =
+          `<i class="fas fa-calendar"></i> ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`;
+
+        try {
+          const { stats } = await api('/nurse/dashboard/stats');
+          document.getElementById('statAssists').textContent = stats.assists_today ?? 0;
+          document.getElementById('statPending').textContent = stats.pending_tasks ?? 0;
+          document.getElementById('statCompleted').textContent = stats.completed_tasks ?? 0;
+          document.getElementById('statRating').textContent = stats.avg_rating ?? '–';
+        } catch (e) { console.error(e); }
+
+        try {
+          const { tasks } = await api('/nurse/dashboard/tasks');
+          const list = document.getElementById('tasksList');
+          list.innerHTML = tasks.length ? tasks.map(t => `
+            <div class="list-row">
+              <span class="priority-dot priority-${t.priority || 'medium'}"></span>
+              <div style="flex:1">
+                <div class="list-row-title">${t.task_name}</div>
+                <div class="list-row-sub">${t.due_date || ''}</div>
+              </div>
+              <span class="glass-badge ${t.status === 'completed' ? 'success' : 'warning'}">${t.status}</span>
+            </div>
+          `).join('') : '<div class="glass-empty"><i class="fas fa-list-check"></i>No tasks assigned</div>';
+        } catch (e) {
+          document.getElementById('tasksList').innerHTML = '<div class="glass-empty"><i class="fas fa-list-check"></i>No tasks assigned</div>';
+        }
+
+        try {
+          const { assists } = await api('/nurse/dashboard/assists');
+          const list = document.getElementById('assistsList');
+          list.innerHTML = assists.length ? assists.map(a => `
+            <div class="list-row">
+              <div style="flex:1">
+                <div class="list-row-title">${a.doctor_name || 'Dr. —'}</div>
+                <div class="list-row-sub">${a.patient_name || ''} · ${a.time || ''}</div>
+              </div>
+              <span class="glass-badge info">${a.status || 'assigned'}</span>
+            </div>
+          `).join('') : '<div class="glass-empty"><i class="fas fa-hand-holding-medical"></i>No assists today</div>';
+        } catch (e) {
+          document.getElementById('assistsList').innerHTML = '<div class="glass-empty"><i class="fas fa-hand-holding-medical"></i>No assists today</div>';
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>

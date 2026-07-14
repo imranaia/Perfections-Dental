@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Prescribe Medication - Doctor - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .prescribe-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: var(--space-xl);
+      }
+
+      .patient-selector {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .inventory-alert {
+        background: rgba(255, 59, 48, 0.1);
+        border-left: 4px solid var(--error);
+        padding: var(--space-md);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--space-md);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+      }
+
+      .inventory-warning {
+        background: rgba(255, 159, 10, 0.1);
+        border-left: 4px solid var(--warning);
+      }
+
+      .medicine-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .medicine-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-base);
+        border: 2px solid transparent;
+        cursor: pointer;
+      }
+
+      .medicine-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-blue);
+      }
+
+      .medicine-card.in-stock {
+        border-left: 4px solid var(--success);
+      }
+
+      .medicine-card.low-stock {
+        border-left: 4px solid var(--warning);
+      }
+
+      .medicine-card.out-of-stock {
+        border-left: 4px solid var(--error);
+        opacity: 0.6;
+      }
+
+      .medicine-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--space-xs);
+      }
+
+      .medicine-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .medicine-category {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-xs);
+      }
+
+      .stock-indicator {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        margin: var(--space-xs) 0;
+        font-size: 0.8rem;
+      }
+
+      .stock-bar {
+        flex: 1;
+        height: 6px;
+        background: var(--light-gray);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+
+      .stock-fill {
+        height: 100%;
+        border-radius: var(--radius-full);
+      }
+
+      .stock-fill.good {
+        background: var(--success);
+      }
+      .stock-fill.warning {
+        background: var(--warning);
+      }
+      .stock-fill.critical {
+        background: var(--error);
+      }
+
+      .expiry-badge {
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .prescription-cart {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        position: sticky;
+        top: var(--space-lg);
+      }
+
+      .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-sm) 0;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .cart-item-info h4 {
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+      }
+
+      .cart-item-info p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .cart-item-actions {
+        display: flex;
+        gap: var(--space-xs);
+      }
+
+      .dosage-selector {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        margin: var(--space-sm) 0;
+      }
+
+      .dosage-input {
+        width: 80px;
+        padding: var(--space-xs);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        text-align: center;
+      }
+
+      .prescription-preview {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        margin-top: var(--space-lg);
+        font-family: var(--font-mono);
+        border: 1px dashed var(--primary-blue);
+      }
+
+      .prescription-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 2px solid var(--primary-blue);
+      }
+
+      .prescription-logo {
+        width: 50px;
+        height: 50px;
+      }
+
+      .prescription-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .prescription-title {
+        flex: 1;
+      }
+
+      .prescription-title h4 {
+        font-size: 1.1rem;
+        color: var(--primary-blue);
+        margin-bottom: 2px;
+      }
+
+      .prescription-title p {
+        font-size: 0.7rem;
+        color: var(--text-light);
+      }
+
+      .prescription-line {
+        display: flex;
+        margin-bottom: var(--space-xs);
+        font-size: 0.9rem;
+      }
+
+      .prescription-label {
+        width: 40px;
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+
+      .prescription-text {
+        flex: 1;
+      }
+
+      .prescription-dosage {
+        margin-left: 40px;
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        margin-bottom: var(--space-sm);
+      }
+
+      .signature-area {
+        margin-top: var(--space-lg);
+        padding-top: var(--space-lg);
+        border-top: 2px dashed var(--medium-gray);
+        text-align: center;
+      }
+
+      .doctor-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--primary-blue);
+      }
+
+      .doctor-title {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin: 2px 0;
+      }
+
+      .prescription-date {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-top: var(--space-xs);
+      }
+
+      /* Enhanced Search Bar Styling */
+      .search-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-md);
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .search-header h3 {
+        margin: 0;
+      }
+
+      .search-wrapper {
+        position: relative;
+        width: 300px;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: var(--space-md);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        font-size: 1rem;
+        z-index: 2;
+        transition: color var(--transition-fast);
+      }
+
+      .search-input {
+        width: 100%;
+        padding: var(--space-sm) var(--space-md) var(--space-sm) 45px;
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+        background: var(--pure-white);
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+      }
+
+      .search-input:focus + .search-icon {
+        color: var(--primary-blue);
+      }
+
+      .search-input::placeholder {
+        color: var(--text-light);
+        font-style: italic;
+      }
+
+      .search-clear {
+        position: absolute;
+        right: var(--space-sm);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        cursor: pointer;
+        display: none;
+        font-size: 1rem;
+        padding: 4px;
+        border-radius: var(--radius-full);
+        background: var(--pure-white);
+        transition: all var(--transition-fast);
+      }
+
+      .search-clear:hover {
+        color: var(--error);
+        background: var(--off-white);
+      }
+
+      .search-input:not(:placeholder-shown) + .search-clear {
+        display: block;
+      }
+
+      /* Filter pills */
+      .filter-pills {
+        display: flex;
+        gap: var(--space-xs);
+        margin-bottom: var(--space-md);
+        flex-wrap: wrap;
+      }
+
+      .filter-pill {
+        padding: var(--space-xs) var(--space-md);
+        background: var(--pure-white);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .filter-pill:hover {
+        border-color: var(--primary-blue);
+      }
+
+      .filter-pill.active {
+        background: var(--primary-blue);
+        border-color: var(--primary-blue);
+        color: white;
+      }
+
+      .filter-pill.warning {
+        border-color: var(--warning);
+        color: var(--warning);
+      }
+
+      .filter-pill.warning.active {
+        background: var(--warning);
+        color: white;
+      }
+
+      /* Results count */
+      .results-count {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-md);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Prescribe Medication</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Patient Selector -->
+        <div class="patient-selector">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: var(--space-md);
+            "
+          >
+            <h3>Select Patient</h3>
+            <span class="badge badge-info">Today's Patients</span>
+          </div>
+          <select
+            style="
+              width: 100%;
+              padding: var(--space-md);
+              border-radius: var(--radius-md);
+              border: 2px solid var(--light-gray);
+              background: var(--pure-white);
+            "
+          >
+            <option>Sarah Jones - Crown Consultation (In Progress)</option>
+            <option>Michael Obi - Root Canal (Waiting)</option>
+            <option>Ada Eze - New Patient (Not Arrived)</option>
+            <option>Tunde Okafor - Deep Cleaning (Waiting)</option>
+          </select>
+        </div>
+
+        <!-- Inventory Alerts -->
+        <div class="inventory-alert">
+          <i
+            class="fas fa-exclamation-triangle"
+            style="color: var(--error); font-size: 1.2rem"
+          ></i>
+          <div style="flex: 1">
+            <strong>Critical Low Stock</strong>
+            <p style="font-size: 0.9rem; margin: 2px 0">
+              Amoxicillin (12 left), Lidocaine (5 left)
+            </p>
+          </div>
+          <button
+            class="btn btn-sm btn-error"
+            style="background: var(--error); color: white"
+          >
+            Reorder
+          </button>
+        </div>
+
+        <div class="inventory-alert inventory-warning">
+          <i
+            class="fas fa-clock"
+            style="color: var(--warning); font-size: 1.2rem"
+          ></i>
+          <div style="flex: 1">
+            <strong>Expiring Soon</strong>
+            <p style="font-size: 0.9rem; margin: 2px 0">
+              Paracetamol (15 days), Chlorhexidine (17 days)
+            </p>
+          </div>
+          <button
+            class="btn btn-sm btn-warning"
+            style="background: var(--warning); color: white"
+          >
+            Review
+          </button>
+        </div>
+
+        <!-- Prescribe Container -->
+        <div class="prescribe-container">
+          <!-- Medicine Grid -->
+          <div>
+            <!-- Enhanced Search Header -->
+            <div class="search-header">
+              <h3>Clinic Inventory</h3>
+              <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input
+                  type="text"
+                  class="search-input"
+                  placeholder="Search by name or category..."
+                  id="searchInput"
+                  onkeyup="filterMedicines()"
+                />
+                <span class="search-clear" onclick="clearSearch()"
+                  ><i class="fas fa-times-circle"></i
+                ></span>
+              </div>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="filter-pills">
+              <span class="filter-pill active" onclick="filterByCategory('all')"
+                >All</span
+              >
+              <span class="filter-pill" onclick="filterByCategory('antibiotic')"
+                >Antibiotics</span
+              >
+              <span class="filter-pill" onclick="filterByCategory('pain')"
+                >Pain Relief</span
+              >
+              <span class="filter-pill" onclick="filterByCategory('anesthetic')"
+                >Anesthetics</span
+              >
+              <span
+                class="filter-pill warning"
+                onclick="filterByCategory('lowstock')"
+                >Low Stock</span
+              >
+            </div>
+
+            <!-- Results Count -->
+            <div class="results-count" id="resultsCount">Showing 6 items</div>
+
+            <div class="medicine-grid" id="medicineGrid">
+              <!-- Amoxicillin - Low Stock -->
+              <div
+                class="medicine-card low-stock"
+                data-category="antibiotic"
+                data-name="Amoxicillin"
+              >
+                <div class="medicine-header">
+                  <span class="medicine-name">Amoxicillin</span>
+                  <span
+                    class="expiry-badge"
+                    style="
+                      background: rgba(52, 199, 89, 0.1);
+                      color: var(--success);
+                    "
+                    >Exp: Aug 2026</span
+                  >
+                </div>
+                <div class="medicine-category">Antibiotic • 500mg</div>
+
+                <div class="stock-indicator">
+                  <span style="font-weight: 600; color: var(--warning)"
+                    >12</span
+                  >
+                  <span style="color: var(--text-light)">/ 50</span>
+                  <div class="stock-bar">
+                    <div class="stock-fill warning" style="width: 24%"></div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-xs);
+                    margin-top: var(--space-sm);
+                  "
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    style="flex: 1"
+                    onclick="addToCart('Amoxicillin', '500mg')"
+                  >
+                    Prescribe
+                  </button>
+                  <span class="badge badge-warning">Low Stock</span>
+                </div>
+              </div>
+
+              <!-- Ibuprofen - In Stock -->
+              <div
+                class="medicine-card in-stock"
+                data-category="pain"
+                data-name="Ibuprofen"
+              >
+                <div class="medicine-header">
+                  <span class="medicine-name">Ibuprofen</span>
+                  <span
+                    class="expiry-badge"
+                    style="
+                      background: rgba(52, 199, 89, 0.1);
+                      color: var(--success);
+                    "
+                    >Exp: Oct 2026</span
+                  >
+                </div>
+                <div class="medicine-category">Pain Relief • 400mg</div>
+
+                <div class="stock-indicator">
+                  <span style="font-weight: 600; color: var(--success)"
+                    >28</span
+                  >
+                  <span style="color: var(--text-light)">/ 50</span>
+                  <div class="stock-bar">
+                    <div class="stock-fill good" style="width: 56%"></div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-xs);
+                    margin-top: var(--space-sm);
+                  "
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    style="flex: 1"
+                    onclick="addToCart('Ibuprofen', '400mg')"
+                  >
+                    Prescribe
+                  </button>
+                  <span class="badge badge-success">In Stock</span>
+                </div>
+              </div>
+
+              <!-- Lidocaine - Critical Low -->
+              <div
+                class="medicine-card low-stock"
+                data-category="anesthetic"
+                data-name="Lidocaine"
+              >
+                <div class="medicine-header">
+                  <span class="medicine-name">Lidocaine</span>
+                  <span
+                    class="expiry-badge"
+                    style="
+                      background: rgba(255, 59, 48, 0.1);
+                      color: var(--error);
+                    "
+                    >Exp: Mar 2026</span
+                  >
+                </div>
+                <div class="medicine-category">Local Anesthetic • 2%</div>
+
+                <div class="stock-indicator">
+                  <span style="font-weight: 600; color: var(--error)">5</span>
+                  <span style="color: var(--text-light)">/ 20</span>
+                  <div class="stock-bar">
+                    <div class="stock-fill critical" style="width: 25%"></div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-xs);
+                    margin-top: var(--space-sm);
+                  "
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    style="flex: 1"
+                    onclick="addToCart('Lidocaine', '2%')"
+                  >
+                    Prescribe
+                  </button>
+                  <span class="badge badge-error">Critical</span>
+                </div>
+              </div>
+
+              <!-- Paracetamol - In Stock -->
+              <div
+                class="medicine-card in-stock"
+                data-category="pain"
+                data-name="Paracetamol"
+              >
+                <div class="medicine-header">
+                  <span class="medicine-name">Paracetamol</span>
+                  <span
+                    class="expiry-badge"
+                    style="
+                      background: rgba(255, 159, 10, 0.1);
+                      color: var(--warning);
+                    "
+                    >Exp: Apr 2026</span
+                  >
+                </div>
+                <div class="medicine-category">Pain Relief • 500mg</div>
+
+                <div class="stock-indicator">
+                  <span style="font-weight: 600">145</span>
+                  <span style="color: var(--text-light)">/ 150</span>
+                  <div class="stock-bar">
+                    <div class="stock-fill good" style="width: 97%"></div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-xs);
+                    margin-top: var(--space-sm);
+                  "
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    style="flex: 1"
+                    onclick="addToCart('Paracetamol', '500mg')"
+                  >
+                    Prescribe
+                  </button>
+                  <span class="badge badge-success">In Stock</span>
+                </div>
+              </div>
+
+              <!-- Metronidazole - Low Stock -->
+              <div
+                class="medicine-card low-stock"
+                data-category="antibiotic"
+                data-name="Metronidazole"
+              >
+                <div class="medicine-header">
+                  <span class="medicine-name">Metronidazole</span>
+                  <span
+                    class="expiry-badge"
+                    style="
+                      background: rgba(255, 159, 10, 0.1);
+                      color: var(--warning);
+                    "
+                    >Exp: May 2026</span
+                  >
+                </div>
+                <div class="medicine-category">Antibiotic • 400mg</div>
+
+                <div class="stock-indicator">
+                  <span style="font-weight: 600; color: var(--warning)"
+                    >32</span
+                  >
+                  <span style="color: var(--text-light)">/ 50</span>
+                  <div class="stock-bar">
+                    <div class="stock-fill warning" style="width: 64%"></div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-xs);
+                    margin-top: var(--space-sm);
+                  "
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    style="flex: 1"
+                    onclick="addToCart('Metronidazole', '400mg')"
+                  >
+                    Prescribe
+                  </button>
+                  <span class="badge badge-warning">Low Stock</span>
+                </div>
+              </div>
+
+              <!-- Chlorhexidine - Critical -->
+              <div
+                class="medicine-card low-stock"
+                data-category="antiseptic"
+                data-name="Chlorhexidine"
+              >
+                <div class="medicine-header">
+                  <span class="medicine-name">Chlorhexidine</span>
+                  <span
+                    class="expiry-badge"
+                    style="
+                      background: rgba(255, 59, 48, 0.1);
+                      color: var(--error);
+                    "
+                    >Exp: Mar 2026</span
+                  >
+                </div>
+                <div class="medicine-category">Antiseptic • 0.2%</div>
+
+                <div class="stock-indicator">
+                  <span style="font-weight: 600; color: var(--error)">8</span>
+                  <span style="color: var(--text-light)">/ 50</span>
+                  <div class="stock-bar">
+                    <div class="stock-fill critical" style="width: 16%"></div>
+                  </div>
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-xs);
+                    margin-top: var(--space-sm);
+                  "
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    style="flex: 1"
+                    onclick="addToCart('Chlorhexidine', '0.2%')"
+                  >
+                    Prescribe
+                  </button>
+                  <span class="badge badge-error">Critical</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prescription Cart -->
+          <div>
+            <div class="prescription-cart">
+              <h3 style="margin-bottom: var(--space-md)">
+                Current Prescription
+              </h3>
+              <p
+                style="
+                  color: var(--text-light);
+                  font-size: 0.9rem;
+                  margin-bottom: var(--space-md);
+                "
+              >
+                Patient: Sarah Jones
+              </p>
+
+              <!-- Cart Items -->
+              <div id="cartItems">
+                <div class="cart-item">
+                  <div class="cart-item-info">
+                    <h4>Amoxicillin 500mg</h4>
+                    <p>1 tab TID x 7 days</p>
+                  </div>
+                  <div class="cart-item-actions">
+                    <button class="action-icon">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-icon delete">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="cart-item">
+                  <div class="cart-item-info">
+                    <h4>Ibuprofen 400mg</h4>
+                    <p>1 tab PRN pain</p>
+                  </div>
+                  <div class="cart-item-actions">
+                    <button class="action-icon">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-icon delete">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dosage Selector (for new item) -->
+              <div
+                style="
+                  margin: var(--space-md) 0;
+                  padding: var(--space-md);
+                  background: var(--off-white);
+                  border-radius: var(--radius-md);
+                "
+              >
+                <h4 style="margin-bottom: var(--space-sm)">Add Dosage</h4>
+                <div class="dosage-selector">
+                  <select class="dosage-input" style="width: auto">
+                    <option>1 tab</option>
+                    <option>2 tab</option>
+                    <option>1/2 tab</option>
+                  </select>
+                  <select class="dosage-input" style="width: auto">
+                    <option>BID</option>
+                    <option>TID</option>
+                    <option>QID</option>
+                    <option>PRN</option>
+                  </select>
+                  <span>x</span>
+                  <input
+                    type="number"
+                    class="dosage-input"
+                    value="7"
+                    placeholder="days"
+                  />
+                </div>
+                <button class="btn btn-sm btn-secondary" style="width: 100%">
+                  Update Dosage
+                </button>
+              </div>
+
+              <!-- Prescription Preview with Logo -->
+              <div class="prescription-preview">
+                <div class="prescription-header">
+                  <div class="prescription-logo">
+                    <img src="../../assets/logo.png" alt="Perfections Dental" />
+                  </div>
+                  <div class="prescription-title">
+                    <h4>PERFECTIONS DENTAL SERVICES</h4>
+                    <p>Excellence in Dental Care</p>
+                  </div>
+                </div>
+
+                <div class="prescription-line">
+                  <span class="prescription-label">Rp:</span>
+                  <span class="prescription-text">Amoxicillin 500mg</span>
+                </div>
+                <div class="prescription-dosage">
+                  Sig: 1 tab three times daily x 7 days
+                </div>
+
+                <div class="prescription-line">
+                  <span class="prescription-label">Rp:</span>
+                  <span class="prescription-text">Ibuprofen 400mg</span>
+                </div>
+                <div class="prescription-dosage">
+                  Sig: 1 tab as needed for pain
+                </div>
+
+                <div class="signature-area">
+                  <div class="doctor-name">Dr. Sarah Smith</div>
+                  <div class="doctor-title">Dental Surgeon</div>
+                  <div class="prescription-date">Date: March 15, 2026</div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div
+                style="
+                  display: flex;
+                  gap: var(--space-md);
+                  margin-top: var(--space-xl);
+                "
+              >
+                <button class="btn btn-primary" style="flex: 2">
+                  <i class="fas fa-print"></i>
+                  Print Prescription
+                </button>
+                <button class="btn btn-secondary" style="flex: 1">
+                  <i class="fas fa-save"></i>
+                  Save
+                </button>
+              </div>
+
+              <button
+                class="btn btn-secondary"
+                style="width: 100%; margin-top: var(--space-sm)"
+              >
+                <i class="fas fa-paper-plane"></i>
+                Send to Pharmacy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Cart functionality
+      function addToCart(medicine, strength) {
+        const cartItems = document.getElementById("cartItems");
+        const newItem = document.createElement("div");
+        newItem.className = "cart-item";
+        newItem.innerHTML = `
+                <div class="cart-item-info">
+                    <h4>${medicine} ${strength}</h4>
+                    <p>1 tab TID x 7 days</p>
+                </div>
+                <div class="cart-item-actions">
+                    <button class="action-icon"><i class="fas fa-edit"></i></button>
+                    <button class="action-icon delete" onclick="this.closest('.cart-item').remove()"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+        cartItems.appendChild(newItem);
+
+        // Show success message
+        alert(`${medicine} added to prescription`);
+      }
+
+      // Delete buttons for existing items
+      document.querySelectorAll(".delete").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          this.closest(".cart-item").remove();
+        });
+      });
+
+      // Search functionality
+      function filterMedicines() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const cards = document.querySelectorAll(".medicine-card");
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const name = card.getAttribute("data-name").toLowerCase();
+          const category = card.getAttribute("data-category").toLowerCase();
+
+          if (name.includes(searchTerm) || category.includes(searchTerm)) {
+            card.style.display = "block";
+            visibleCount++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        document.getElementById("resultsCount").innerText =
+          `Showing ${visibleCount} items`;
+      }
+
+      function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        filterMedicines();
+      }
+
+      // Filter by category
+      function filterByCategory(category) {
+        // Update active pill
+        document.querySelectorAll(".filter-pill").forEach((pill) => {
+          pill.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        const cards = document.querySelectorAll(".medicine-card");
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          if (category === "all") {
+            card.style.display = "block";
+            visibleCount++;
+          } else if (category === "lowstock") {
+            const stockClass = card.classList.contains("low-stock");
+            if (stockClass) {
+              card.style.display = "block";
+              visibleCount++;
+            } else {
+              card.style.display = "none";
+            }
+          } else {
+            const cardCategory = card.getAttribute("data-category");
+            if (cardCategory === category) {
+              card.style.display = "block";
+              visibleCount++;
+            } else {
+              card.style.display = "none";
+            }
+          }
+        });
+
+        document.getElementById("resultsCount").innerText =
+          `Showing ${visibleCount} items`;
+        document.getElementById("searchInput").value = "";
+      }
+
+      // Category tabs for the filter pills
+      document.querySelectorAll(".filter-pill").forEach((pill) => {
+        pill.addEventListener("click", function () {
+          document
+            .querySelectorAll(".filter-pill")
+            .forEach((p) => p.classList.remove("active"));
+          this.classList.add("active");
+        });
+      });
+    </script>
+  </body>
+</html>

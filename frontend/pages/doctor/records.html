@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Patient Records — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0 0 20px; }
+      .patient-pick-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; }
+      .patient-pick-row:hover { background: rgba(4,80,160,0.06); }
+      .visit-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--light-border); }
+      .visit-row:last-child { border-bottom: none; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Doctor</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a>
+        <a class="glass-nav-link" href="my-patients.html"><i class="fas fa-users"></i> My Patients</a>
+        <a class="glass-nav-link" href="consult.html"><i class="fas fa-stethoscope"></i> Consultation</a>
+        <a class="glass-nav-link" href="prescribe.html"><i class="fas fa-pills"></i> Prescribe</a>
+        <a class="glass-nav-link active" href="records.html"><i class="fas fa-file-waveform"></i> Records</a>
+        <a class="glass-nav-link" href="my-reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>Patient Records</h1></div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <div class="glass-field"><input type="text" id="searchInput" class="glass-input" placeholder="Search patient by name, number, or phone…" /></div>
+          <div id="searchResults"></div>
+        </div>
+
+        <div id="recordDetail"></div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/doctor/records';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let t;
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        clearTimeout(t);
+        t = setTimeout(() => search(e.target.value), 250);
+      });
+
+      async function search(q) {
+        if (!q) { document.getElementById('searchResults').innerHTML = ''; return; }
+        const { patients } = await api(`/search?q=${encodeURIComponent(q)}`);
+        document.getElementById('searchResults').innerHTML = patients.map(p => `
+          <div class="patient-pick-row" data-id="${p.id}">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;">${(p.full_name || '??').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
+            <div><div style="font-weight:700;">${p.full_name}</div><div style="font-size:0.75rem;color:var(--mid-gray);">${p.patient_number} · ${p.age || '—'} yrs</div></div>
+          </div>
+        `).join('') || '<div class="glass-empty"><i class="fas fa-user"></i>No matches</div>';
+
+        document.querySelectorAll('#searchResults [data-id]').forEach(row => {
+          row.addEventListener('click', () => loadRecord(row.dataset.id));
+        });
+      }
+
+      async function loadRecord(patientId) {
+        const { patient: p } = await api(`/${patientId}`);
+        document.getElementById('recordDetail').innerHTML = `
+          <div class="glass-grid glass-grid-2" style="margin-bottom:20px;">
+            <div class="glass-card">
+              <h3><i class="fas fa-user"></i> ${p.full_name}</h3>
+              <p>${p.patient_number} · ${p.age} yrs · ${p.gender}</p>
+              <div style="margin-top:12px; font-size:0.86rem; line-height:1.9;">
+                <div><strong>Phone:</strong> ${p.phone || '—'}</div>
+                <div><strong>Email:</strong> ${p.email || '—'}</div>
+                <div><strong>Address:</strong> ${p.address || '—'}</div>
+              </div>
+            </div>
+            <div class="glass-card">
+              <h3><i class="fas fa-triangle-exclamation"></i> Clinical Alerts</h3>
+              <div style="margin-top:12px; font-size:0.86rem; line-height:1.9;">
+                <div><strong>Allergies:</strong> ${(p.allergies_list || []).join(', ') || 'None recorded'}</div>
+                <div><strong>Conditions:</strong> ${(p.conditions_list || []).join(', ') || 'None recorded'}</div>
+                <div><strong>Medications:</strong> ${(p.medications_list || []).join(', ') || 'None recorded'}</div>
+              </div>
+            </div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-clock-rotate-left"></i> Visit History</h3>
+            <div id="visitList" style="margin-top:10px;">
+              ${(p.visits || []).length ? p.visits.map(v => `
+                <div class="visit-row">
+                  <div style="flex:1">
+                    <div style="font-weight:700;">${v.date || v.appointment_date || ''}</div>
+                    <div style="font-size:0.78rem;color:var(--mid-gray);">${v.notes_content ? v.notes_content.slice(0, 80) : 'No notes recorded'}</div>
+                  </div>
+                  <span class="glass-badge info">${v.status || ''}</span>
+                </div>
+              `).join('') : '<div class="glass-empty"><i class="fas fa-calendar"></i>No visits yet</div>'}
+            </div>
+          </div>
+        `;
+      }
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        const params = new URLSearchParams(window.location.search);
+        const patientId = params.get('patient');
+        if (patientId) await loadRecord(patientId);
+      }
+      init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Notes & Vitals — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0 0 20px; }
+      .patient-pick-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; }
+      .patient-pick-row:hover { background: rgba(4,80,160,0.06); }
+      .form-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0 12px; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Nurse</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="my-tasks.html"><i class="fas fa-list-check"></i> My Tasks</a>
+        <a class="glass-nav-link" href="my-assists.html"><i class="fas fa-hand-holding-medical"></i> My Assists</a>
+        <a class="glass-nav-link" href="procedures.html"><i class="fas fa-syringe"></i> Procedures</a>
+        <a class="glass-nav-link" href="prescribe.html"><i class="fas fa-pills"></i> Prescribe</a>
+        <a class="glass-nav-link active" href="notes.html"><i class="fas fa-notes-medical"></i> Notes & Vitals</a>
+        <a class="glass-nav-link" href="records.html"><i class="fas fa-file-waveform"></i> Records</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>Notes &amp; Vitals</h1></div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h3><i class="fas fa-user"></i> Today's Patients</h3>
+          <div id="patientList" style="margin-top:12px;"></div>
+        </div>
+
+        <div class="glass-card" id="noteForm" style="display:none;">
+          <div id="patientBanner" style="margin-bottom:16px;"></div>
+          <h3><i class="fas fa-heart-pulse"></i> Vitals</h3>
+          <div class="form-row-4" style="margin-top:10px;">
+            <div class="glass-field"><label>BP Systolic</label><input type="number" id="f_bp_sys" class="glass-input" /></div>
+            <div class="glass-field"><label>BP Diastolic</label><input type="number" id="f_bp_dia" class="glass-input" /></div>
+            <div class="glass-field"><label>Heart Rate</label><input type="number" id="f_hr" class="glass-input" /></div>
+            <div class="glass-field"><label>Temp (°C)</label><input type="number" step="0.1" id="f_temp" class="glass-input" /></div>
+          </div>
+          <div class="glass-field"><label>O2 Saturation (%)</label><input type="number" id="f_o2" class="glass-input" style="max-width:150px;" /></div>
+          <h3 style="margin-top:16px;"><i class="fas fa-note-sticky"></i> Note</h3>
+          <div class="glass-field" style="margin-top:10px;"><textarea id="f_content" class="glass-textarea" placeholder="Observations, patient concerns…"></textarea></div>
+          <button class="glass-btn glass-btn-primary" id="saveBtn"><i class="fas fa-check"></i> Save Note</button>
+          <div id="formMessage" style="margin-top:10px; font-size:0.85rem;"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/nurse/notes';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let currentPatient = null;
+
+      async function loadPatients() {
+        const { patients } = await api('/today-patients');
+        document.getElementById('patientList').innerHTML = patients.length ? patients.map(p => `
+          <div class="patient-pick-row" data-id="${p.id}" data-name="${p.first_name} ${p.last_name}" data-appt="${p.appointment_id || ''}">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;">${p.first_name[0]}${p.last_name[0]}</div>
+            <div><div style="font-weight:700;">${p.first_name} ${p.last_name}</div><div style="font-size:0.75rem;color:var(--mid-gray);">${p.appointment_time || ''}</div></div>
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-user"></i>No patients scheduled today</div>';
+
+        document.querySelectorAll('#patientList [data-id]').forEach(row => {
+          row.addEventListener('click', () => selectPatient(row.dataset.id, row.dataset.name, row.dataset.appt));
+        });
+      }
+
+      function selectPatient(id, name, apptId) {
+        currentPatient = { id: Number(id), name, appointment_id: apptId ? Number(apptId) : null };
+        document.getElementById('patientBanner').innerHTML = `<span class="glass-badge success" style="font-size:0.85rem;padding:8px 16px;"><i class="fas fa-user-check"></i> ${name}</span>`;
+        document.getElementById('noteForm').style.display = 'block';
+        ['bp_sys', 'bp_dia', 'hr', 'temp', 'o2', 'content'].forEach(f => document.getElementById('f_' + f).value = '');
+      }
+
+      document.getElementById('saveBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('formMessage');
+        try {
+          await api('/save', {
+            method: 'POST',
+            body: JSON.stringify({
+              patient_id: currentPatient.id,
+              appointment_id: currentPatient.appointment_id,
+              note_type: 'nurse_note',
+              content: document.getElementById('f_content').value.trim(),
+              vitals: {
+                bp_systolic: Number(document.getElementById('f_bp_sys').value) || null,
+                bp_diastolic: Number(document.getElementById('f_bp_dia').value) || null,
+                heart_rate: Number(document.getElementById('f_hr').value) || null,
+                temperature: Number(document.getElementById('f_temp').value) || null,
+                oxygen_saturation: Number(document.getElementById('f_o2').value) || null,
+              },
+            }),
+          });
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = 'Note saved!';
+        } catch (e) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = e.message;
+        }
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await loadPatients();
+      }
+      init();
+    </script>
+  </body>
+</html>

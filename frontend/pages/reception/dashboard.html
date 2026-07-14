@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Reception Dashboard — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .list-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--light-border); }
+      .list-row:last-child { border-bottom: none; }
+      .list-row-title { font-weight: 700; color: var(--dark); font-size: 0.88rem; }
+      .list-row-sub { font-size: 0.78rem; color: var(--mid-gray); }
+      .quick-links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 10px; }
+      @media (max-width: 700px) { .quick-links { grid-template-columns: repeat(2, 1fr); } }
+      .quick-link {
+        display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 10px;
+        border-radius: var(--radius-md); background: rgba(255,255,255,0.4); border: 1px solid var(--light-border);
+        text-decoration: none; color: var(--dark); font-weight: 700; font-size: 0.82rem; transition: all 0.2s var(--ease);
+      }
+      .quick-link:hover { background: var(--blue); color: #fff; transform: translateY(-3px); }
+      .quick-link i { font-size: 1.4rem; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Reception</small></div>
+        </a>
+        <a class="glass-nav-link active" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="appointments.html"><i class="fas fa-calendar-days"></i> Appointments</a>
+        <a class="glass-nav-link" href="patients.html"><i class="fas fa-users"></i> Patients</a>
+        <a class="glass-nav-link" href="prescriptions.html"><i class="fas fa-pills"></i> Prescriptions</a>
+        <a class="glass-nav-link" href="invoices.html"><i class="fas fa-file-invoice"></i> Invoices</a>
+        <a class="glass-nav-link" href="payments.html"><i class="fas fa-credit-card"></i> Payments</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1 id="greeting">Welcome back</h1>
+          <span class="glass-badge info" id="todayBadge"></span>
+        </div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:22px;">
+          <div class="glass-card glass-stat">
+            <div class="glass-stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div><div class="glass-stat-num" id="statToday">–</div><div class="glass-stat-label">Today's Appointments</div></div>
+          </div>
+          <div class="glass-card glass-stat">
+            <div class="glass-stat-icon green"><i class="fas fa-user-plus"></i></div>
+            <div><div class="glass-stat-num" id="statNewPatients">–</div><div class="glass-stat-label">New Patients Today</div></div>
+          </div>
+          <div class="glass-card glass-stat">
+            <div class="glass-stat-icon gold"><i class="fas fa-sack-dollar"></i></div>
+            <div><div class="glass-stat-num" id="statCollections">–</div><div class="glass-stat-label">Today's Collections</div></div>
+          </div>
+          <div class="glass-card glass-stat">
+            <div class="glass-stat-icon"><i class="fas fa-pills"></i></div>
+            <div><div class="glass-stat-num" id="statPendingRx">–</div><div class="glass-stat-label">Prescriptions to Dispense</div></div>
+          </div>
+        </div>
+
+        <div class="glass-grid glass-grid-2">
+          <div class="glass-card">
+            <h3><i class="fas fa-calendar-day"></i> Today's Appointments</h3>
+            <div id="apptList" style="margin-top:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            <div class="quick-links">
+              <a class="quick-link" href="appointments.html"><i class="fas fa-calendar-plus"></i> New Appointment</a>
+              <a class="quick-link" href="patients.html"><i class="fas fa-user-plus"></i> New Patient</a>
+              <a class="quick-link" href="prescriptions.html"><i class="fas fa-pills"></i> Dispense Rx</a>
+              <a class="quick-link" href="payments.html"><i class="fas fa-credit-card"></i> Take Payment</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api';
+      async function api(path) {
+        const res = await fetch(API + path, { credentials: 'include' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await logout();
+      });
+
+      function initials(first, last) {
+        return `${(first || '?')[0]}${(last || '?')[0]}`.toUpperCase();
+      }
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        document.getElementById('greeting').textContent = `Welcome back, ${user.first_name}`;
+        document.getElementById('todayBadge').innerHTML =
+          `<i class="fas fa-calendar"></i> ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`;
+
+        try {
+          const { stats } = await api('/dashboard/stats');
+          document.getElementById('statToday').textContent = stats.today_appointments ?? 0;
+          document.getElementById('statNewPatients').textContent = stats.new_patients ?? 0;
+          document.getElementById('statCollections').textContent = '₦' + (stats.today_collections ?? 0).toLocaleString();
+        } catch (e) { console.error(e); }
+
+        try {
+          const { prescriptions } = await api('/reception/prescriptions/?status=pending_dispense');
+          document.getElementById('statPendingRx').textContent = prescriptions.length;
+        } catch (e) { console.error(e); }
+
+        try {
+          const { appointments } = await api('/reception/appointments/today');
+          const list = document.getElementById('apptList');
+          list.innerHTML = appointments.length ? appointments.map(a => `
+            <div class="list-row">
+              <div class="avatar-circle" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;flex-shrink:0;">
+                ${initials(a.patient?.first_name, a.patient?.last_name)}
+              </div>
+              <div style="flex:1">
+                <div class="list-row-title">${a.patient?.name || ''}</div>
+                <div class="list-row-sub">${a.start_time || ''} · ${a.doctor?.name || 'Unassigned'}</div>
+              </div>
+              <span class="glass-badge info">${a.status_display || a.status || ''}</span>
+            </div>
+          `).join('') : '<div class="glass-empty"><i class="fas fa-calendar-check"></i>No appointments today</div>';
+        } catch (e) {
+          document.getElementById('apptList').innerHTML = '<div class="glass-empty"><i class="fas fa-calendar-check"></i>No appointments today</div>';
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>

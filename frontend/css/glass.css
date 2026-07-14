@@ -1,0 +1,416 @@
+/* =========================================
+   Perfections Dental Services
+   "Liquid Glass" Design System — v2.0
+   Shared across the public site, the staff dashboards, and the patient
+   portal. Palette and type pulled straight from the pdsl landing page
+   so every surface of the product reads as one brand.
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+:root {
+    /* Brand palette */
+    --blue: #0450a0;
+    --blue-dark: #022b5c;
+    --blue-mid: #0a6ec7;
+    --green: #1db568;
+    --green-dark: #0f8046;
+    --green-light: #d4f5e3;
+    --gold: #c9a84c;
+    --cream: #fdfaf5;
+    --off-white: #f6f2eb;
+    --dark: #0b1826;
+    --mid-gray: #5a6e84;
+    --light-border: rgba(4, 80, 160, 0.12);
+
+    --danger: #c0392b;
+    --danger-light: #fee2e2;
+    --warning: #c9a84c;
+    --warning-light: #fdf6e3;
+
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-body: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Liquid glass surfaces */
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-bg-strong: rgba(255, 255, 255, 0.78);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    --glass-blur: blur(20px);
+    --glass-shadow: 0 8px 32px rgba(4, 80, 160, 0.12);
+    --glass-shadow-lg: 0 24px 60px -12px rgba(4, 80, 160, 0.25);
+
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 28px;
+    --radius-xl: 36px;
+    --radius-pill: 100px;
+}
+
+:root[data-theme="dark"] {
+    --cream: #0b1826;
+    --off-white: #0f2136;
+    --dark: #f6f2eb;
+    --mid-gray: #9fb0c3;
+    --light-border: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(20, 35, 55, 0.55);
+    --glass-bg-strong: rgba(20, 35, 55, 0.75);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --cream: #0b1826;
+        --off-white: #0f2136;
+        --dark: #f6f2eb;
+        --mid-gray: #9fb0c3;
+        --light-border: rgba(255, 255, 255, 0.1);
+        --glass-bg: rgba(20, 35, 55, 0.55);
+        --glass-bg-strong: rgba(20, 35, 55, 0.75);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+        --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+}
+
+* , *::before, *::after { box-sizing: border-box; }
+
+body.glass-app {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ── Noise texture overlay — matches the landing page's grain ── */
+body.glass-app::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+}
+
+/* ── Ambient mesh backdrop — use on any full page ── */
+.glass-mesh {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+.glass-mesh span {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.16;
+    animation: glass-drift 20s ease-in-out infinite alternate;
+}
+.glass-mesh span:nth-child(1) { width: 620px; height: 620px; background: var(--blue); top: -180px; right: -160px; }
+.glass-mesh span:nth-child(2) { width: 480px; height: 480px; background: var(--green); bottom: -140px; left: -100px; animation-delay: -7s; }
+.glass-mesh span:nth-child(3) { width: 360px; height: 360px; background: var(--blue-mid); top: 40%; left: 25%; animation-delay: -13s; }
+@keyframes glass-drift {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(36px, 26px) scale(1.06); }
+}
+
+/* ── Core glass surface ── */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    box-shadow: var(--glass-shadow), var(--glass-highlight);
+    border-radius: var(--radius-lg);
+}
+.glass-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    box-shadow: var(--glass-shadow), var(--glass-highlight);
+    border-radius: var(--radius-lg);
+}
+
+/* ── Layout shells ── */
+.glass-shell {
+    display: flex;
+    min-height: 100vh;
+}
+.glass-sidebar {
+    width: 264px;
+    flex-shrink: 0;
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+.glass-main {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 36px 60px;
+}
+.glass-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    margin-bottom: 24px;
+    position: sticky;
+    top: 16px;
+    z-index: 50;
+}
+
+/* ── Brand lockup ── */
+.glass-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px 22px;
+    text-decoration: none;
+}
+.glass-brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-mid));
+    box-shadow: 0 6px 16px rgba(4, 80, 160, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.glass-brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+.glass-brand-words strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--blue-dark);
+    letter-spacing: -0.2px;
+}
+.glass-brand-words small {
+    font-size: 0.66rem;
+    font-weight: 600;
+    color: var(--green-dark);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+/* ── Nav items ── */
+.glass-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    color: var(--mid-gray);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: all 0.25s var(--ease);
+}
+.glass-nav-link i { width: 18px; text-align: center; font-size: 0.95rem; }
+.glass-nav-link:hover { background: rgba(4, 80, 160, 0.08); color: var(--blue); }
+.glass-nav-link.active {
+    background: linear-gradient(110deg, var(--blue), var(--blue-mid));
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(4, 80, 160, 0.3);
+}
+
+/* ── Cards ── */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow), var(--glass-highlight);
+    padding: 26px;
+    transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
+}
+.glass-card:hover { transform: translateY(-3px); box-shadow: var(--glass-shadow-lg), var(--glass-highlight); }
+.glass-card h3 {
+    font-family: var(--font-display);
+    color: var(--blue-dark);
+    margin: 0 0 6px;
+    font-size: 1.1rem;
+}
+.glass-card p { color: var(--mid-gray); margin: 0; font-size: 0.9rem; }
+
+/* ── Stat tiles ── */
+.glass-stat {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+}
+.glass-stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #eaf4ff, #d4f5e3);
+    color: var(--blue);
+}
+.glass-stat-icon.green { background: linear-gradient(135deg, var(--green-light), #b8edd3); color: var(--green-dark); }
+.glass-stat-icon.gold { background: linear-gradient(135deg, #fdf6e3, #f3e4b8); color: #8a6d1d; }
+.glass-stat-icon.red { background: linear-gradient(135deg, var(--danger-light), #fecaca); color: var(--danger); }
+.glass-stat-num { font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; color: var(--dark); line-height: 1.1; }
+.glass-stat-label { font-size: 0.78rem; color: var(--mid-gray); font-weight: 600; }
+
+/* ── Buttons ── */
+.glass-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    padding: 11px 22px;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 0.87rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s var(--ease);
+    font-family: var(--font-body);
+}
+.glass-btn-primary {
+    background: linear-gradient(110deg, var(--blue-mid), var(--blue-dark));
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(4, 80, 160, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.glass-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(4, 80, 160, 0.38); }
+.glass-btn-success {
+    background: linear-gradient(110deg, var(--green), var(--green-dark));
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(29, 181, 104, 0.3);
+}
+.glass-btn-success:hover { transform: translateY(-2px); }
+.glass-btn-ghost {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    color: var(--blue);
+    border: 1.5px solid rgba(4, 80, 160, 0.25);
+}
+.glass-btn-ghost:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+.glass-btn-danger { background: linear-gradient(110deg, #d64f3f, var(--danger)); color: #fff; }
+.glass-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+/* ── Forms ── */
+.glass-field { margin-bottom: 18px; }
+.glass-field label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--blue-dark);
+    margin-bottom: 7px;
+}
+.glass-input, .glass-select, .glass-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--light-border);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(6px);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--dark);
+    transition: all 0.25s var(--ease);
+}
+.glass-input:focus, .glass-select:focus, .glass-textarea:focus {
+    outline: none;
+    border-color: var(--blue-mid);
+    box-shadow: 0 0 0 4px rgba(10, 110, 199, 0.14);
+    background: rgba(255, 255, 255, 0.85);
+}
+.glass-textarea { resize: vertical; min-height: 90px; }
+
+/* ── Badges / pills ── */
+.glass-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 13px;
+    border-radius: var(--radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+.glass-badge.success { background: var(--green-light); color: var(--green-dark); }
+.glass-badge.info { background: #eaf4ff; color: var(--blue); }
+.glass-badge.warning { background: var(--warning-light); color: #8a6d1d; }
+.glass-badge.danger { background: var(--danger-light); color: var(--danger); }
+.glass-badge.neutral { background: rgba(90, 110, 132, 0.12); color: var(--mid-gray); }
+
+/* ── Tables ── */
+.glass-table-wrap { overflow-x: auto; border-radius: var(--radius-md); }
+.glass-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.glass-table th {
+    text-align: left;
+    padding: 12px 16px;
+    color: var(--mid-gray);
+    font-weight: 700;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid var(--light-border);
+}
+.glass-table td { padding: 14px 16px; border-bottom: 1px solid var(--light-border); color: var(--dark); }
+.glass-table tr:last-child td { border-bottom: none; }
+.glass-table tr:hover td { background: rgba(4, 80, 160, 0.04); }
+
+/* ── Modal ── */
+.glass-modal-backdrop {
+    position: fixed; inset: 0; background: rgba(11, 24, 38, 0.45);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+}
+.glass-modal {
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow-lg), var(--glass-highlight);
+    max-width: 560px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 30px;
+}
+
+/* ── Utility ── */
+.glass-grid { display: grid; gap: 20px; }
+.glass-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.glass-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.glass-grid-4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 1000px) { .glass-grid-4 { grid-template-columns: repeat(2, 1fr); } .glass-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 700px) {
+    .glass-grid-2, .glass-grid-3, .glass-grid-4 { grid-template-columns: 1fr; }
+    .glass-shell { flex-direction: column; }
+    .glass-sidebar { width: 100%; height: auto; position: relative; flex-direction: row; overflow-x: auto; }
+    .glass-main { padding: 20px; }
+}
+
+.glass-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--mid-gray);
+}
+.glass-empty i { font-size: 2.4rem; opacity: 0.35; margin-bottom: 12px; display: block; }

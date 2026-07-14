@@ -1,0 +1,1172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Patient Records - Doctor - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      /* Same base styles as consultation page */
+      :root {
+        --pure-white: #ffffff;
+        --off-white: #f8fafc;
+        --light-gray: #e2e8f0;
+        --dark-gray: #64748b;
+        --text-light: #64748b;
+        --text-dark: #0f172a;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --radius-xl: 1rem;
+        --radius-lg: 0.75rem;
+        --radius-md: 0.375rem;
+        --radius-sm: 0.25rem;
+        --radius-full: 9999px;
+        --space-xs: 0.25rem;
+        --space-sm: 0.5rem;
+        --space-md: 1rem;
+        --space-lg: 1.5rem;
+        --space-xl: 2rem;
+        --transition-fast: 0.15s ease;
+        --transition-base: 0.3s ease;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: #f1f5f9;
+        color: var(--text-dark);
+      }
+
+      .app-container {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Records specific styles */
+      .records-container {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: var(--space-xl);
+        margin-top: var(--space-xl);
+      }
+
+      /* Patient List Sidebar */
+      .patient-list-sidebar {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        box-shadow: var(--shadow-md);
+        height: fit-content;
+      }
+
+      .patient-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 2px solid var(--light-gray);
+      }
+
+      .patient-list-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .patient-search {
+        position: relative;
+        margin-bottom: var(--space-lg);
+      }
+
+      .patient-search i {
+        position: absolute;
+        left: var(--space-md);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        font-size: 0.9rem;
+      }
+
+      .patient-search input {
+        width: 100%;
+        padding: var(--space-md) var(--space-md) var(--space-md)
+          calc(var(--space-xl) + 10px);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+      }
+
+      .patient-search input:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+      }
+
+      .patient-list {
+        max-height: 600px;
+        overflow-y: auto;
+        margin-bottom: var(--space-md);
+      }
+
+      .patient-list-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-md);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        margin-bottom: 4px;
+        border: 2px solid transparent;
+      }
+
+      .patient-list-item:hover {
+        background: var(--off-white);
+        border-color: var(--primary-blue);
+      }
+
+      .patient-list-item.active {
+        background: rgba(0, 102, 204, 0.1);
+        border-left: 4px solid var(--primary-blue);
+      }
+
+      .patient-list-avatar {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(
+          145deg,
+          var(--primary-blue),
+          var(--primary-blue-dark)
+        );
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .patient-list-info {
+        flex: 1;
+      }
+
+      .patient-list-info h4 {
+        font-size: 1rem;
+        margin-bottom: 4px;
+        color: var(--text-dark);
+      }
+
+      .patient-list-info p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-bottom: 2px;
+      }
+
+      .last-visit {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .last-visit i {
+        color: var(--primary-blue);
+        font-size: 0.6rem;
+      }
+
+      /* Records Content Area */
+      .records-content {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        box-shadow: var(--shadow-md);
+      }
+
+      .records-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        padding-bottom: var(--space-lg);
+        border-bottom: 2px solid var(--light-gray);
+      }
+
+      .patient-info-large {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
+      }
+
+      .patient-avatar-large {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(
+          145deg,
+          var(--primary-blue),
+          var(--primary-blue-dark)
+        );
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 2rem;
+        box-shadow: var(--shadow-md);
+      }
+
+      .patient-details-large h2 {
+        font-size: 2rem;
+        margin-bottom: 4px;
+        color: var(--text-dark);
+      }
+
+      .patient-details-large p {
+        color: var(--text-light);
+        font-size: 0.95rem;
+      }
+
+      .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .stat-item {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+        transition: all var(--transition-fast);
+      }
+
+      .stat-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: 2px;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      /* Timeline */
+      .timeline-section {
+        margin-top: var(--space-xl);
+      }
+
+      .timeline-year {
+        margin-bottom: var(--space-xl);
+      }
+
+      .year-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-xs);
+        border-bottom: 2px solid var(--light-gray);
+      }
+
+      .timeline-item {
+        display: flex;
+        gap: var(--space-xl);
+        padding: var(--space-lg);
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-md);
+        transition: all var(--transition-fast);
+      }
+
+      .timeline-item:hover {
+        transform: translateX(4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .timeline-date {
+        min-width: 100px;
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+
+      .timeline-content {
+        flex: 1;
+      }
+
+      .timeline-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-xs);
+        flex-wrap: wrap;
+      }
+
+      .timeline-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+      }
+
+      .record-tag {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .tag-xray {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .tag-treatment {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .tag-prescription {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .tag-consult {
+        background: rgba(175, 82, 222, 0.1);
+        color: #9b59b6;
+      }
+
+      .timeline-doctor {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-xs);
+      }
+
+      .timeline-notes {
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        margin-bottom: var(--space-sm);
+        line-height: 1.5;
+      }
+
+      /* Tooth markers */
+      .tooth-chart-small {
+        display: inline-flex;
+        gap: 4px;
+        margin-top: var(--space-xs);
+      }
+
+      .tooth-marker {
+        width: 28px;
+        height: 28px;
+        background: var(--pure-white);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-sm);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .tooth-marker.filled {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+      }
+
+      .tooth-marker.extracted {
+        background: var(--error);
+        color: white;
+        border-color: var(--error);
+      }
+
+      .tooth-marker.crown {
+        background: var(--warning);
+        color: white;
+        border-color: var(--warning);
+      }
+
+      /* X-Ray Grid */
+      .xray-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-sm);
+        margin-top: var(--space-md);
+      }
+
+      .xray-thumbnail {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-sm);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        border: 2px solid transparent;
+      }
+
+      .xray-thumbnail:hover {
+        transform: scale(1.05);
+        border-color: var(--primary-blue);
+        box-shadow: var(--shadow-md);
+      }
+
+      .xray-thumbnail i {
+        font-size: 2rem;
+        color: var(--primary-blue);
+        margin-bottom: 4px;
+      }
+
+      .xray-thumbnail .date {
+        font-size: 0.7rem;
+        color: var(--text-light);
+      }
+
+      /* Medical Conditions Grid */
+      .conditions-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-lg);
+        margin-top: var(--space-xl);
+      }
+
+      .condition-card {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        border-left: 4px solid;
+      }
+
+      .condition-card.allergies {
+        border-left-color: var(--error);
+      }
+      .condition-card.chronic {
+        border-left-color: var(--primary-blue);
+      }
+      .condition-card.medications {
+        border-left-color: var(--success);
+      }
+
+      .condition-title {
+        font-weight: 600;
+        margin-bottom: var(--space-md);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .condition-item {
+        padding: var(--space-xs) 0;
+        border-bottom: 1px dashed var(--light-gray);
+        font-size: 0.95rem;
+      }
+
+      .condition-item:last-child {
+        border-bottom: none;
+      }
+
+      /* No patient selected */
+      .no-patient-selected {
+        text-align: center;
+        padding: var(--space-3xl) var(--space-xl);
+        background: var(--off-white);
+        border-radius: var(--radius-xl);
+      }
+
+      .no-patient-icon {
+        font-size: 5rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-xl);
+        opacity: 0.5;
+      }
+
+      .no-patient-text {
+        color: var(--text-light);
+        font-size: 1.2rem;
+        margin-bottom: var(--space-md);
+      }
+
+      /* Badge */
+      .badge {
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .badge-info {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      /* Buttons */
+      .btn-primary {
+        background: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: var(--space-md) var(--space-lg);
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-blue-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-secondary {
+        background: var(--off-white);
+        color: var(--primary-blue);
+        border: 2px solid var(--light-gray);
+        padding: var(--space-md) var(--space-lg);
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+      }
+
+      .btn-sm {
+        padding: var(--space-sm) var(--space-md);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar (matching consultation page style) -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <!-- Menu items would go here -->
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header (matching consultation page) -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Patient Records</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Records Container -->
+        <div class="records-container">
+          <!-- Patient List Sidebar -->
+          <div class="patient-list-sidebar">
+            <div class="patient-list-header">
+              <span class="patient-list-title">My Patients</span>
+              <span class="badge badge-info" id="patientCount">24 total</span>
+            </div>
+
+            <div class="patient-search">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                placeholder="Search patients..."
+                id="patientSearch"
+                onkeyup="searchPatients()"
+              />
+            </div>
+
+            <div class="patient-list" id="patientList">
+              <!-- Patient items will be populated by JavaScript -->
+            </div>
+
+            <button
+              class="btn-secondary btn-sm"
+              style="width: 100%; margin-top: var(--space-md)"
+              onclick="loadMorePatients()"
+            >
+              <i class="fas fa-chevron-down"></i>
+              View All Patients
+            </button>
+          </div>
+
+          <!-- Records Content -->
+          <div class="records-content" id="recordsContent">
+            <!-- Content will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Sample Patient Data
+      const patients = [
+        {
+          id: "SJ",
+          initials: "SJ",
+          name: "Sarah Jones",
+          patientId: "PAT-00123",
+          age: 34,
+          gender: "Female",
+          dob: "15/06/1992",
+          phone: "+234 812 345 6789",
+          lastVisit: "Mar 10, 2026",
+          nextVisit: "Today",
+          totalVisits: 12,
+          xrayCount: 4,
+          allergies: ["Penicillin (Severe)", "Latex"],
+          conditions: ["Hypertension (Controlled)", "Diabetes Type 2"],
+          medications: ["Metformin 500mg", "Lisinopril 10mg"],
+          records: [
+            {
+              date: "Mar 10, 2026",
+              type: "Teeth Cleaning",
+              category: "treatment",
+              doctor: "Dr. Sarah Smith",
+              notes:
+                "Moderate calculus removed. Gums slightly inflamed. Recommended 6-month follow-up.",
+              tooth: null,
+            },
+            {
+              date: "Feb 12, 2026",
+              type: "X-Ray - Panoramic",
+              category: "xray",
+              doctor: "Dr. Michael Perfect",
+              notes:
+                "Findings: Small cavity #19 noted. Wisdom teeth impacted but asymptomatic.",
+              xrays: ["Panoramic"],
+            },
+            {
+              date: "Jan 5, 2026",
+              type: "Prescription - Amoxicillin",
+              category: "prescription",
+              doctor: "Dr. Sarah Smith",
+              notes: "500mg, 1 tab TID x 7 days - For tooth infection #18",
+              tooth: 18,
+            },
+            {
+              date: "Nov 3, 2025",
+              type: "Consultation - Toothache",
+              category: "consult",
+              doctor: "Dr. Sarah Smith",
+              notes:
+                "Patient complained of sensitivity in lower right. Diagnosed: Cracked tooth #29 - temporary filling placed.",
+              tooth: 29,
+              toothStatus: "filled",
+            },
+            {
+              date: "Aug 20, 2025",
+              type: "X-Ray - Bitewing",
+              category: "xray",
+              doctor: "Dr. Michael Perfect",
+              notes: "Routine bitewing x-rays. No new caries detected.",
+              xrays: ["Bitewing"],
+            },
+            {
+              date: "Jun 15, 2025",
+              type: "Filling - #18",
+              category: "treatment",
+              doctor: "Dr. Sarah Smith",
+              notes: "Composite filling placed on #18. Patient tolerated well.",
+              tooth: 18,
+              toothStatus: "filled",
+            },
+            {
+              date: "Mar 3, 2025",
+              type: "Extraction - #32",
+              category: "treatment",
+              doctor: "Dr. Michael Perfect",
+              notes:
+                "Wisdom tooth extraction under local anesthesia. Post-op instructions given.",
+              tooth: 32,
+              toothStatus: "extracted",
+            },
+            {
+              date: "Dec 10, 2024",
+              type: "New Patient Exam",
+              category: "consult",
+              doctor: "Dr. Sarah Smith",
+              notes:
+                "Comprehensive exam. Medical history reviewed. Treatment plan discussed.",
+              tooth: null,
+            },
+          ],
+        },
+        {
+          id: "MO",
+          initials: "MO",
+          name: "Michael Obi",
+          patientId: "PAT-00456",
+          age: 45,
+          gender: "Male",
+          dob: "12/03/1981",
+          phone: "+234 803 456 7890",
+          lastVisit: "Mar 5, 2026",
+          nextVisit: "Mar 19, 2026",
+          totalVisits: 8,
+          xrayCount: 3,
+          allergies: ["None"],
+          conditions: ["None"],
+          medications: ["None"],
+          records: [
+            {
+              date: "Mar 5, 2026",
+              type: "Root Canal - #19",
+              category: "treatment",
+              doctor: "Dr. Eze",
+              notes: "Root canal treatment completed. Temporary crown placed.",
+              tooth: 19,
+              toothStatus: "filled",
+            },
+            {
+              date: "Feb 20, 2026",
+              type: "X-Ray - Periapical",
+              category: "xray",
+              doctor: "Dr. Perfect",
+              notes: "Periapical x-ray #19 shows infection at root tip.",
+              xrays: ["Periapical"],
+            },
+          ],
+        },
+        {
+          id: "AE",
+          initials: "AE",
+          name: "Ada Eze",
+          patientId: "PAT-00789",
+          age: 28,
+          gender: "Female",
+          dob: "23/08/1998",
+          phone: "+234 815 678 9012",
+          lastVisit: "Mar 1, 2026",
+          nextVisit: "Apr 15, 2026",
+          totalVisits: 6,
+          xrayCount: 2,
+          allergies: ["Sulfa"],
+          conditions: ["Asthma"],
+          medications: ["Ventolin Inhaler"],
+          records: [
+            {
+              date: "Mar 1, 2026",
+              type: "Teeth Whitening",
+              category: "treatment",
+              doctor: "Dr. Perfect",
+              notes:
+                "Professional whitening treatment completed. Sensitivity noted.",
+              tooth: null,
+            },
+            {
+              date: "Jan 15, 2026",
+              type: "Cleaning",
+              category: "treatment",
+              doctor: "Nurse Chinwe",
+              notes: "Routine cleaning. Good oral hygiene.",
+              tooth: null,
+            },
+          ],
+        },
+        {
+          id: "TO",
+          initials: "TO",
+          name: "Tunde Okafor",
+          patientId: "PAT-00345",
+          age: 52,
+          gender: "Male",
+          dob: "05/11/1974",
+          phone: "+234 802 345 6789",
+          lastVisit: "Feb 28, 2026",
+          nextVisit: "Mar 28, 2026",
+          totalVisits: 15,
+          xrayCount: 6,
+          allergies: ["Ibuprofen"],
+          conditions: ["Hypertension", "Arthritis"],
+          medications: ["Lisinopril 20mg", "Amlodipine 5mg"],
+          records: [
+            {
+              date: "Feb 28, 2026",
+              type: "Crown Placement - #14",
+              category: "treatment",
+              doctor: "Dr. Smith",
+              notes: "Permanent crown cemented. Good fit and bite.",
+              tooth: 14,
+              toothStatus: "crown",
+            },
+            {
+              date: "Feb 10, 2026",
+              type: "X-Ray - Panoramic",
+              category: "xray",
+              doctor: "Dr. Perfect",
+              notes: "Full mouth x-ray. Generalized bone loss noted.",
+              xrays: ["Panoramic"],
+            },
+          ],
+        },
+        {
+          id: "CU",
+          initials: "CU",
+          name: "Chioma Umeh",
+          patientId: "PAT-00901",
+          age: 31,
+          gender: "Female",
+          dob: "19/02/1995",
+          phone: "+234 809 876 5432",
+          lastVisit: "Feb 15, 2026",
+          nextVisit: "May 15, 2026",
+          totalVisits: 4,
+          xrayCount: 1,
+          allergies: ["Latex"],
+          conditions: ["None"],
+          medications: ["None"],
+          records: [
+            {
+              date: "Feb 15, 2026",
+              type: "Filling - #3",
+              category: "treatment",
+              doctor: "Dr. Jones",
+              notes: "Composite filling placed. Patient satisfied.",
+              tooth: 3,
+              toothStatus: "filled",
+            },
+          ],
+        },
+        {
+          id: "FA",
+          initials: "FA",
+          name: "Funke Adebayo",
+          patientId: "PAT-00234",
+          age: 41,
+          gender: "Female",
+          dob: "30/09/1985",
+          phone: "+234 813 456 7890",
+          lastVisit: "Feb 10, 2026",
+          nextVisit: "Aug 10, 2026",
+          totalVisits: 9,
+          xrayCount: 3,
+          allergies: ["Codeine"],
+          conditions: ["None"],
+          medications: ["None"],
+          records: [
+            {
+              date: "Feb 10, 2026",
+              type: "Deep Cleaning",
+              category: "treatment",
+              doctor: "Nurse Grace",
+              notes:
+                "Scaling and root planing completed. Follow-up in 6 months.",
+              tooth: null,
+            },
+          ],
+        },
+      ];
+
+      let currentPatientId = "SJ";
+
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", function () {
+        loadPatientList();
+        loadPatientRecords(currentPatientId);
+      });
+
+      // Load patient list
+      function loadPatientList(filterText = "") {
+        const container = document.getElementById("patientList");
+        let filteredPatients = patients;
+
+        if (filterText) {
+          filteredPatients = patients.filter(
+            (p) =>
+              p.name.toLowerCase().includes(filterText.toLowerCase()) ||
+              p.patientId.toLowerCase().includes(filterText.toLowerCase()),
+          );
+        }
+
+        let html = "";
+        filteredPatients.forEach((p) => {
+          const activeClass = p.id === currentPatientId ? "active" : "";
+          html += `
+            <div class="patient-list-item ${activeClass}" onclick="selectPatient('${p.id}')">
+              <div class="patient-list-avatar">${p.initials}</div>
+              <div class="patient-list-info">
+                <h4>${p.name}</h4>
+                <p>${p.patientId} • ${p.age} yrs</p>
+                <div class="last-visit">
+                  <i class="fas fa-circle"></i>
+                  Last: ${p.lastVisit}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+        document.getElementById("patientCount").innerText =
+          `${filteredPatients.length} total`;
+      }
+
+      // Search patients
+      function searchPatients() {
+        const searchText = document.getElementById("patientSearch").value;
+        loadPatientList(searchText);
+      }
+
+      // Load more patients
+      function loadMorePatients() {
+        alert(
+          "In a full implementation, this would load more patients from the database.",
+        );
+      }
+
+      // Select patient
+      function selectPatient(patientId) {
+        currentPatientId = patientId;
+        loadPatientList(document.getElementById("patientSearch").value);
+        loadPatientRecords(patientId);
+      }
+
+      // Load patient records
+      function loadPatientRecords(patientId) {
+        const patient = patients.find((p) => p.id === patientId);
+        if (!patient) return;
+
+        const container = document.getElementById("recordsContent");
+
+        // Group records by year
+        const recordsByYear = {};
+        patient.records.forEach((record) => {
+          const year = record.date.split(", ")[1];
+          if (!recordsByYear[year]) {
+            recordsByYear[year] = [];
+          }
+          recordsByYear[year].push(record);
+        });
+
+        // Build timeline HTML
+        let timelineHtml = "";
+        const years = Object.keys(recordsByYear).sort((a, b) => b - a);
+
+        years.forEach((year) => {
+          timelineHtml += `
+            <div class="timeline-year">
+              <div class="year-title">${year}</div>
+          `;
+
+          recordsByYear[year].forEach((record) => {
+            const tagClass =
+              record.category === "xray"
+                ? "tag-xray"
+                : record.category === "treatment"
+                  ? "tag-treatment"
+                  : record.category === "prescription"
+                    ? "tag-prescription"
+                    : "tag-consult";
+
+            const tagText =
+              record.category === "xray"
+                ? "X-Ray"
+                : record.category === "treatment"
+                  ? "Treatment"
+                  : record.category === "prescription"
+                    ? "Prescription"
+                    : "Consultation";
+
+            let toothHtml = "";
+            if (record.tooth) {
+              const toothClass =
+                record.toothStatus === "filled"
+                  ? "filled"
+                  : record.toothStatus === "extracted"
+                    ? "extracted"
+                    : record.toothStatus === "crown"
+                      ? "crown"
+                      : "";
+              toothHtml = `
+                <div class="tooth-chart-small">
+                  <span class="tooth-marker ${toothClass}">${record.tooth}</span>
+                </div>
+              `;
+            }
+
+            let xrayHtml = "";
+            if (record.xrays) {
+              xrayHtml = '<div class="xray-grid">';
+              record.xrays.forEach((xray) => {
+                xrayHtml += `
+                  <div class="xray-thumbnail">
+                    <i class="fas fa-x-ray"></i>
+                    <div class="date">${xray}</div>
+                  </div>
+                `;
+              });
+              xrayHtml += "</div>";
+            }
+
+            timelineHtml += `
+              <div class="timeline-item">
+                <div class="timeline-date">${record.date.split(", ")[0]}</div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-title">${record.type}</span>
+                    <span class="record-tag ${tagClass}">${tagText}</span>
+                  </div>
+                  <div class="timeline-doctor">${record.doctor}</div>
+                  <div class="timeline-notes">${record.notes}</div>
+                  ${toothHtml}
+                  ${xrayHtml}
+                </div>
+              </div>
+            `;
+          });
+
+          timelineHtml += "</div>";
+        });
+
+        // Build conditions HTML
+        const conditionsHtml = `
+          <div class="conditions-grid">
+            <div class="condition-card allergies">
+              <div class="condition-title">
+                <i class="fas fa-exclamation-triangle" style="color: var(--error);"></i>
+                Allergies
+              </div>
+              ${patient.allergies.map((a) => `<div class="condition-item">${a}</div>`).join("")}
+            </div>
+            <div class="condition-card chronic">
+              <div class="condition-title">
+                <i class="fas fa-heartbeat" style="color: var(--primary-blue);"></i>
+                Chronic Conditions
+              </div>
+              ${patient.conditions.map((c) => `<div class="condition-item">${c}</div>`).join("")}
+            </div>
+            <div class="condition-card medications">
+              <div class="condition-title">
+                <i class="fas fa-pills" style="color: var(--success);"></i>
+                Current Medications
+              </div>
+              ${patient.medications.map((m) => `<div class="condition-item">${m}</div>`).join("")}
+            </div>
+          </div>
+        `;
+
+        // Build complete HTML
+        const html = `
+          <div class="records-header">
+            <div class="patient-info-large">
+              <div class="patient-avatar-large">${patient.initials}</div>
+              <div class="patient-details-large">
+                <h2>${patient.name}</h2>
+                <p>Patient ID: ${patient.patientId} | DOB: ${patient.dob} (${patient.age} yrs) | ${patient.gender}</p>
+                <p style="margin-top: 4px;"><i class="fas fa-phone" style="color: var(--primary-blue);"></i> ${patient.phone}</p>
+              </div>
+            </div>
+            <div>
+              <button class="btn-primary" onclick="addNewRecord()">
+                <i class="fas fa-plus"></i>
+                Add Record
+              </button>
+            </div>
+          </div>
+
+          <div class="quick-stats">
+            <div class="stat-item">
+              <div class="stat-value">${patient.totalVisits}</div>
+              <div class="stat-label">Total Visits</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${patient.lastVisit}</div>
+              <div class="stat-label">Last Visit</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${patient.nextVisit}</div>
+              <div class="stat-label">Next Visit</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${patient.xrayCount}</div>
+              <div class="stat-label">X-Rays</div>
+            </div>
+          </div>
+
+          <div class="timeline-section">
+            <h3 style="margin-bottom: var(--space-lg); color: var(--text-dark);">
+              <i class="fas fa-history" style="color: var(--primary-blue); margin-right: var(--space-sm);"></i>
+              Medical History Timeline
+            </h3>
+            ${timelineHtml}
+          </div>
+
+          ${conditionsHtml}
+        `;
+
+        container.innerHTML = html;
+      }
+
+      // Add new record
+      function addNewRecord() {
+        alert(
+          "In a full implementation, this would open a modal to add a new patient record.",
+        );
+      }
+
+      // Toggle sidebar
+      function toggleSidebar() {
+        const sidebar = document.querySelector(".sidebar");
+        sidebar.style.width = sidebar.style.width === "80px" ? "280px" : "80px";
+      }
+    </script>
+  </body>
+</html>

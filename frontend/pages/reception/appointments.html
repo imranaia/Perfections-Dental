@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Appointments — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+      .toolbar input, .toolbar select { padding: 9px 14px; }
+      .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+      .filter-tabs button {
+        padding: 8px 16px; border-radius: var(--radius-pill); border: 1.5px solid var(--light-border);
+        background: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 700; color: var(--mid-gray); cursor: pointer;
+      }
+      .filter-tabs button.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+      .appt-card { margin-bottom: 14px; }
+      .appt-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+      .appt-time { font-family: var(--font-display); font-weight: 800; color: var(--blue-dark); font-size: 1.1rem; }
+      .appt-meta { font-size: 0.8rem; color: var(--mid-gray); margin-top: 4px; }
+      .avatar-sm { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,var(--blue),var(--blue-mid)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; }
+      .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+      .service-check { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+      .close-modal-btn { background: none; border: none; font-size: 1.2rem; color: var(--mid-gray); cursor: pointer; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Reception</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link active" href="appointments.html"><i class="fas fa-calendar-days"></i> Appointments</a>
+        <a class="glass-nav-link" href="patients.html"><i class="fas fa-users"></i> Patients</a>
+        <a class="glass-nav-link" href="prescriptions.html"><i class="fas fa-pills"></i> Prescriptions</a>
+        <a class="glass-nav-link" href="invoices.html"><i class="fas fa-file-invoice"></i> Invoices</a>
+        <a class="glass-nav-link" href="payments.html"><i class="fas fa-credit-card"></i> Payments</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1>Appointments</h1>
+          <button class="glass-btn glass-btn-primary" id="newApptBtn"><i class="fas fa-calendar-plus"></i> New Appointment</button>
+        </div>
+
+        <div class="toolbar">
+          <input type="date" id="dateFilter" class="glass-input" style="width:auto;" />
+          <input type="text" id="searchFilter" class="glass-input" placeholder="Search patient…" style="width:220px;" />
+          <div class="filter-tabs" id="filterTabs">
+            <button class="active" data-filter="all">All</button>
+            <button data-filter="scheduled">Scheduled</button>
+            <button data-filter="waiting">Waiting</button>
+            <button data-filter="checkedin">Checked In</button>
+            <button data-filter="completed">Completed</button>
+            <button data-filter="emergency">Emergency</button>
+          </div>
+        </div>
+
+        <div id="apptList"></div>
+      </main>
+    </div>
+
+    <!-- New Appointment Modal -->
+    <div class="glass-modal-backdrop" id="modalBackdrop" style="display:none;">
+      <div class="glass-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0;"><i class="fas fa-calendar-plus"></i> New Appointment</h3>
+          <button class="close-modal-btn" id="closeModalBtn"><i class="fas fa-xmark"></i></button>
+        </div>
+
+        <div class="glass-field">
+          <label>Patient</label>
+          <input type="text" id="patientSearchInput" class="glass-input" placeholder="Search existing patient…" />
+          <div id="patientResults" style="max-height:140px; overflow-y:auto; margin-top:6px;"></div>
+          <div id="selectedPatientTag" style="margin-top:6px;"></div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="glass-field">
+            <label>Date</label>
+            <input type="date" id="apptDate" class="glass-input" />
+          </div>
+          <div class="glass-field">
+            <label>Time</label>
+            <input type="time" id="apptTime" class="glass-input" />
+          </div>
+        </div>
+
+        <div class="glass-field">
+          <label>Doctor</label>
+          <select id="doctorSelect" class="glass-select"></select>
+        </div>
+
+        <div class="glass-field">
+          <label>Services</label>
+          <div id="serviceChecks"></div>
+        </div>
+
+        <div class="glass-field">
+          <label>Notes (optional)</label>
+          <textarea id="apptNotes" class="glass-textarea"></textarea>
+        </div>
+
+        <button class="glass-btn glass-btn-primary" id="createApptBtn" style="width:100%;">
+          <i class="fas fa-check"></i> Create Appointment
+        </button>
+        <div id="createMessage" style="margin-top:10px; font-size:0.85rem;"></div>
+      </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/reception/appointments';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let currentFilter = 'all';
+      let selectedPatient = null;
+
+      function today() { return new Date().toISOString().slice(0, 10); }
+      document.getElementById('dateFilter').value = today();
+      document.getElementById('apptDate').value = today();
+
+      async function loadAppointments() {
+        const date = document.getElementById('dateFilter').value;
+        const search = document.getElementById('searchFilter').value;
+        const params = new URLSearchParams({ date, filter: currentFilter });
+        if (search) params.set('search', search);
+        const { appointments } = await api(`/?${params}`);
+        const list = document.getElementById('apptList');
+        list.innerHTML = appointments.length ? appointments.map(a => `
+          <div class="glass-card appt-card">
+            <div class="appt-head">
+              <div style="display:flex; gap:14px; align-items:center;">
+                <div class="appt-time">${a.start_time}</div>
+                <div class="avatar-sm">${a.patient.initials}</div>
+                <div>
+                  <div style="font-weight:700;">${a.patient.name}</div>
+                  <div class="appt-meta">${a.patient.patient_number} · ${a.services.join(', ')}</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                ${a.is_emergency ? '<span class="glass-badge danger"><i class="fas fa-triangle-exclamation"></i> Emergency</span>' : ''}
+                <span class="glass-badge info">${a.status_display}</span>
+              </div>
+            </div>
+            <div class="appt-meta" style="margin-top:10px;">
+              <i class="fas fa-user-doctor"></i> ${a.doctor.name || 'Unassigned'}
+              ${a.nurse.name ? ' · <i class="fas fa-user-nurse"></i> ' + a.nurse.name : ''}
+              ${a.room && a.room !== 'TBD' ? ' · Room ' + a.room : ''}
+            </div>
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+              ${a.status !== 'completed' ? statusButtons(a) : ''}
+            </div>
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-calendar-days"></i>No appointments for this filter</div>';
+
+        list.querySelectorAll('[data-status-btn]').forEach(btn => {
+          btn.addEventListener('click', () => updateStatus(btn.dataset.id, btn.dataset.statusBtn));
+        });
+      }
+
+      function statusButtons(a) {
+        const next = {
+          scheduled: [['checked_in', 'Check In']],
+          checked_in: [['waiting', 'Send to Waiting']],
+          waiting: [['in_progress', 'Start']],
+          in_progress: [['completed', 'Complete']],
+        }[a.status] || [];
+        return next.map(([s, label]) =>
+          `<button class="glass-btn glass-btn-ghost" data-status-btn="${s}" data-id="${a.id}">${label}</button>`
+        ).join('') + (a.status !== 'cancelled' ?
+          `<button class="glass-btn glass-btn-danger" data-status-btn="cancelled" data-id="${a.id}">Cancel</button>` : '');
+      }
+
+      async function updateStatus(id, status) {
+        try {
+          await api(`/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) });
+          loadAppointments();
+        } catch (e) { alert(e.message); }
+      }
+
+      document.getElementById('filterTabs').addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        document.querySelectorAll('#filterTabs button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.dataset.filter;
+        loadAppointments();
+      });
+      document.getElementById('dateFilter').addEventListener('change', loadAppointments);
+      let searchDebounce;
+      document.getElementById('searchFilter').addEventListener('input', () => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(loadAppointments, 300);
+      });
+
+      // ── New appointment modal ──
+      const modal = document.getElementById('modalBackdrop');
+      document.getElementById('newApptBtn').addEventListener('click', async () => {
+        modal.style.display = 'flex';
+        await loadDoctorsAndServices();
+      });
+      document.getElementById('closeModalBtn').addEventListener('click', () => { modal.style.display = 'none'; });
+
+      async function loadDoctorsAndServices() {
+        const { doctors } = await api('/doctors/availability');
+        document.getElementById('doctorSelect').innerHTML = doctors.map(d =>
+          `<option value="${d.id}">${d.name} — ${d.next_free}</option>`).join('');
+
+        const { services } = await api('/services');
+        document.getElementById('serviceChecks').innerHTML = services.map(s => `
+          <label class="service-check">
+            <input type="checkbox" value="${s.id}" class="service-checkbox" /> ${s.name} — ₦${s.price.toLocaleString()}
+          </label>
+        `).join('');
+      }
+
+      let patientSearchDebounce;
+      document.getElementById('patientSearchInput').addEventListener('input', (e) => {
+        clearTimeout(patientSearchDebounce);
+        patientSearchDebounce = setTimeout(async () => {
+          if (!e.target.value) { document.getElementById('patientResults').innerHTML = ''; return; }
+          const { patients } = await api(`/patients?search=${encodeURIComponent(e.target.value)}`);
+          document.getElementById('patientResults').innerHTML = patients.map(p => `
+            <div class="patient-pick-row" data-id="${p.id}" data-name="${p.name}" style="padding:8px; cursor:pointer; border-radius:8px;">
+              ${p.name} · ${p.patient_number}
+            </div>
+          `).join('');
+          document.querySelectorAll('#patientResults [data-id]').forEach(row => {
+            row.addEventListener('click', () => {
+              selectedPatient = { id: row.dataset.id, name: row.dataset.name };
+              document.getElementById('selectedPatientTag').innerHTML =
+                `<span class="glass-badge success"><i class="fas fa-check"></i> ${row.dataset.name}</span>`;
+              document.getElementById('patientResults').innerHTML = '';
+              document.getElementById('patientSearchInput').value = '';
+            });
+          });
+        }, 250);
+      });
+
+      document.getElementById('createApptBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('createMessage');
+        if (!selectedPatient) { msg.style.color = 'var(--danger)'; msg.textContent = 'Please select a patient.'; return; }
+        const serviceIds = Array.from(document.querySelectorAll('.service-checkbox:checked')).map(c => Number(c.value));
+        try {
+          await api('/create', {
+            method: 'POST',
+            body: JSON.stringify({
+              patient_id: selectedPatient.id,
+              doctor_id: Number(document.getElementById('doctorSelect').value),
+              date: document.getElementById('apptDate').value,
+              start_time: document.getElementById('apptTime').value,
+              service_ids: serviceIds,
+              notes: document.getElementById('apptNotes').value.trim(),
+            }),
+          });
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = 'Appointment created!';
+          setTimeout(() => { modal.style.display = 'none'; msg.textContent = ''; selectedPatient = null; loadAppointments(); }, 800);
+        } catch (e) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = e.message;
+        }
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await loadAppointments();
+      }
+      init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Invoices - Reception - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      /* ========== OVERRIDES ========== */
+      .filter-input {
+        display: flex;
+        align-items: center;
+        background: var(--pure-white);
+        border-radius: var(--radius-full);
+        padding: var(--space-xs) var(--space-md);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid var(--light-gray);
+        transition: all var(--transition-fast);
+      }
+
+      .filter-input:focus-within {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+      }
+
+      .filter-input i {
+        color: var(--text-light);
+        margin-right: var(--space-sm);
+        font-size: 1rem;
+      }
+
+      .filter-input input {
+        border: none;
+        padding: var(--space-sm) 0;
+        width: 100%;
+        font-size: 0.95rem;
+        background: transparent;
+      }
+
+      .filter-input input:focus {
+        outline: none;
+      }
+
+      .filter-input input::placeholder {
+        color: var(--text-light);
+        opacity: 0.7;
+      }
+
+      .filter-select {
+        padding: var(--space-sm) var(--space-md);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        font-size: 0.95rem;
+        background: var(--pure-white);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 700px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      /* Form Styles */
+      .form-section {
+        margin-bottom: var(--space-lg);
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        border: 1px solid var(--light-gray);
+      }
+
+      .form-section h4 {
+        margin-bottom: var(--space-md);
+        color: var(--primary-blue);
+        font-size: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: var(--space-md);
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: var(--space-xs);
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: var(--space-sm) var(--space-md);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+      }
+
+      /* Invoice Items Table */
+      .invoice-items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: var(--space-md);
+      }
+
+      .invoice-items-table th {
+        text-align: left;
+        padding: var(--space-sm);
+        border-bottom: 2px solid var(--light-gray);
+        color: var(--text-light);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .invoice-items-table td {
+        padding: var(--space-sm);
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .invoice-items-table input {
+        width: 100%;
+        padding: var(--space-xs) var(--space-sm);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-sm);
+      }
+
+      .remove-item {
+        color: var(--error);
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .add-item-btn {
+        background: var(--off-white);
+        border: 2px dashed var(--light-gray);
+        border-radius: var(--radius-md);
+        padding: var(--space-sm);
+        width: 100%;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .add-item-btn:hover {
+        border-color: var(--primary-blue);
+        color: var(--primary-blue);
+      }
+
+      /* Invoice Totals */
+      .invoice-totals {
+        margin-top: var(--space-md);
+        padding: var(--space-md);
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+      }
+
+      .total-line {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--space-xs) 0;
+      }
+
+      .grand-total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+        border-top: 2px solid var(--light-gray);
+        margin-top: var(--space-xs);
+        padding-top: var(--space-sm);
+      }
+
+      /* Payment Modal */
+      .payment-methods {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-md);
+      }
+
+      .payment-method-card {
+        background: var(--pure-white);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .payment-method-card:hover {
+        border-color: var(--primary-blue);
+      }
+
+      .payment-method-card.selected {
+        border-color: var(--primary-blue);
+        background: rgba(0, 102, 204, 0.05);
+      }
+
+      .payment-method-card i {
+        font-size: 2rem;
+        color: var(--primary-blue);
+        margin-bottom: var(--space-sm);
+      }
+
+      .payment-method-card span {
+        display: block;
+        font-weight: 600;
+      }
+
+      /* Delete Modal */
+      .delete-modal {
+        max-width: 400px;
+      }
+
+      .delete-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(255, 59, 48, 0.1);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--space-lg);
+        color: var(--error);
+        font-size: 2.5rem;
+      }
+
+      .delete-warning {
+        text-align: center;
+        color: var(--text-light);
+        margin-bottom: var(--space-lg);
+      }
+
+      .delete-warning strong {
+        color: var(--error);
+        font-size: 1.1rem;
+      }
+
+      /* Toast Notification */
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md) var(--space-lg);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 2000;
+        border-left: 4px solid var(--success);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.error {
+        border-left-color: var(--error);
+      }
+
+      .toast.warning {
+        border-left-color: var(--warning);
+      }
+
+      .toast-icon {
+        font-size: 1.2rem;
+      }
+
+      .toast.success .toast-icon {
+        color: var(--success);
+      }
+
+      .toast.error .toast-icon {
+        color: var(--error);
+      }
+
+      .toast-message {
+        font-size: 0.95rem;
+      }
+
+      .toast-close {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        font-size: 1rem;
+        margin-left: var(--space-sm);
+      }
+
+      /* Invoice specific styles */
+      .invoices-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .invoice-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .stat-card,
+      .stat-card-green,
+      .stat-card-orange,
+      .stat-card-purple {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: transform var(--transition-fast);
+      }
+
+      .stat-card:hover,
+      .stat-card-green:hover,
+      .stat-card-orange:hover,
+      .stat-card-purple:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .stat-card {
+        border: 2px solid var(--primary-blue);
+      }
+
+      .stat-card-green {
+        border: 2px solid var(--success);
+      }
+
+      .stat-card-orange {
+        border: 2px solid var(--warning);
+      }
+
+      .stat-card-purple {
+        border: 2px solid var(--purple);
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        color: var(--text-light);
+        font-size: 0.9rem;
+      }
+
+      .invoice-filters {
+        display: flex;
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+      }
+
+      .invoice-table-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+      }
+
+      .invoice-row {
+        display: flex;
+        align-items: center;
+        padding: var(--space-md) var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        transition: background var(--transition-fast);
+        cursor: pointer;
+      }
+
+      .invoice-row:hover {
+        background: rgba(0, 102, 204, 0.02);
+      }
+
+      .invoice-row.selected {
+        background: rgba(0, 102, 204, 0.05);
+      }
+
+      .invoice-cell {
+        flex: 1;
+      }
+
+      .invoice-cell.invoice-number {
+        flex: 1.5;
+        font-weight: 600;
+      }
+
+      .invoice-cell.patient {
+        flex: 1.5;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .invoice-cell.amount {
+        flex: 1;
+        font-weight: 600;
+      }
+
+      .invoice-cell.status {
+        flex: 0.8;
+      }
+
+      .invoice-cell.date {
+        flex: 1;
+        color: var(--text-light);
+      }
+
+      .invoice-cell.actions {
+        flex: 0.8;
+        display: flex;
+        gap: var(--space-xs);
+        cursor: default;
+      }
+
+      .status-badge {
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .status-paid {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .status-unpaid {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .status-partial {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .status-cancelled {
+        background: rgba(108, 117, 125, 0.1);
+        color: var(--text-light);
+      }
+
+      .action-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-full);
+        border: none;
+        background: var(--off-white);
+        color: var(--text-dark);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .action-icon:hover {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .action-icon.delete:hover {
+        background: var(--error);
+      }
+
+      .action-icon.payment:hover {
+        background: var(--success);
+      }
+
+      .invoice-preview-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .invoice-preview-modal.show {
+        display: flex;
+      }
+
+      .invoice-preview-content {
+        background: var(--pure-white);
+        border-radius: var(--radius-2xl);
+        padding: var(--space-2xl);
+        max-width: 800px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--space-xl);
+        padding-bottom: var(--space-lg);
+        border-bottom: 2px solid var(--light-gray);
+      }
+
+      .clinic-details h2 {
+        font-size: 1.5rem;
+        color: var(--primary-blue);
+        margin-bottom: 4px;
+      }
+
+      .invoice-details {
+        text-align: right;
+      }
+
+      .invoice-details h3 {
+        font-size: 1.2rem;
+        margin-bottom: 4px;
+      }
+
+      .patient-details {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-xl);
+      }
+
+      .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: var(--space-xl);
+      }
+
+      .items-table th {
+        text-align: left;
+        padding: var(--space-sm);
+        border-bottom: 2px solid var(--light-gray);
+        color: var(--text-light);
+        font-weight: 600;
+      }
+
+      .items-table td {
+        padding: var(--space-sm);
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .totals {
+        margin-top: var(--space-xl);
+        padding-top: var(--space-lg);
+        border-top: 2px solid var(--light-gray);
+      }
+
+      .total-line {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-xl);
+        margin-bottom: var(--space-xs);
+      }
+
+      .grand-total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img
+                src="../../assets/logo.png"
+                alt="Perfections Dental Services"
+              />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Invoices</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Invoices Header -->
+        <div class="invoices-header">
+          <h2 style="font-size: 1.5rem">Invoice Management</h2>
+          <button class="btn btn-primary" onclick="openInvoiceModal()">
+            <i class="fas fa-plus"></i>
+            Create New Invoice
+          </button>
+        </div>
+
+        <!-- Invoice Stats -->
+        <div class="invoice-stats" id="invoiceStats"></div>
+
+        <!-- Filters -->
+        <div class="invoice-filters">
+          <div class="filter-input" style="flex: 2">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              placeholder="Search by invoice number or patient..."
+              id="searchInput"
+              onkeyup="filterInvoices()"
+            />
+          </div>
+          <select
+            class="filter-select"
+            style="flex: 1"
+            id="statusFilter"
+            onchange="filterInvoices()"
+          >
+            <option value="all">All Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+            <option value="Partial">Partially Paid</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+          <select
+            class="filter-select"
+            style="flex: 1"
+            id="dateFilter"
+            onchange="filterInvoices()"
+          >
+            <option value="30">Last 30 Days</option>
+            <option value="this_month">This Month</option>
+            <option value="last_month">Last Month</option>
+            <option value="all">All Time</option>
+          </select>
+        </div>
+
+        <!-- Invoices Table -->
+        <div class="invoice-table-container">
+          <div
+            style="
+              padding: var(--space-lg);
+              border-bottom: 1px solid var(--light-gray);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <h3>Recent Invoices</h3>
+            <span class="badge badge-info" id="invoiceCount"
+              >Showing 0 invoices</span
+            >
+          </div>
+
+          <!-- Invoice Rows Container -->
+          <div id="invoiceList"></div>
+
+          <!-- Pagination -->
+          <div
+            style="
+              padding: var(--space-lg);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-top: 1px solid var(--light-gray);
+            "
+            id="pagination"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoice Modal (Create/Edit) -->
+    <div class="modal-overlay" id="invoiceModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title" id="invoiceModalTitle"
+            >Create New Invoice</span
+          >
+          <button class="modal-close" onclick="closeInvoiceModal()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="invoiceForm">
+            <div class="form-section">
+              <h4>Patient Information</h4>
+              <div class="form-row">
+                <div class="form-group">
+                  <label
+                    >Select Patient
+                    <span style="color: var(--error)">*</span></label
+                  >
+                  <select class="form-control" id="patientSelect" required>
+                    <option value="">-- Select Patient --</option>
+                    <option value="1">Sarah Jones (PAT-00123)</option>
+                    <option value="2">Michael Obi (PAT-00124)</option>
+                    <option value="3">Ada Eze (PAT-00125)</option>
+                    <option value="4">John Okonkwo (PAT-00126)</option>
+                    <option value="5">Funke Adebayo (PAT-00127)</option>
+                    <option value="6">Tunde Okafor (PAT-00128)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Invoice Date</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="invoiceDate"
+                    value="2026-03-15"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Patient Notes</label>
+                <textarea
+                  class="form-control"
+                  id="patientNotes"
+                  rows="2"
+                  placeholder="Any notes about the patient..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4>Invoice Items</h4>
+              <table class="invoice-items-table" id="invoiceItemsTable">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Unit Price (₦)</th>
+                    <th>Total (₦)</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="invoiceItemsBody">
+                  <tr class="invoice-item-row">
+                    <td>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Item description"
+                        value="Consultation Fee"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        class="form-control item-qty"
+                        value="1"
+                        min="1"
+                        onchange="calculateItemTotal(this)"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        class="form-control item-price"
+                        value="10000"
+                        min="0"
+                        onchange="calculateItemTotal(this)"
+                      />
+                    </td>
+                    <td class="item-total">₦10,000</td>
+                    <td class="remove-item" onclick="removeInvoiceItem(this)">
+                      <i class="fas fa-trash"></i>
+                    </td>
+                  </tr>
+                  <tr class="invoice-item-row">
+                    <td>
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Item description"
+                        value="Teeth Cleaning"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        class="form-control item-qty"
+                        value="1"
+                        min="1"
+                        onchange="calculateItemTotal(this)"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        class="form-control item-price"
+                        value="15000"
+                        min="0"
+                        onchange="calculateItemTotal(this)"
+                      />
+                    </td>
+                    <td class="item-total">₦15,000</td>
+                    <td class="remove-item" onclick="removeInvoiceItem(this)">
+                      <i class="fas fa-trash"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <button
+                type="button"
+                class="add-item-btn"
+                onclick="addInvoiceItem()"
+              >
+                <i class="fas fa-plus"></i> Add Item
+              </button>
+
+              <div class="invoice-totals">
+                <div class="total-line">
+                  <span>Subtotal:</span>
+                  <span id="subtotal">₦25,000</span>
+                </div>
+                <div class="total-line">
+                  <span>Discount:</span>
+                  <span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      style="width: 80px; display: inline-block"
+                      value="0"
+                      min="0"
+                      id="discount"
+                      onchange="calculateTotals()"
+                    />
+                    ₦
+                  </span>
+                </div>
+                <div class="total-line grand-total">
+                  <span>Total:</span>
+                  <span id="grandTotal">₦25,000</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4>Payment Information</h4>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Payment Status</label>
+                  <select class="form-control" id="paymentStatus">
+                    <option value="Unpaid">Unpaid</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Partial">Partially Paid</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Amount Paid</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="amountPaid"
+                    value="0"
+                    min="0"
+                    onchange="updateBalance()"
+                  />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Balance Due</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="balanceDue"
+                    value="25000"
+                    readonly
+                    style="background: var(--off-white)"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Payment Method</label>
+                  <select class="form-control" id="paymentMethod">
+                    <option value="Cash">Cash</option>
+                    <option value="POS">POS</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Insurance">Insurance</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h4>Additional Information</h4>
+              <div class="form-group">
+                <label>Invoice Notes</label>
+                <textarea
+                  class="form-control"
+                  id="invoiceNotes"
+                  rows="3"
+                  placeholder="Any notes for the invoice..."
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label>Staff Discount</label>
+                <div class="checkbox-group">
+                  <input
+                    type="checkbox"
+                    id="staffDiscount"
+                    onchange="applyStaffDiscount()"
+                  />
+                  <label for="staffDiscount">Apply 10% staff discount</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeInvoiceModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveInvoice()">
+            Save Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-overlay" id="paymentModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Record Payment</span>
+          <button class="modal-close" onclick="closePaymentModal()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-section">
+            <h4>
+              Invoice: <span id="paymentInvoiceNumber">INV-2026-0342</span>
+            </h4>
+            <div class="form-group">
+              <label>Patient</label>
+              <p id="paymentPatient" style="font-weight: 600">Sarah Jones</p>
+            </div>
+            <div class="form-group">
+              <label>Total Amount</label>
+              <p
+                id="paymentTotal"
+                style="
+                  font-size: 1.2rem;
+                  font-weight: 700;
+                  color: var(--primary-blue);
+                "
+              >
+                ₦25,000
+              </p>
+            </div>
+            <div class="form-group">
+              <label>Balance Due</label>
+              <p
+                id="paymentBalance"
+                style="color: var(--warning); font-weight: 600"
+              >
+                ₦15,000
+              </p>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>Payment Details</h4>
+            <div class="payment-methods">
+              <div
+                class="payment-method-card"
+                onclick="selectPaymentMethod('Cash')"
+              >
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Cash</span>
+              </div>
+              <div
+                class="payment-method-card"
+                onclick="selectPaymentMethod('POS')"
+              >
+                <i class="fas fa-credit-card"></i>
+                <span>POS</span>
+              </div>
+              <div
+                class="payment-method-card"
+                onclick="selectPaymentMethod('Transfer')"
+              >
+                <i class="fas fa-university"></i>
+                <span>Transfer</span>
+              </div>
+              <div
+                class="payment-method-card"
+                onclick="selectPaymentMethod('Cheque')"
+              >
+                <i class="fas fa-money-check"></i>
+                <span>Cheque</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Amount Paying</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="paymentAmount"
+                  value="0"
+                  min="0"
+                  onchange="calculatePaymentChange()"
+                />
+              </div>
+              <div class="form-group">
+                <label>Payment Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="paymentDate"
+                  value="2026-03-15"
+                />
+              </div>
+            </div>
+
+            <div
+              class="form-group"
+              id="changeDueContainer"
+              style="display: none"
+            >
+              <label>Change Due</label>
+              <p
+                id="changeDue"
+                style="
+                  font-size: 1.2rem;
+                  font-weight: 700;
+                  color: var(--success);
+                "
+              >
+                ₦0
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label>Reference/Transaction ID</label>
+              <input
+                type="text"
+                class="form-control"
+                id="paymentReference"
+                placeholder="e.g., POS-123456"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Notes</label>
+              <textarea
+                class="form-control"
+                id="paymentNotes"
+                rows="2"
+                placeholder="Any payment notes..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closePaymentModal()">
+            Cancel
+          </button>
+          <button
+            class="btn btn-success"
+            style="background: var(--success); color: white"
+            onclick="processPayment()"
+          >
+            Process Payment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoice Preview Modal -->
+    <div class="invoice-preview-modal" id="invoicePreviewModal">
+      <div class="invoice-preview-content" id="invoicePreviewContent">
+        <!-- Preview content will be populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="modal-container delete-modal">
+        <div class="modal-header">
+          <span class="modal-title">Confirm Delete</span>
+          <button class="modal-close" onclick="closeDeleteModal()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="delete-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="delete-warning">
+            <p>
+              Are you sure you want to delete
+              <strong id="deleteItemName">this invoice</strong>?
+            </p>
+            <p>This action cannot be undone.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeDeleteModal()">
+            Cancel
+          </button>
+          <button
+            class="btn btn-error"
+            style="background: var(--error); color: white"
+            onclick="confirmDelete()"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+      <div class="toast-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="toast-message" id="toastMessage">
+        Action completed successfully
+      </div>
+      <button class="toast-close" onclick="hideToast()">&times;</button>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Sample Invoices Data
+      let invoices = [
+        {
+          id: 1,
+          number: "INV-2026-0342",
+          patient: "Sarah Jones",
+          patientId: "PAT-00123",
+          patientInitials: "SJ",
+          amount: 22500,
+          status: "Paid",
+          date: "2026-03-15",
+          items: [
+            { description: "Consultation Fee", qty: 1, price: 10000 },
+            { description: "Teeth Cleaning", qty: 1, price: 15000 },
+          ],
+          discount: 2500,
+          paymentMethod: "POS",
+          paymentRef: "POS-2345-6789",
+          notes: "Staff discount applied",
+        },
+        {
+          id: 2,
+          number: "INV-2026-0341",
+          patient: "Michael Obi",
+          patientId: "PAT-00124",
+          patientInitials: "MO",
+          amount: 45000,
+          status: "Paid",
+          date: "2026-03-15",
+          items: [{ description: "Root Canal", qty: 1, price: 45000 }],
+          discount: 0,
+          paymentMethod: "Transfer",
+          paymentRef: "TRF-9876-5432",
+        },
+        {
+          id: 3,
+          number: "INV-2026-0340",
+          patient: "Ada Eze",
+          patientId: "PAT-00125",
+          patientInitials: "AE",
+          amount: 15000,
+          status: "Paid",
+          date: "2026-03-15",
+          items: [{ description: "Consultation", qty: 1, price: 15000 }],
+          discount: 0,
+          paymentMethod: "Cash",
+        },
+        {
+          id: 4,
+          number: "INV-2026-0339",
+          patient: "John Okonkwo",
+          patientId: "PAT-00126",
+          patientInitials: "JO",
+          amount: 0,
+          status: "Paid",
+          date: "2026-03-15",
+          items: [
+            { description: "FREE - Initial Consultation", qty: 1, price: 0 },
+          ],
+          discount: 0,
+          paymentMethod: "N/A",
+          notes: "Complimentary consultation",
+        },
+        {
+          id: 5,
+          number: "INV-2026-0338",
+          patient: "Funke Adebayo",
+          patientId: "PAT-00127",
+          patientInitials: "FA",
+          amount: 85000,
+          status: "Unpaid",
+          date: "2026-03-14",
+          items: [{ description: "Dental Crown", qty: 1, price: 85000 }],
+          discount: 0,
+        },
+        {
+          id: 6,
+          number: "INV-2026-0337",
+          patient: "Tunde Okafor",
+          patientId: "PAT-00128",
+          patientInitials: "TO",
+          amount: 35000,
+          status: "Partial",
+          date: "2026-03-14",
+          items: [{ description: "Filling (Composite)", qty: 2, price: 17500 }],
+          discount: 0,
+          amountPaid: 20000,
+          balance: 15000,
+        },
+      ];
+
+      // State
+      let currentInvoiceId = null;
+      let deleteId = null;
+      let currentPage = 1;
+      let itemsPerPage = 6;
+      let currentFilter = "all";
+      let searchTerm = "";
+      let selectedPaymentMethod = "Cash";
+
+      // Initialize page
+      document.addEventListener("DOMContentLoaded", function () {
+        loadInvoices();
+        updateStats();
+      });
+
+      // Load invoices list
+      function loadInvoices() {
+        const container = document.getElementById("invoiceList");
+        let filteredInvoices = filterInvoicesData();
+
+        // Update count
+        document.getElementById("invoiceCount").innerHTML =
+          `Showing ${filteredInvoices.length} invoices`;
+
+        let html = "";
+
+        filteredInvoices.forEach((invoice) => {
+          const statusClass =
+            invoice.status === "Paid"
+              ? "status-paid"
+              : invoice.status === "Unpaid"
+                ? "status-unpaid"
+                : invoice.status === "Partial"
+                  ? "status-partial"
+                  : "status-cancelled";
+
+          // Format amount display
+          let amountDisplay = `₦${invoice.amount.toLocaleString()}`;
+          if (invoice.amount === 0) {
+            amountDisplay = "FREE";
+          }
+
+          html += `
+            <div class="invoice-row" onclick="selectInvoice(${invoice.id})">
+              <div class="invoice-cell invoice-number">${invoice.number}</div>
+              <div class="invoice-cell patient">
+                <div class="user-avatar" style="width: 32px; height: 32px">
+                  ${invoice.patientInitials}
+                </div>
+                <span>${invoice.patient}</span>
+              </div>
+              <div class="invoice-cell amount">${amountDisplay}</div>
+              <div class="invoice-cell status">
+                <span class="status-badge ${statusClass}">${invoice.status}</span>
+              </div>
+              <div class="invoice-cell date">${formatDate(invoice.date)}</div>
+              <div class="invoice-cell actions" onclick="event.stopPropagation()">
+                <button class="action-icon" onclick="showInvoicePreview(${invoice.id})">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-icon" onclick="editInvoice(${invoice.id})">
+                  <i class="fas fa-edit"></i>
+                </button>
+                ${
+                  invoice.status === "Unpaid" || invoice.status === "Partial"
+                    ? `
+                  <button class="action-icon payment" onclick="openPaymentModal(${invoice.id})">
+                    <i class="fas fa-credit-card"></i>
+                  </button>
+                `
+                    : ""
+                }
+                <button class="action-icon delete" onclick="openDeleteModal(${invoice.id}, '${invoice.number}')">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `;
+        });
+
+        if (filteredInvoices.length === 0) {
+          html = `
+            <div style="padding: var(--space-xl); text-align: center;">
+              <i class="fas fa-file-invoice" style="font-size: 3rem; color: var(--text-light); margin-bottom: var(--space-md);"></i>
+              <h3>No Invoices Found</h3>
+              <p style="color: var(--text-light);">Try adjusting your filters or create a new invoice</p>
+              <button class="btn btn-primary" style="margin-top: var(--space-md);" onclick="openInvoiceModal()">
+                <i class="fas fa-plus"></i> Create New Invoice
+              </button>
+            </div>
+          `;
+        }
+
+        container.innerHTML = html;
+        loadPagination(filteredInvoices.length);
+      }
+
+      // Filter invoices based on search and filters
+      function filterInvoicesData() {
+        let filtered = [...invoices];
+        const statusFilter = document.getElementById("statusFilter").value;
+        const dateFilter = document.getElementById("dateFilter").value;
+        const search = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+
+        // Apply status filter
+        if (statusFilter !== "all") {
+          filtered = filtered.filter((inv) => inv.status === statusFilter);
+        }
+
+        // Apply date filter
+        if (dateFilter !== "all") {
+          const today = new Date();
+          filtered = filtered.filter((inv) => {
+            const invDate = new Date(inv.date);
+            if (dateFilter === "30") {
+              const thirtyDaysAgo = new Date();
+              thirtyDaysAgo.setDate(today.getDate() - 30);
+              return invDate >= thirtyDaysAgo;
+            } else if (dateFilter === "this_month") {
+              return (
+                invDate.getMonth() === today.getMonth() &&
+                invDate.getFullYear() === today.getFullYear()
+              );
+            } else if (dateFilter === "last_month") {
+              const lastMonth = new Date(
+                today.getFullYear(),
+                today.getMonth() - 1,
+                1,
+              );
+              return (
+                invDate.getMonth() === lastMonth.getMonth() &&
+                invDate.getFullYear() === lastMonth.getFullYear()
+              );
+            }
+            return true;
+          });
+        }
+
+        // Apply search filter
+        if (search) {
+          filtered = filtered.filter(
+            (inv) =>
+              inv.number.toLowerCase().includes(search) ||
+              inv.patient.toLowerCase().includes(search),
+          );
+        }
+
+        return filtered;
+      }
+
+      // Update statistics
+      function updateStats() {
+        const totalInvoices = invoices.length;
+        const totalAmount = invoices.reduce((sum, inv) => sum + inv.amount, 0);
+        const outstanding = invoices
+          .filter((inv) => inv.status === "Unpaid" || inv.status === "Partial")
+          .reduce((sum, inv) => sum + (inv.balance || inv.amount), 0);
+
+        const today = new Date();
+        const thisMonthInvoices = invoices.filter((inv) => {
+          const invDate = new Date(inv.date);
+          return (
+            invDate.getMonth() === today.getMonth() &&
+            invDate.getFullYear() === today.getFullYear()
+          );
+        }).length;
+
+        const statsHtml = `
+          <div class="stat-card" onclick="filterByStatus('all')">
+            <div class="stat-value">${totalInvoices}</div>
+            <div class="stat-label">Total Invoices</div>
+          </div>
+
+          <div class="stat-card-green" onclick="filterByStatus('Paid')">
+            <div class="stat-value" style="color: var(--success)">₦${(totalAmount / 1000).toFixed(1)}K</div>
+            <div class="stat-label">Total Amount</div>
+          </div>
+
+          <div class="stat-card-orange" onclick="filterByStatus('Unpaid')">
+            <div class="stat-value" style="color: var(--warning)">₦${(outstanding / 1000).toFixed(1)}K</div>
+            <div class="stat-label">Outstanding</div>
+          </div>
+
+          <div class="stat-card-purple">
+            <div class="stat-value" style="color: var(--purple)">${thisMonthInvoices}</div>
+            <div class="stat-label">This Month</div>
+          </div>
+        `;
+
+        document.getElementById("invoiceStats").innerHTML = statsHtml;
+      }
+
+      function filterByStatus(status) {
+        document.getElementById("statusFilter").value =
+          status === "all" ? "all" : status;
+        filterInvoices();
+      }
+
+      // Filter function
+      function filterInvoices() {
+        loadInvoices();
+      }
+
+      // Select invoice
+      function selectInvoice(id) {
+        document.querySelectorAll(".invoice-row").forEach((row) => {
+          row.classList.remove("selected");
+        });
+        event.currentTarget.classList.add("selected");
+        currentInvoiceId = id;
+      }
+
+      // Modal functions
+      function openInvoiceModal(invoiceId = null) {
+        currentInvoiceId = invoiceId;
+
+        if (invoiceId) {
+          const invoice = invoices.find((i) => i.id === invoiceId);
+          if (invoice) {
+            document.getElementById("invoiceModalTitle").innerText =
+              "Edit Invoice";
+            // Populate form with invoice data
+            document.getElementById("patientSelect").value = invoice.patientId
+              ? invoice.patientId.slice(-1)
+              : "1";
+            document.getElementById("invoiceDate").value = invoice.date;
+            document.getElementById("paymentStatus").value = invoice.status;
+            document.getElementById("paymentMethod").value =
+              invoice.paymentMethod || "Cash";
+            document.getElementById("invoiceNotes").value = invoice.notes || "";
+
+            // Populate items
+            const tbody = document.getElementById("invoiceItemsBody");
+            tbody.innerHTML = "";
+            invoice.items.forEach((item) => {
+              addInvoiceItem(item.description, item.qty, item.price);
+            });
+
+            document.getElementById("discount").value = invoice.discount || 0;
+            calculateTotals();
+          }
+        } else {
+          document.getElementById("invoiceModalTitle").innerText =
+            "Create New Invoice";
+          // Reset form
+          document.getElementById("invoiceForm").reset();
+          document.getElementById("invoiceItemsBody").innerHTML = `
+            <tr class="invoice-item-row">
+              <td>
+                <input type="text" class="form-control" placeholder="Item description" value="Consultation Fee">
+              </td>
+              <td>
+                <input type="number" class="form-control item-qty" value="1" min="1" onchange="calculateItemTotal(this)">
+              </td>
+              <td>
+                <input type="number" class="form-control item-price" value="10000" min="0" onchange="calculateItemTotal(this)">
+              </td>
+              <td class="item-total">₦10,000</td>
+              <td class="remove-item" onclick="removeInvoiceItem(this)">
+                <i class="fas fa-trash"></i>
+              </td>
+            </tr>
+          `;
+          document.getElementById("discount").value = 0;
+          calculateTotals();
+        }
+
+        document.getElementById("invoiceModal").classList.add("active");
+      }
+
+      function closeInvoiceModal() {
+        document.getElementById("invoiceModal").classList.remove("active");
+        currentInvoiceId = null;
+      }
+
+      // Invoice items management
+      function addInvoiceItem(description = "", qty = 1, price = 0) {
+        const tbody = document.getElementById("invoiceItemsBody");
+        const newRow = document.createElement("tr");
+        newRow.className = "invoice-item-row";
+        newRow.innerHTML = `
+          <td>
+            <input type="text" class="form-control" placeholder="Item description" value="${description}">
+          </td>
+          <td>
+            <input type="number" class="form-control item-qty" value="${qty}" min="1" onchange="calculateItemTotal(this)">
+          </td>
+          <td>
+            <input type="number" class="form-control item-price" value="${price}" min="0" onchange="calculateItemTotal(this)">
+          </td>
+          <td class="item-total">₦${(qty * price).toLocaleString()}</td>
+          <td class="remove-item" onclick="removeInvoiceItem(this)">
+            <i class="fas fa-trash"></i>
+          </td>
+        `;
+        tbody.appendChild(newRow);
+        calculateTotals();
+      }
+
+      function removeInvoiceItem(element) {
+        const row = element.closest("tr");
+        if (document.querySelectorAll(".invoice-item-row").length > 1) {
+          row.remove();
+          calculateTotals();
+        } else {
+          showToast("At least one item is required", "warning");
+        }
+      }
+
+      function calculateItemTotal(element) {
+        const row = element.closest("tr");
+        const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+        const price = parseFloat(row.querySelector(".item-price").value) || 0;
+        const total = qty * price;
+        row.querySelector(".item-total").innerText =
+          `₦${total.toLocaleString()}`;
+        calculateTotals();
+      }
+
+      function calculateTotals() {
+        let subtotal = 0;
+        document.querySelectorAll(".invoice-item-row").forEach((row) => {
+          const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+          const price = parseFloat(row.querySelector(".item-price").value) || 0;
+          subtotal += qty * price;
+        });
+
+        const discount =
+          parseFloat(document.getElementById("discount").value) || 0;
+        const total = subtotal - discount;
+
+        document.getElementById("subtotal").innerText =
+          `₦${subtotal.toLocaleString()}`;
+        document.getElementById("grandTotal").innerText =
+          `₦${total.toLocaleString()}`;
+
+        const amountPaid =
+          parseFloat(document.getElementById("amountPaid").value) || 0;
+        const balance = total - amountPaid;
+        document.getElementById("balanceDue").value =
+          `₦${balance.toLocaleString()}`;
+      }
+
+      function updateBalance() {
+        calculateTotals();
+      }
+
+      function applyStaffDiscount() {
+        const staffDiscount = document.getElementById("staffDiscount").checked;
+        if (staffDiscount) {
+          const subtotal =
+            parseFloat(
+              document
+                .getElementById("subtotal")
+                .innerText.replace(/[^0-9]/g, ""),
+            ) || 0;
+          const discount = Math.round(subtotal * 0.1);
+          document.getElementById("discount").value = discount;
+        } else {
+          document.getElementById("discount").value = 0;
+        }
+        calculateTotals();
+      }
+
+      // Save invoice
+      function saveInvoice() {
+        const patient = document.getElementById("patientSelect").value;
+        const date = document.getElementById("invoiceDate").value;
+        const status = document.getElementById("paymentStatus").value;
+        const paymentMethod = document.getElementById("paymentMethod").value;
+        const notes = document.getElementById("invoiceNotes").value;
+        const discount =
+          parseFloat(document.getElementById("discount").value) || 0;
+        const amountPaid =
+          parseFloat(document.getElementById("amountPaid").value) || 0;
+
+        if (!patient) {
+          showToast("Please select a patient", "error");
+          return;
+        }
+
+        // Collect items
+        const items = [];
+        document.querySelectorAll(".invoice-item-row").forEach((row) => {
+          const description = row.querySelector("td:first-child input").value;
+          const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+          const price = parseFloat(row.querySelector(".item-price").value) || 0;
+          if (description && qty > 0) {
+            items.push({ description, qty, price });
+          }
+        });
+
+        if (items.length === 0) {
+          showToast("Please add at least one item", "error");
+          return;
+        }
+
+        const subtotal = items.reduce(
+          (sum, item) => sum + item.qty * item.price,
+          0,
+        );
+        const total = subtotal - discount;
+
+        // Get patient name and initials
+        const patientMap = {
+          1: { name: "Sarah Jones", initials: "SJ", id: "PAT-00123" },
+          2: { name: "Michael Obi", initials: "MO", id: "PAT-00124" },
+          3: { name: "Ada Eze", initials: "AE", id: "PAT-00125" },
+          4: { name: "John Okonkwo", initials: "JO", id: "PAT-00126" },
+          5: { name: "Funke Adebayo", initials: "FA", id: "PAT-00127" },
+          6: { name: "Tunde Okafor", initials: "TO", id: "PAT-00128" },
+        };
+
+        const patientInfo = patientMap[patient];
+
+        if (currentInvoiceId) {
+          // Update existing invoice
+          const index = invoices.findIndex((i) => i.id === currentInvoiceId);
+          if (index !== -1) {
+            invoices[index] = {
+              ...invoices[index],
+              patient: patientInfo.name,
+              patientId: patientInfo.id,
+              patientInitials: patientInfo.initials,
+              date,
+              items,
+              amount: total,
+              discount,
+              status:
+                amountPaid >= total
+                  ? "Paid"
+                  : amountPaid > 0
+                    ? "Partial"
+                    : status,
+              amountPaid,
+              balance: total - amountPaid,
+              paymentMethod,
+              notes,
+            };
+          }
+          showToast("Invoice updated successfully");
+        } else {
+          // Create new invoice
+          const newInvoice = {
+            id: invoices.length + 1,
+            number: `INV-${new Date().getFullYear()}-${String(3400 + invoices.length + 1).slice(-4)}`,
+            patient: patientInfo.name,
+            patientId: patientInfo.id,
+            patientInitials: patientInfo.initials,
+            date,
+            items,
+            amount: total,
+            discount,
+            status:
+              amountPaid >= total
+                ? "Paid"
+                : amountPaid > 0
+                  ? "Partial"
+                  : status,
+            amountPaid,
+            balance: total - amountPaid,
+            paymentMethod,
+            notes,
+          };
+          invoices.push(newInvoice);
+          showToast("Invoice created successfully");
+        }
+
+        // Refresh views
+        loadInvoices();
+        updateStats();
+        closeInvoiceModal();
+      }
+
+      // Payment Modal
+      function openPaymentModal(invoiceId) {
+        const invoice = invoices.find((i) => i.id === invoiceId);
+        if (invoice) {
+          currentInvoiceId = invoiceId;
+          document.getElementById("paymentInvoiceNumber").innerText =
+            invoice.number;
+          document.getElementById("paymentPatient").innerText = invoice.patient;
+          document.getElementById("paymentTotal").innerHTML =
+            `₦${invoice.amount.toLocaleString()}`;
+          const balance = invoice.balance || invoice.amount;
+          document.getElementById("paymentBalance").innerHTML =
+            `₦${balance.toLocaleString()}`;
+          document.getElementById("paymentAmount").value = balance;
+          document.getElementById("paymentAmount").max = balance;
+          document.getElementById("paymentModal").classList.add("active");
+        }
+      }
+
+      function closePaymentModal() {
+        document.getElementById("paymentModal").classList.remove("active");
+        currentInvoiceId = null;
+      }
+
+      function selectPaymentMethod(method) {
+        selectedPaymentMethod = method;
+        document.querySelectorAll(".payment-method-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        event.currentTarget.classList.add("selected");
+      }
+
+      function calculatePaymentChange() {
+        const amount =
+          parseFloat(document.getElementById("paymentAmount").value) || 0;
+        const total =
+          parseFloat(
+            document
+              .getElementById("paymentTotal")
+              .innerText.replace(/[^0-9]/g, ""),
+          ) || 0;
+        const changeContainer = document.getElementById("changeDueContainer");
+
+        if (amount > total) {
+          const change = amount - total;
+          document.getElementById("changeDue").innerHTML =
+            `₦${change.toLocaleString()}`;
+          changeContainer.style.display = "block";
+        } else {
+          changeContainer.style.display = "none";
+        }
+      }
+
+      function processPayment() {
+        const amount =
+          parseFloat(document.getElementById("paymentAmount").value) || 0;
+        const method = selectedPaymentMethod;
+        const date = document.getElementById("paymentDate").value;
+        const reference = document.getElementById("paymentReference").value;
+        const notes = document.getElementById("paymentNotes").value;
+
+        if (amount <= 0) {
+          showToast("Please enter a valid amount", "error");
+          return;
+        }
+
+        const invoice = invoices.find((i) => i.id === currentInvoiceId);
+        if (invoice) {
+          const total = invoice.amount;
+          const newAmountPaid = (invoice.amountPaid || 0) + amount;
+
+          invoice.status = newAmountPaid >= total ? "Paid" : "Partial";
+          invoice.amountPaid = newAmountPaid;
+          invoice.balance = total - newAmountPaid;
+          invoice.paymentMethod = method;
+          invoice.paymentRef = reference;
+          invoice.paymentDate = date;
+          invoice.paymentNotes = notes;
+
+          showToast(
+            `Payment of ₦${amount.toLocaleString()} processed successfully`,
+          );
+          loadInvoices();
+          updateStats();
+          closePaymentModal();
+        }
+      }
+
+      // Invoice Preview
+      function showInvoicePreview(id) {
+        const invoice = invoices.find((i) => i.id === id);
+        if (invoice) {
+          const itemsHtml = invoice.items
+            .map(
+              (item) => `
+            <tr>
+              <td>${item.description}</td>
+              <td>${item.qty}</td>
+              <td>₦${item.price.toLocaleString()}</td>
+              <td>₦${(item.qty * item.price).toLocaleString()}</td>
+            </tr>
+          `,
+            )
+            .join("");
+
+          const previewHtml = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+              <h2>Invoice Preview</h2>
+              <button class="modal-close" onclick="hideInvoicePreview()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div class="invoice-header">
+              <div class="clinic-details">
+                <h2>PERFECTIONS DENTAL</h2>
+                <p>23 Ikeja Way, Lagos, Nigeria</p>
+                <p>+234 123 456 7890 • info@perfections.dental</p>
+              </div>
+              <div class="invoice-details">
+                <h3>INVOICE</h3>
+                <p>${invoice.number}</p>
+                <p>Date: ${formatDate(invoice.date)}</p>
+              </div>
+            </div>
+
+            <div class="patient-details">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-lg);">
+                <div>
+                  <p style="color: var(--text-light); margin-bottom: 4px">Bill To:</p>
+                  <p style="font-weight: 600">${invoice.patient}</p>
+                  <p>Patient ID: ${invoice.patientId}</p>
+                </div>
+                <div>
+                  <p style="color: var(--text-light); margin-bottom: 4px">Payment Status:</p>
+                  <p><span class="status-badge ${invoice.status === "Paid" ? "status-paid" : invoice.status === "Unpaid" ? "status-unpaid" : "status-partial"}">${invoice.status}</span></p>
+                </div>
+              </div>
+            </div>
+
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Qty</th>
+                  <th>Unit Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${itemsHtml}
+              </tbody>
+            </table>
+
+            <div class="totals">
+              <div class="total-line">
+                <span>Subtotal:</span>
+                <span>₦${invoice.items.reduce((sum, item) => sum + item.qty * item.price, 0).toLocaleString()}</span>
+              </div>
+              ${
+                invoice.discount > 0
+                  ? `
+                <div class="total-line">
+                  <span>Discount:</span>
+                  <span>-₦${invoice.discount.toLocaleString()}</span>
+                </div>
+              `
+                  : ""
+              }
+              <div class="total-line grand-total">
+                <span>Total:</span>
+                <span>₦${invoice.amount.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div style="margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 2px dashed var(--light-gray); text-align: center; color: var(--text-light);">
+              <p>Payment Method: ${invoice.paymentMethod || "N/A"} ${invoice.paymentRef ? `| Reference: ${invoice.paymentRef}` : ""}</p>
+              <p style="margin-top: var(--space-sm)">Thank you for choosing Perfections Dental!</p>
+            </div>
+
+            <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl);">
+              <button class="btn btn-primary" style="flex: 1" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                Print
+              </button>
+              <button class="btn btn-secondary" style="flex: 1" onclick="hideInvoicePreview()">
+                <i class="fas fa-download"></i>
+                Download PDF
+              </button>
+            </div>
+          `;
+
+          document.getElementById("invoicePreviewContent").innerHTML =
+            previewHtml;
+          document.getElementById("invoicePreviewModal").classList.add("show");
+        }
+      }
+
+      function hideInvoicePreview() {
+        document.getElementById("invoicePreviewModal").classList.remove("show");
+      }
+
+      // Edit invoice
+      function editInvoice(id) {
+        openInvoiceModal(id);
+      }
+
+      // Delete functions
+      function openDeleteModal(id, name) {
+        deleteId = id;
+        document.getElementById("deleteItemName").innerText = name;
+        document.getElementById("deleteModal").classList.add("active");
+      }
+
+      function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.remove("active");
+        deleteId = null;
+      }
+
+      function confirmDelete() {
+        if (deleteId) {
+          const index = invoices.findIndex((i) => i.id === deleteId);
+          if (index !== -1) {
+            invoices.splice(index, 1);
+            showToast("Invoice deleted successfully");
+            loadInvoices();
+            updateStats();
+          }
+        }
+        closeDeleteModal();
+      }
+
+      // Pagination
+      function loadPagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const container = document.getElementById("pagination");
+
+        if (totalPages <= 1) {
+          container.innerHTML = "";
+          return;
+        }
+
+        let html = `
+          <div style="color: var(--text-light)">
+            Showing ${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, totalItems)} of ${totalItems} invoices
+          </div>
+          <div style="display: flex; gap: var(--space-xs)">
+        `;
+
+        html += `<button class="btn btn-sm btn-secondary" ${currentPage === 1 ? "disabled" : ""} onclick="changePage(${currentPage - 1})">Previous</button>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+          if (
+            i === currentPage ||
+            (i >= currentPage - 2 && i <= currentPage + 2)
+          ) {
+            html += `<button class="btn btn-sm ${i === currentPage ? "btn-primary" : "btn-secondary"}" onclick="changePage(${i})">${i}</button>`;
+          } else if (i === currentPage - 3 || i === currentPage + 3) {
+            html += `<button class="btn btn-sm btn-secondary" disabled>...</button>`;
+          }
+        }
+
+        html += `<button class="btn btn-sm btn-secondary" ${currentPage === totalPages ? "disabled" : ""} onclick="changePage(${currentPage + 1})">Next</button>`;
+        html += "</div>";
+
+        container.innerHTML = html;
+      }
+
+      function changePage(page) {
+        currentPage = page;
+        loadInvoices();
+      }
+
+      // Helper functions
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+      }
+
+      // Toast functions
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toast.querySelector(".toast-icon i");
+
+        toastMessage.innerText = message;
+        toast.className = "toast show " + type;
+
+        if (type === "success") {
+          toastIcon.className = "fas fa-check-circle";
+        } else if (type === "error") {
+          toastIcon.className = "fas fa-exclamation-circle";
+        } else if (type === "warning") {
+          toastIcon.className = "fas fa-exclamation-triangle";
+        }
+
+        setTimeout(() => {
+          hideToast();
+        }, 3000);
+      }
+
+      function hideToast() {
+        document.getElementById("toast").classList.remove("show");
+      }
+    </script>
+  </body>
+</html>

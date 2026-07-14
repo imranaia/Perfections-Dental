@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Reports — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+      .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+      .filter-tabs button {
+        padding: 8px 16px; border-radius: var(--radius-pill); border: 1.5px solid var(--light-border);
+        background: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 700; color: var(--mid-gray); cursor: pointer;
+      }
+      .filter-tabs button.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+      .list-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--light-border); font-size: 0.86rem; }
+      .list-row:last-child { border-bottom: none; }
+      .bar-track { flex: 1; height: 8px; border-radius: 4px; background: var(--light-border); margin: 0 10px; overflow: hidden; }
+      .bar-track-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Reception</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="appointments.html"><i class="fas fa-calendar-days"></i> Appointments</a>
+        <a class="glass-nav-link" href="patients.html"><i class="fas fa-users"></i> Patients</a>
+        <a class="glass-nav-link" href="prescriptions.html"><i class="fas fa-pills"></i> Prescriptions</a>
+        <a class="glass-nav-link" href="invoices.html"><i class="fas fa-file-invoice"></i> Invoices</a>
+        <a class="glass-nav-link" href="payments.html"><i class="fas fa-credit-card"></i> Payments</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link active" href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1>Reports</h1>
+          <div style="display:flex; gap:8px;">
+            <button class="glass-btn glass-btn-ghost" id="exportTxBtn"><i class="fas fa-file-csv"></i> Export Transactions</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="filter-tabs" id="periodTabs">
+            <button class="active" data-period="daily">Today</button>
+            <button data-period="weekly">This Week</button>
+            <button data-period="monthly">This Month</button>
+          </div>
+        </div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:20px;">
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-calendar-check"></i></div><div><div class="glass-stat-num" id="statAppointments">–</div><div class="glass-stat-label">Appointments</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon green"><i class="fas fa-sack-dollar"></i></div><div><div class="glass-stat-num" id="statRevenue">–</div><div class="glass-stat-label">Revenue</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon gold"><i class="fas fa-user-plus"></i></div><div><div class="glass-stat-num" id="statNewPatients">–</div><div class="glass-stat-label">New Patients</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-ticket"></i></div><div><div class="glass-stat-num" id="statAvgTx">–</div><div class="glass-stat-label">Avg. Transaction</div></div></div>
+        </div>
+
+        <div class="glass-grid glass-grid-2" style="margin-bottom:20px;">
+          <div class="glass-card">
+            <h3><i class="fas fa-calendar-day"></i> Appointment Breakdown</h3>
+            <div id="apptBreakdown" style="margin-top:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-credit-card"></i> Payment Methods</h3>
+            <div id="paymentBreakdown" style="margin-top:10px;"></div>
+          </div>
+        </div>
+
+        <div class="glass-grid glass-grid-2" style="margin-bottom:20px;">
+          <div class="glass-card">
+            <h3><i class="fas fa-user-doctor"></i> Staff Performance</h3>
+            <div id="staffPerf" style="margin-top:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-people-group"></i> Patient Demographics</h3>
+            <div id="demographics" style="margin-top:10px;"></div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h3><i class="fas fa-boxes-stacked"></i> Inventory Status</h3>
+          <div id="inventoryStatus" style="margin-top:10px;"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/reception/reports';
+      async function api(path) {
+        const res = await fetch(API + path, { credentials: 'include' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+      document.getElementById('exportTxBtn').addEventListener('click', () => {
+        window.open(`${API}/export-csv?type=transactions`, '_blank');
+      });
+
+      let currentPeriod = 'daily';
+
+      async function loadFinancial() {
+        const { report } = await api(`/financial?period=${currentPeriod}`);
+        document.getElementById('statRevenue').textContent = '₦' + (report.total_revenue ?? 0).toLocaleString();
+        document.getElementById('statAvgTx').textContent = '₦' + Math.round(report.avg_transaction ?? 0).toLocaleString();
+        document.getElementById('paymentBreakdown').innerHTML = report.payment_methods.length ? report.payment_methods.map(m => `
+          <div class="list-row"><span style="text-transform:capitalize;">${m.method || m.payment_method}</span><span>₦${(m.total ?? 0).toLocaleString()} (${m.count ?? 0})</span></div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-credit-card"></i>No payments in this period</div>';
+      }
+
+      async function loadAppointmentSummary() {
+        const { summary } = await api(`/appointment-summary?period=${currentPeriod}`);
+        document.getElementById('statAppointments').textContent = summary.total ?? 0;
+        const rows = [
+          ['Completed', summary.completed], ['Cancelled', summary.cancelled],
+          ['No Shows', summary.no_shows], ['Emergencies', summary.emergencies], ['Nurse-only', summary.nurse_only],
+        ];
+        const max = Math.max(...rows.map(r => r[1] || 0), 1);
+        document.getElementById('apptBreakdown').innerHTML = rows.map(([label, val]) => `
+          <div class="list-row"><span>${label}</span><div class="bar-track"><div class="bar-track-fill" style="width:${((val || 0) / max) * 100}%"></div></div><span>${val ?? 0}</span></div>
+        `).join('');
+      }
+
+      async function loadDemographics() {
+        const { demographics: d } = await api('/patient-demographics');
+        document.getElementById('statNewPatients').textContent = d.patient_types?.new ?? 0;
+        document.getElementById('demographics').innerHTML = `
+          ${(d.age_groups || []).map(a => `<div class="list-row"><span>${a.age_group}</span><span>${a.count}</span></div>`).join('')}
+          ${(d.gender || []).map(g => `<div class="list-row"><span>${g.gender}</span><span>${g.count}</span></div>`).join('')}
+        `;
+      }
+
+      async function loadStaffPerformance() {
+        const { performance } = await api('/staff-performance');
+        const all = [...(performance.doctors || []).map(d => ({ ...d, role: 'Dr.' })), ...(performance.nurses || []).map(n => ({ ...n, role: 'Nurse' }))];
+        document.getElementById('staffPerf').innerHTML = all.length ? all.map(s => `
+          <div class="list-row"><span>${s.role} ${s.first_name} ${s.last_name}</span><span>${s.total_appointments ?? s.total_assists ?? 0} · ${s.completed ?? 0} done</span></div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-user-doctor"></i>No staff data</div>';
+      }
+
+      async function loadInventoryStatus() {
+        const { inventory: inv } = await api('/inventory-status');
+        document.getElementById('inventoryStatus').innerHTML = `
+          <div class="glass-grid glass-grid-3">
+            <div><strong>${inv.total_items ?? 0}</strong> total items</div>
+            <div><strong>₦${(inv.total_value ?? 0).toLocaleString()}</strong> total value</div>
+            <div><strong>${(inv.low_stock || []).length}</strong> low stock, <strong>${(inv.expiring_soon || []).length}</strong> expiring soon</div>
+          </div>
+          ${(inv.low_stock || []).length ? '<div style="margin-top:14px;"><strong>Low Stock:</strong>' + inv.low_stock.map(i => `<div class="list-row"><span>${i.name}</span><span>${i.current_stock} left</span></div>`).join('') + '</div>' : ''}
+        `;
+      }
+
+      async function loadAll() {
+        await Promise.all([loadFinancial(), loadAppointmentSummary(), loadDemographics(), loadStaffPerformance(), loadInventoryStatus()]);
+      }
+
+      document.getElementById('periodTabs').addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        document.querySelectorAll('#periodTabs button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentPeriod = e.target.dataset.period;
+        loadFinancial();
+        loadAppointmentSummary();
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await loadAll();
+      }
+      init();
+    </script>
+  </body>
+</html>

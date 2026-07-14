@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Services — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+      .close-modal-btn { background: none; border: none; font-size: 1.2rem; color: var(--mid-gray); cursor: pointer; }
+      .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+      .cat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-pill); font-size: 0.72rem; font-weight: 700; background: #eaf4ff; color: var(--blue); }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Reception</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="appointments.html"><i class="fas fa-calendar-days"></i> Appointments</a>
+        <a class="glass-nav-link" href="patients.html"><i class="fas fa-users"></i> Patients</a>
+        <a class="glass-nav-link" href="prescriptions.html"><i class="fas fa-pills"></i> Prescriptions</a>
+        <a class="glass-nav-link" href="invoices.html"><i class="fas fa-file-invoice"></i> Invoices</a>
+        <a class="glass-nav-link" href="payments.html"><i class="fas fa-credit-card"></i> Payments</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link active" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1>Services</h1>
+          <button class="glass-btn glass-btn-primary" id="newServiceBtn"><i class="fas fa-plus"></i> New Service</button>
+        </div>
+
+        <div class="toolbar" id="categoryTabs"></div>
+
+        <div class="glass-grid glass-grid-3" id="serviceGrid"></div>
+      </main>
+    </div>
+
+    <div class="glass-modal-backdrop" id="modalBackdrop" style="display:none;">
+      <div class="glass-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0;" id="modalTitle"><i class="fas fa-plus"></i> New Service</h3>
+          <button class="close-modal-btn" id="closeModalBtn"><i class="fas fa-xmark"></i></button>
+        </div>
+        <input type="hidden" id="editServiceId" />
+        <div class="glass-field"><label>Name</label><input id="f_name" class="glass-input" /></div>
+        <div class="glass-field"><label>Category</label><input id="f_category" class="glass-input" placeholder="General, Cosmetic…" /></div>
+        <div class="form-row-2">
+          <div class="glass-field"><label>Price (₦)</label><input type="number" id="f_price" class="glass-input" /></div>
+          <div class="glass-field"><label>Duration (mins)</label><input type="number" id="f_duration" class="glass-input" value="30" /></div>
+        </div>
+        <div class="glass-field"><label>Description</label><textarea id="f_description" class="glass-textarea"></textarea></div>
+        <button class="glass-btn glass-btn-primary" id="saveBtn" style="width:100%;"><i class="fas fa-check"></i> Save Service</button>
+        <div id="formMessage" style="margin-top:10px; font-size:0.85rem;"></div>
+      </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/reception/services';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let currentCategory = 'all';
+      let allServices = [];
+
+      async function loadCategories() {
+        const { categories } = await api('/categories');
+        const tabs = document.getElementById('categoryTabs');
+        tabs.innerHTML = `<button class="glass-btn glass-btn-ghost cat-btn active" data-cat="all" style="padding:8px 16px;">All</button>` +
+          categories.map(c => `<button class="glass-btn glass-btn-ghost cat-btn" data-cat="${c.name}" style="padding:8px 16px;">${c.name} (${c.service_count})</button>`).join('');
+        tabs.querySelectorAll('.cat-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            tabs.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('glass-btn-primary'));
+            currentCategory = btn.dataset.cat;
+            renderServices();
+          });
+        });
+      }
+
+      async function loadServices() {
+        const { services } = await api('/?per_page=100');
+        allServices = services;
+        renderServices();
+      }
+
+      function renderServices() {
+        const list = currentCategory === 'all' ? allServices : allServices.filter(s => s.category?.name === currentCategory);
+        document.getElementById('serviceGrid').innerHTML = list.length ? list.map(s => `
+          <div class="glass-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <span class="cat-pill">${s.category?.name || 'General'}</span>
+              <button class="glass-btn glass-btn-ghost edit-btn" data-id="${s.id}" style="padding:5px 10px;"><i class="fas fa-pen"></i></button>
+            </div>
+            <h3 style="margin-top:12px;">${s.name}</h3>
+            <p>${s.description || ''}</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+              <strong style="font-family:var(--font-display); color:var(--blue-dark); font-size:1.1rem;">₦${s.price.toLocaleString()}</strong>
+              <span class="glass-badge info"><i class="fas fa-clock"></i> ${s.duration} min</span>
+            </div>
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-tooth"></i>No services in this category</div>';
+
+        document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => openEdit(btn.dataset.id)));
+      }
+
+      const modal = document.getElementById('modalBackdrop');
+      function resetForm() {
+        ['name', 'category', 'price', 'duration', 'description'].forEach(f => document.getElementById('f_' + f).value = '');
+        document.getElementById('f_duration').value = 30;
+        document.getElementById('editServiceId').value = '';
+      }
+
+      document.getElementById('newServiceBtn').addEventListener('click', () => {
+        resetForm();
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus"></i> New Service';
+        modal.style.display = 'flex';
+      });
+      document.getElementById('closeModalBtn').addEventListener('click', () => { modal.style.display = 'none'; });
+
+      function openEdit(id) {
+        const s = allServices.find(x => String(x.id) === String(id));
+        if (!s) return;
+        resetForm();
+        document.getElementById('editServiceId').value = id;
+        document.getElementById('f_name').value = s.name;
+        document.getElementById('f_category').value = s.category?.name || '';
+        document.getElementById('f_price').value = s.price;
+        document.getElementById('f_duration').value = s.duration;
+        document.getElementById('f_description').value = s.description || '';
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-pen"></i> Edit Service';
+        modal.style.display = 'flex';
+      }
+
+      document.getElementById('saveBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('formMessage');
+        const id = document.getElementById('editServiceId').value;
+        const payload = {
+          name: document.getElementById('f_name').value.trim(),
+          category_name: document.getElementById('f_category').value.trim(),
+          price: Number(document.getElementById('f_price').value) || 0,
+          duration: Number(document.getElementById('f_duration').value) || 30,
+          description: document.getElementById('f_description').value.trim(),
+        };
+        try {
+          if (id) {
+            await api(`/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+          } else {
+            await api('/', { method: 'POST', body: JSON.stringify(payload) });
+          }
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = 'Saved!';
+          setTimeout(async () => {
+            modal.style.display = 'none'; msg.textContent = '';
+            await Promise.all([loadServices(), loadCategories()]);
+          }, 600);
+        } catch (e) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = e.message;
+        }
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await Promise.all([loadServices(), loadCategories()]);
+      }
+      init();
+    </script>
+  </body>
+</html>

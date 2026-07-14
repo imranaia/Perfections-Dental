@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Doctors — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .close-modal-btn { background: none; border: none; font-size: 1.2rem; color: var(--mid-gray); cursor: pointer; }
+      .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+      .avatar-md { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,var(--blue),var(--blue-mid)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Superadmin</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link active" href="doctors.html"><i class="fas fa-user-doctor"></i> Doctors</a>
+        <a class="glass-nav-link" href="nurses.html"><i class="fas fa-user-nurse"></i> Nurses</a>
+        <a class="glass-nav-link" href="reception.html"><i class="fas fa-desk"></i> Reception Staff</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="financial.html"><i class="fas fa-sack-dollar"></i> Financial</a>
+        <a class="glass-nav-link" href="analytics.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a class="glass-nav-link" href="performance.html"><i class="fas fa-ranking-star"></i> Performance</a>
+        <a class="glass-nav-link" href="access-control.html"><i class="fas fa-shield-halved"></i> Access Control</a>
+        <a class="glass-nav-link" href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1>Doctors</h1>
+          <button class="glass-btn glass-btn-primary" id="newBtn"><i class="fas fa-plus"></i> New Doctor</button>
+        </div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:20px;">
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-user-doctor"></i></div><div><div class="glass-stat-num" id="statTotal">–</div><div class="glass-stat-label">Total Doctors</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon green"><i class="fas fa-circle-check"></i></div><div><div class="glass-stat-num" id="statActive">–</div><div class="glass-stat-label">Active</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon gold"><i class="fas fa-calendar-check"></i></div><div><div class="glass-stat-num" id="statAppointments">–</div><div class="glass-stat-label">Today's Appointments</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-star"></i></div><div><div class="glass-stat-num" id="statRating">–</div><div class="glass-stat-label">Avg. Rating</div></div></div>
+        </div>
+
+        <div class="glass-card">
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead><tr><th>Doctor</th><th>Specialty</th><th>Phone</th><th>Experience</th><th>Status</th><th></th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="glass-modal-backdrop" id="modalBackdrop" style="display:none;">
+      <div class="glass-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0;" id="modalTitle"><i class="fas fa-plus"></i> New Doctor</h3>
+          <button class="close-modal-btn" id="closeModalBtn"><i class="fas fa-xmark"></i></button>
+        </div>
+        <input type="hidden" id="editId" />
+        <div class="form-row-2">
+          <div class="glass-field"><label>First name</label><input id="f_first" class="glass-input" /></div>
+          <div class="glass-field"><label>Last name</label><input id="f_last" class="glass-input" /></div>
+        </div>
+        <div class="form-row-2">
+          <div class="glass-field"><label>Email</label><input type="email" id="f_email" class="glass-input" /></div>
+          <div class="glass-field"><label>Phone</label><input id="f_phone" class="glass-input" /></div>
+        </div>
+        <div class="form-row-2">
+          <div class="glass-field"><label>License number</label><input id="f_license" class="glass-input" /></div>
+          <div class="glass-field"><label>Specialty</label><input id="f_specialty" class="glass-input" /></div>
+        </div>
+        <div class="form-row-2">
+          <div class="glass-field"><label>Qualifications</label><input id="f_qual" class="glass-input" /></div>
+          <div class="glass-field"><label>Experience (years)</label><input type="number" id="f_exp" class="glass-input" /></div>
+        </div>
+        <div class="glass-field"><label>Status</label>
+          <select id="f_status" class="glass-select"><option value="active">Active</option><option value="inactive">Inactive</option><option value="suspended">Suspended</option></select>
+        </div>
+        <p id="newDoctorHint" style="font-size:0.78rem; color:var(--mid-gray);">New doctor accounts get the default password <code>doctor123</code>.</p>
+        <button class="glass-btn glass-btn-primary" id="saveBtn" style="width:100%;"><i class="fas fa-check"></i> Save Doctor</button>
+        <div id="formMessage" style="margin-top:10px; font-size:0.85rem;"></div>
+      </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/superadmin/doctors';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let allDoctors = [];
+
+      async function loadStats() {
+        const { stats } = await api('/stats');
+        document.getElementById('statTotal').textContent = stats.total_doctors ?? 0;
+        document.getElementById('statActive').textContent = stats.active_doctors ?? 0;
+        document.getElementById('statAppointments').textContent = stats.today_appointments ?? 0;
+        document.getElementById('statRating').textContent = stats.avg_rating ?? '–';
+      }
+
+      async function loadDoctors() {
+        const { doctors } = await api('/');
+        allDoctors = doctors;
+        document.getElementById('rows').innerHTML = doctors.length ? doctors.map(d => `
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar-md">${(d.fullName || '??').replace('Dr. ', '').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
+              <div><div style="font-weight:700;">${d.fullName}</div><div style="font-size:0.75rem;color:var(--mid-gray);">${d.email || ''}</div></div></div></td>
+            <td>${d.specialty || '—'}</td>
+            <td>${d.phone || '—'}</td>
+            <td>${d.experience ?? 0} yrs</td>
+            <td><span class="glass-badge ${d.status === 'active' ? 'success' : 'neutral'}">${d.status}</span></td>
+            <td><button class="glass-btn glass-btn-ghost edit-btn" data-id="${d.id}" style="padding:6px 12px;"><i class="fas fa-pen"></i></button></td>
+          </tr>
+        `).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--mid-gray);padding:30px;">No doctors yet</td></tr>';
+
+        document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => openEdit(btn.dataset.id)));
+      }
+
+      const modal = document.getElementById('modalBackdrop');
+      function resetForm() {
+        ['first', 'last', 'email', 'phone', 'license', 'specialty', 'qual', 'exp'].forEach(f => document.getElementById('f_' + f).value = '');
+        document.getElementById('f_status').value = 'active';
+        document.getElementById('editId').value = '';
+      }
+
+      document.getElementById('newBtn').addEventListener('click', () => {
+        resetForm();
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus"></i> New Doctor';
+        document.getElementById('newDoctorHint').style.display = 'block';
+        modal.style.display = 'flex';
+      });
+      document.getElementById('closeModalBtn').addEventListener('click', () => { modal.style.display = 'none'; });
+
+      function openEdit(id) {
+        const d = allDoctors.find(x => String(x.id) === String(id));
+        if (!d) return;
+        resetForm();
+        document.getElementById('editId').value = id;
+        document.getElementById('f_first').value = d.firstName || '';
+        document.getElementById('f_last').value = d.lastName || '';
+        document.getElementById('f_email').value = d.email || '';
+        document.getElementById('f_phone').value = d.phone || '';
+        document.getElementById('f_specialty').value = d.specialty || '';
+        document.getElementById('f_exp').value = d.experience || '';
+        document.getElementById('f_status').value = d.status || 'active';
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-pen"></i> Edit Doctor';
+        document.getElementById('newDoctorHint').style.display = 'none';
+        modal.style.display = 'flex';
+      }
+
+      document.getElementById('saveBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('formMessage');
+        const id = document.getElementById('editId').value;
+        const payload = {
+          firstName: document.getElementById('f_first').value.trim(),
+          lastName: document.getElementById('f_last').value.trim(),
+          email: document.getElementById('f_email').value.trim(),
+          phone: document.getElementById('f_phone').value.trim(),
+          license: document.getElementById('f_license').value.trim(),
+          specialty: document.getElementById('f_specialty').value.trim(),
+          qualifications: document.getElementById('f_qual').value.trim(),
+          experience: Number(document.getElementById('f_exp').value) || 0,
+          status: document.getElementById('f_status').value,
+        };
+        try {
+          if (id) {
+            await api(`/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+          } else {
+            await api('/', { method: 'POST', body: JSON.stringify(payload) });
+          }
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = 'Saved!';
+          setTimeout(async () => { modal.style.display = 'none'; msg.textContent = ''; await Promise.all([loadDoctors(), loadStats()]); }, 600);
+        } catch (e) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = e.message;
+        }
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await Promise.all([loadStats(), loadDoctors()]);
+      }
+      init();
+    </script>
+  </body>
+</html>

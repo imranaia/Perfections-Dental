@@ -1,0 +1,1483 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Payments - Reception - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .payments-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .payment-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .summary-card-blue,
+      .summary-card-green,
+      .summary-card-orange,
+      .summary-card-purple {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-base);
+        border-left: 4px solid transparent;
+      }
+
+      .summary-card-blue:hover,
+      .summary-card-green:hover,
+      .summary-card-orange:hover,
+      .summary-card-purple:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .summary-card-blue {
+        border-left-color: var(--primary-blue);
+      }
+
+      .summary-card-green {
+        border-left-color: var(--primary-green);
+      }
+
+      .summary-card-orange {
+        border-left-color: var(--warning);
+      }
+
+      .summary-card-purple {
+        border-left-color: var(--purple);
+      }
+
+      .summary-label {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-xs);
+      }
+
+      .summary-amount {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: var(--space-xs);
+      }
+
+      .summary-amount.green {
+        color: var(--primary-green);
+      }
+
+      .summary-amount.orange {
+        color: var(--warning);
+      }
+
+      .summary-amount.purple {
+        color: var(--purple);
+      }
+
+      .summary-change {
+        font-size: 0.8rem;
+      }
+
+      .summary-change.positive {
+        color: var(--success);
+      }
+
+      .payment-layout {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: var(--space-xl);
+      }
+
+      /* Patient Selector */
+      .patient-selector {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      /* Cart Styles */
+      .prescription-cart {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        position: sticky;
+        top: var(--space-lg);
+      }
+
+      .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--space-sm) 0;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .cart-item-info h4 {
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+      }
+
+      .cart-item-info p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .cart-item-actions {
+        display: flex;
+        gap: var(--space-xs);
+      }
+
+      .action-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-full);
+        border: none;
+        background: var(--off-white);
+        color: var(--text-light);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .action-icon:hover {
+        background: var(--primary-blue);
+        color: white;
+      }
+
+      .action-icon.delete:hover {
+        background: var(--error);
+      }
+
+      /* Dosage Selector */
+      .dosage-selector {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        margin: var(--space-sm) 0;
+        flex-wrap: wrap;
+      }
+
+      .dosage-input {
+        width: 80px;
+        padding: var(--space-xs);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        text-align: center;
+      }
+
+      .dosage-input.large {
+        width: 120px;
+      }
+
+      /* Prescription Preview */
+      .prescription-preview {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        margin-top: var(--space-lg);
+        font-family: var(--font-mono);
+        border: 1px dashed var(--primary-blue);
+      }
+
+      .prescription-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 2px solid var(--primary-blue);
+      }
+
+      .prescription-logo {
+        width: 50px;
+        height: 50px;
+      }
+
+      .prescription-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .prescription-title h4 {
+        font-size: 1.1rem;
+        color: var(--primary-blue);
+        margin-bottom: 2px;
+      }
+
+      .prescription-title p {
+        font-size: 0.7rem;
+        color: var(--text-light);
+      }
+
+      .prescription-line {
+        display: flex;
+        margin-bottom: var(--space-xs);
+        font-size: 0.9rem;
+      }
+
+      .prescription-label {
+        width: 40px;
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+
+      .prescription-text {
+        flex: 1;
+      }
+
+      .prescription-dosage {
+        margin-left: 40px;
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        margin-bottom: var(--space-sm);
+      }
+
+      .signature-area {
+        margin-top: var(--space-lg);
+        padding-top: var(--space-lg);
+        border-top: 2px dashed var(--medium-gray);
+        text-align: center;
+      }
+
+      .doctor-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--primary-blue);
+      }
+
+      .doctor-title {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin: 2px 0;
+      }
+
+      /* Invoice Preview */
+      .invoice-preview {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        margin: var(--space-lg) 0;
+        font-family: var(--font-mono);
+        border: 1px solid var(--light-gray);
+      }
+
+      .invoice-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 2px solid var(--primary-blue);
+      }
+
+      .invoice-title h4 {
+        font-size: 1.1rem;
+        color: var(--primary-blue);
+        margin-bottom: 2px;
+      }
+
+      .invoice-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--space-xs);
+        padding: var(--space-xs) 0;
+        border-bottom: 1px dashed var(--medium-gray);
+      }
+
+      .invoice-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
+        border-top: 2px solid var(--dark-gray);
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+
+      .service-items {
+        max-height: 300px;
+        overflow-y: auto;
+        margin: var(--space-md) 0;
+      }
+
+      /* Payment Methods */
+      .payment-methods {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin: var(--space-lg) 0;
+      }
+
+      .payment-method-card {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        border: 2px solid transparent;
+      }
+
+      .payment-method-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .payment-method-card.selected {
+        border-color: var(--primary-blue);
+        background: white;
+      }
+
+      .payment-method-card.free.selected {
+        border-color: var(--purple);
+      }
+
+      .payment-method-card i {
+        font-size: 2rem;
+        color: var(--primary-blue);
+        margin-bottom: var(--space-xs);
+      }
+
+      .payment-method-card.free i {
+        color: var(--purple);
+      }
+
+      .payment-method-card span {
+        display: block;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      /* Discount Section */
+      .discount-section {
+        background: rgba(255, 159, 10, 0.1);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin: var(--space-md) 0;
+      }
+
+      .free-reason {
+        background: rgba(175, 82, 222, 0.1);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin: var(--space-md) 0;
+      }
+
+      /* Recent Payments & Breakdown - Now in New Payment section */
+      .payment-history-section {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-top: var(--space-xl);
+      }
+
+      .recent-payments {
+        margin-bottom: var(--space-xl);
+      }
+
+      .payment-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px solid var(--light-gray);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .payment-item:hover {
+        background: rgba(0, 102, 204, 0.05);
+        border-radius: var(--radius-md);
+        padding-left: var(--space-sm);
+      }
+
+      .payment-item:last-child {
+        border-bottom: none;
+      }
+
+      .payment-method-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .payment-method-icon.pos {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .payment-method-icon.cash {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .payment-method-icon.transfer {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .payment-method-icon.free {
+        background: rgba(175, 82, 222, 0.1);
+        color: var(--purple);
+      }
+
+      .breakdown-card {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        margin-top: var(--space-lg);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: var(--space-md);
+        margin-top: var(--space-xl);
+      }
+
+      .badge-prescription {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .section-divider {
+        margin: var(--space-xl) 0;
+        border-top: 2px dashed var(--light-gray);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img
+                src="../../assets/logo.png"
+                alt="Perfections Dental Services"
+              />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Payments</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile"></div>
+          </div>
+        </div>
+
+        <!-- Payments Header -->
+        <div class="payments-header">
+          <h2 style="font-size: 1.5rem">Process Payment & Prescription</h2>
+          <div
+            class="date-display"
+            style="
+              background: var(--pure-white);
+              padding: var(--space-sm) var(--space-lg);
+              border-radius: var(--radius-full);
+            "
+          >
+            <i class="fas fa-calendar"></i>
+            Monday, March 15, 2026
+          </div>
+        </div>
+
+        <!-- Payment Summary -->
+        <div class="payment-summary">
+          <div class="summary-card-blue">
+            <div class="summary-amount">₦257,000</div>
+            <div class="summary-label">Today's Revenue</div>
+            <div class="summary-change positive">▲ 12% vs yesterday</div>
+          </div>
+
+          <div class="summary-card-green">
+            <div class="summary-amount green">28</div>
+            <div class="summary-label">Transactions</div>
+            <div class="summary-change">25 paid | 3 free</div>
+          </div>
+
+          <div class="summary-card-orange">
+            <div class="summary-amount orange">₦10,280</div>
+            <div class="summary-label">Average Ticket</div>
+            <div class="summary-change">+₦520 vs average</div>
+          </div>
+
+          <div class="summary-card-purple">
+            <div class="summary-amount purple">3</div>
+            <div class="summary-label">Pending Approvals</div>
+            <div class="summary-change">Discounts awaiting</div>
+          </div>
+        </div>
+
+        <!-- Patient Selector -->
+        <div class="patient-selector">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: var(--space-md);
+            "
+          >
+            <h3>Select Patient</h3>
+            <span class="badge badge-info">Today's Patients</span>
+          </div>
+          <select
+            style="
+              width: 100%;
+              padding: var(--space-md);
+              border-radius: var(--radius-md);
+              border: 2px solid var(--light-gray);
+              background: var(--pure-white);
+            "
+            id="patientSelect"
+            onchange="updatePatientInfo()"
+          >
+            <option value="sarah">
+              Sarah Jones - Crown Consultation (9:00 AM)
+            </option>
+            <option value="michael">Michael Obi - Root Canal (9:45 AM)</option>
+            <option value="ada">Ada Eze - New Patient Exam (10:30 AM)</option>
+            <option value="tunde">
+              Tunde Okafor - Deep Cleaning (11:45 AM)
+            </option>
+          </select>
+        </div>
+
+        <!-- Payment Layout -->
+        <div class="payment-layout">
+          <!-- Left Column - Payment Form -->
+          <div>
+            <div class="table-container">
+              <div class="table-header">
+                <h3 class="table-title">New Payment</h3>
+              </div>
+
+              <div style="padding: var(--space-lg)">
+                <!-- Services Section -->
+                <div style="margin-bottom: var(--space-lg)">
+                  <label class="form-label">Services & Procedures</label>
+                  <div class="service-items">
+                    <div class="cart-item">
+                      <div class="cart-item-info">
+                        <h4>Consultation Fee</h4>
+                        <p>Dr. Smith • Crown Consultation</p>
+                      </div>
+                      <div style="font-weight: 600">₦10,000</div>
+                    </div>
+                    <div class="cart-item">
+                      <div class="cart-item-info">
+                        <h4>Teeth Cleaning</h4>
+                        <p>Nurse Chinwe • Complete cleaning</p>
+                      </div>
+                      <div style="font-weight: 600">₦15,000</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Prescribed Medications Section -->
+                <div style="margin-bottom: var(--space-lg)">
+                  <label class="form-label">
+                    <i
+                      class="fas fa-prescription"
+                      style="color: var(--primary-blue)"
+                    ></i>
+                    Prescribed Medications
+                  </label>
+                  <div class="service-items" id="prescribedMeds">
+                    <div class="cart-item">
+                      <div class="cart-item-info">
+                        <h4>Amoxicillin 500mg</h4>
+                        <p>1 tab TID x 7 days • Prescribed by Dr. Smith</p>
+                      </div>
+                      <div style="font-weight: 600">₦2,500</div>
+                    </div>
+                    <div class="cart-item">
+                      <div class="cart-item-info">
+                        <h4>Ibuprofen 400mg</h4>
+                        <p>1 tab PRN pain • Prescribed by Dr. Smith</p>
+                      </div>
+                      <div style="font-weight: 600">₦1,200</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Invoice Preview -->
+                <div class="invoice-preview">
+                  <div class="invoice-header">
+                    <div class="prescription-logo">
+                      <img
+                        src="../../assets/logo.png"
+                        alt="Perfections Dental"
+                      />
+                    </div>
+                    <div class="invoice-title">
+                      <h4>PERFECTIONS DENTAL SERVICES</h4>
+                      <p>Invoice & Receipt</p>
+                    </div>
+                  </div>
+
+                  <div class="invoice-line">
+                    <span>Consultation Fee</span>
+                    <span>₦10,000</span>
+                  </div>
+                  <div class="invoice-line">
+                    <span>Teeth Cleaning</span>
+                    <span>₦15,000</span>
+                  </div>
+                  <div class="invoice-line" style="color: var(--primary-blue)">
+                    <span>Amoxicillin 500mg</span>
+                    <span>₦2,500</span>
+                  </div>
+                  <div class="invoice-line" style="color: var(--primary-blue)">
+                    <span>Ibuprofen 400mg</span>
+                    <span>₦1,200</span>
+                  </div>
+                  <div class="invoice-line">
+                    <span>Subtotal</span>
+                    <span>₦28,700</span>
+                  </div>
+                  <div class="invoice-line">
+                    <span>Discount (10%)</span>
+                    <span>-₦2,870</span>
+                  </div>
+                  <div class="invoice-total">
+                    <span>TOTAL DUE</span>
+                    <span>₦25,830</span>
+                  </div>
+                </div>
+
+                <!-- Discount Section -->
+                <div class="discount-section">
+                  <div
+                    style="
+                      display: flex;
+                      gap: var(--space-md);
+                      align-items: center;
+                    "
+                  >
+                    <div style="flex: 1">
+                      <label class="form-label">Discount (%)</label>
+                      <input
+                        type="number"
+                        value="10"
+                        min="0"
+                        max="100"
+                        id="discountInput"
+                        onchange="calculateTotal()"
+                        style="
+                          width: 100%;
+                          padding: var(--space-sm);
+                          border-radius: var(--radius-md);
+                          border: 2px solid var(--light-gray);
+                        "
+                      />
+                    </div>
+                    <div style="flex: 2">
+                      <label class="form-label">Reason</label>
+                      <select
+                        id="discountReason"
+                        style="
+                          width: 100%;
+                          padding: var(--space-sm);
+                          border-radius: var(--radius-md);
+                          border: 2px solid var(--light-gray);
+                        "
+                      >
+                        <option>Staff Family</option>
+                        <option>Loyalty Patient</option>
+                        <option>Package Deal</option>
+                        <option>Promotional</option>
+                        <option>Hardship</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      margin-top: var(--space-sm);
+                      font-size: 0.8rem;
+                      color: var(--warning);
+                    "
+                  >
+                    <i class="fas fa-info-circle"></i>
+                    Discounts >20% require Super Admin approval
+                  </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div>
+                  <label class="form-label">Payment Method</label>
+                  <div class="payment-methods">
+                    <div
+                      class="payment-method-card"
+                      onclick="selectPaymentMethod(this, 'pos')"
+                    >
+                      <i class="fas fa-credit-card"></i>
+                      <span>POS</span>
+                    </div>
+                    <div
+                      class="payment-method-card"
+                      onclick="selectPaymentMethod(this, 'transfer')"
+                    >
+                      <i class="fas fa-university"></i>
+                      <span>Transfer</span>
+                    </div>
+                    <div
+                      class="payment-method-card"
+                      onclick="selectPaymentMethod(this, 'cash')"
+                    >
+                      <i class="fas fa-money-bill-wave"></i>
+                      <span>Cash</span>
+                    </div>
+                    <div
+                      class="payment-method-card free"
+                      onclick="selectPaymentMethod(this, 'free')"
+                    >
+                      <i class="fas fa-heart"></i>
+                      <span>FREE</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Free Service Reason -->
+                <div class="free-reason" id="freeReason" style="display: none">
+                  <label class="form-label">Reason for Free Service</label>
+                  <select
+                    style="
+                      width: 100%;
+                      padding: var(--space-md);
+                      border-radius: var(--radius-md);
+                      border: 2px solid var(--light-gray);
+                    "
+                  >
+                    <option>Staff Family</option>
+                    <option>Emergency Hardship</option>
+                    <option>Charity Case</option>
+                    <option>Community Service</option>
+                    <option>Pro Bono</option>
+                  </select>
+                  <div
+                    style="
+                      margin-top: var(--space-sm);
+                      font-size: 0.8rem;
+                      color: var(--purple);
+                    "
+                  >
+                    <i class="fas fa-info-circle"></i>
+                    Free services are excluded from revenue calculations
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-primary"
+                    style="flex: 2"
+                    onclick="processPayment()"
+                  >
+                    <i class="fas fa-print"></i>
+                    Generate Invoice & Receipt
+                  </button>
+                  <button
+                    class="btn btn-secondary"
+                    style="flex: 1"
+                    onclick="resetForm()"
+                  >
+                    <i class="fas fa-times"></i>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Payments & Today's Breakdown - Now included in New Payment section -->
+            <div class="payment-history-section">
+              <h3 style="margin-bottom: var(--space-md)">Recent Payments</h3>
+
+              <div class="recent-payments">
+                <div class="payment-item" onclick="viewPayment('sarah')">
+                  <div class="payment-method-icon pos">
+                    <i class="fas fa-credit-card"></i>
+                  </div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">Sarah Jones</div>
+                    <div style="font-size: 0.8rem">POS • 10 min ago</div>
+                  </div>
+                  <div style="font-weight: 600; color: var(--success)">
+                    ₦22,500
+                  </div>
+                </div>
+
+                <div class="payment-item" onclick="viewPayment('michael')">
+                  <div class="payment-method-icon transfer">
+                    <i class="fas fa-university"></i>
+                  </div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">Michael Obi</div>
+                    <div style="font-size: 0.8rem">Transfer • 25 min ago</div>
+                  </div>
+                  <div style="font-weight: 600; color: var(--success)">
+                    ₦45,000
+                  </div>
+                </div>
+
+                <div class="payment-item" onclick="viewPayment('ada')">
+                  <div class="payment-method-icon cash">
+                    <i class="fas fa-money-bill-wave"></i>
+                  </div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">Ada Eze</div>
+                    <div style="font-size: 0.8rem">Cash • 1 hour ago</div>
+                  </div>
+                  <div style="font-weight: 600; color: var(--success)">
+                    ₦15,000
+                  </div>
+                </div>
+
+                <div class="payment-item" onclick="viewPayment('john')">
+                  <div class="payment-method-icon free">
+                    <i class="fas fa-heart"></i>
+                  </div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">John Okonkwo</div>
+                    <div style="font-size: 0.8rem">FREE • 2 hours ago</div>
+                  </div>
+                  <div style="font-weight: 600; color: var(--purple)">₦0</div>
+                </div>
+
+                <div class="payment-item" onclick="viewPayment('funke')">
+                  <div class="payment-method-icon pos">
+                    <i class="fas fa-credit-card"></i>
+                  </div>
+                  <div style="flex: 1">
+                    <div style="font-weight: 500">Funke Adebayo</div>
+                    <div style="font-size: 0.8rem">POS • 2 hours ago</div>
+                  </div>
+                  <div style="font-weight: 600; color: var(--success)">
+                    ₦85,000
+                  </div>
+                </div>
+
+                <button
+                  class="btn btn-secondary btn-sm"
+                  style="width: 100%; margin-top: var(--space-md)"
+                  onclick="viewAllTransactions()"
+                >
+                  View All Transactions
+                </button>
+              </div>
+
+              <!-- Today's Breakdown -->
+              <div class="breakdown-card">
+                <h4 style="margin-bottom: var(--space-md)">
+                  Today's Breakdown
+                </h4>
+
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: var(--space-sm);
+                  "
+                >
+                  <span>POS:</span>
+                  <span style="font-weight: 600">₦124,500 (12)</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: var(--space-sm);
+                  "
+                >
+                  <span>Transfer:</span>
+                  <span style="font-weight: 600">₦87,200 (8)</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: var(--space-sm);
+                  "
+                >
+                  <span>Cash:</span>
+                  <span style="font-weight: 600">₦45,300 (5)</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: var(--space-sm);
+                  "
+                >
+                  <span>FREE:</span>
+                  <span style="font-weight: 600; color: var(--purple)"
+                    >3 services</span
+                  >
+                </div>
+                <div
+                  style="
+                    margin-top: var(--space-md);
+                    padding-top: var(--space-md);
+                    border-top: 1px solid var(--light-gray);
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      font-weight: 600;
+                    "
+                  >
+                    <span>Total Paid:</span>
+                    <span>₦257,000</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column - Prescription Cart -->
+          <div>
+            <div class="prescription-cart">
+              <h3 style="margin-bottom: var(--space-md)">
+                <i
+                  class="fas fa-prescription"
+                  style="color: var(--primary-blue)"
+                ></i>
+                Current Prescription
+              </h3>
+              <p
+                style="
+                  color: var(--text-light);
+                  font-size: 0.9rem;
+                  margin-bottom: var(--space-md);
+                "
+                id="prescriptionPatient"
+              >
+                Patient: Sarah Jones
+              </p>
+
+              <!-- Cart Items -->
+              <div id="cartItems">
+                <div class="cart-item">
+                  <div class="cart-item-info">
+                    <h4>Amoxicillin 500mg</h4>
+                    <p>1 tab TID x 7 days</p>
+                  </div>
+                  <div class="cart-item-actions">
+                    <button class="action-icon" onclick="editCartItem(this)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="action-icon delete"
+                      onclick="removeCartItem(this)"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="cart-item">
+                  <div class="cart-item-info">
+                    <h4>Ibuprofen 400mg</h4>
+                    <p>1 tab PRN pain</p>
+                  </div>
+                  <div class="cart-item-actions">
+                    <button class="action-icon" onclick="editCartItem(this)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                      class="action-icon delete"
+                      onclick="removeCartItem(this)"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add Medication -->
+              <div
+                style="
+                  margin: var(--space-md) 0;
+                  padding: var(--space-md);
+                  background: var(--off-white);
+                  border-radius: var(--radius-md);
+                "
+              >
+                <h4 style="margin-bottom: var(--space-sm)">Add Medication</h4>
+                <select
+                  class="dosage-input large"
+                  style="width: 100%; margin-bottom: var(--space-sm)"
+                  id="medicationSelect"
+                >
+                  <option>Amoxicillin 500mg</option>
+                  <option>Ibuprofen 400mg</option>
+                  <option>Paracetamol 500mg</option>
+                  <option>Metronidazole 400mg</option>
+                  <option>Lidocaine 2%</option>
+                </select>
+                <div class="dosage-selector">
+                  <select class="dosage-input" id="dosageAmount">
+                    <option>1 tab</option>
+                    <option>2 tab</option>
+                    <option>1/2 tab</option>
+                  </select>
+                  <select class="dosage-input" id="dosageFrequency">
+                    <option>BID</option>
+                    <option>TID</option>
+                    <option>QID</option>
+                    <option>PRN</option>
+                  </select>
+                  <span>x</span>
+                  <input
+                    type="number"
+                    class="dosage-input"
+                    value="7"
+                    placeholder="days"
+                    id="dosageDays"
+                  />
+                </div>
+                <button
+                  class="btn btn-sm btn-primary"
+                  style="width: 100%; margin-top: var(--space-sm)"
+                  onclick="addMedication()"
+                >
+                  Add to Prescription
+                </button>
+              </div>
+
+              <!-- Prescription Preview -->
+              <div class="prescription-preview">
+                <div class="prescription-header">
+                  <div class="prescription-logo">
+                    <img src="../../assets/logo.png" alt="Perfections Dental" />
+                  </div>
+                  <div class="prescription-title">
+                    <h4>PERFECTIONS DENTAL SERVICES</h4>
+                    <p>Excellence in Dental Care</p>
+                  </div>
+                </div>
+
+                <div class="prescription-line">
+                  <span class="prescription-label">Rp:</span>
+                  <span class="prescription-text">Amoxicillin 500mg</span>
+                </div>
+                <div class="prescription-dosage">
+                  Sig: 1 tab three times daily x 7 days
+                </div>
+
+                <div class="prescription-line">
+                  <span class="prescription-label">Rp:</span>
+                  <span class="prescription-text">Ibuprofen 400mg</span>
+                </div>
+                <div class="prescription-dosage">
+                  Sig: 1 tab as needed for pain
+                </div>
+
+                <div class="signature-area">
+                  <div class="doctor-name">Dr. Sarah Smith</div>
+                  <div class="doctor-title">Dental Surgeon</div>
+                  <div class="prescription-date" id="prescriptionDate">
+                    Date: March 5, 2026
+                  </div>
+                </div>
+              </div>
+
+              <!-- Prescription Actions -->
+              <div class="action-buttons" style="margin-top: var(--space-md)">
+                <button
+                  class="btn btn-primary"
+                  style="flex: 2"
+                  onclick="printPrescription()"
+                >
+                  <i class="fas fa-print"></i>
+                  Print Prescription
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // State
+      let selectedPaymentMethod = "pos";
+      let cartItems = [];
+
+      // Initialize loading
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.body.classList.remove("loading-active");
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+
+        // Set current date
+        const today = new Date();
+        const dateStr = today.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        document.getElementById("prescriptionDate").textContent =
+          `Date: ${dateStr}`;
+      });
+
+      // Payment method selection
+      function selectPaymentMethod(element, method) {
+        selectedPaymentMethod = method;
+
+        document.querySelectorAll(".payment-method-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+
+        element.classList.add("selected");
+
+        const freeReason = document.getElementById("freeReason");
+        freeReason.style.display = method === "free" ? "block" : "none";
+      }
+
+      // Patient info update
+      function updatePatientInfo() {
+        const select = document.getElementById("patientSelect");
+        const patient = select.options[select.selectedIndex].text;
+        document.getElementById("prescriptionPatient").textContent =
+          `Patient: ${patient.split(" - ")[0]}`;
+        showToast(`Patient changed to ${patient.split(" - ")[0]}`, "info");
+      }
+
+      // Cart functions
+      function addToCart(medicine, strength) {
+        const cartItems = document.getElementById("cartItems");
+        const newItem = document.createElement("div");
+        newItem.className = "cart-item";
+        newItem.innerHTML = `
+          <div class="cart-item-info">
+            <h4>${medicine} ${strength}</h4>
+            <p>1 tab TID x 7 days</p>
+          </div>
+          <div class="cart-item-actions">
+            <button class="action-icon" onclick="editCartItem(this)"><i class="fas fa-edit"></i></button>
+            <button class="action-icon delete" onclick="removeCartItem(this)"><i class="fas fa-trash"></i></button>
+          </div>
+        `;
+        cartItems.appendChild(newItem);
+
+        updateInvoiceWithMedication(medicine, strength);
+        showToast(`${medicine} added to prescription`, "success");
+      }
+
+      function addMedication() {
+        const select = document.getElementById("medicationSelect");
+        const medication = select.value;
+        const amount = document.getElementById("dosageAmount").value;
+        const frequency = document.getElementById("dosageFrequency").value;
+        const days = document.getElementById("dosageDays").value;
+
+        const cartItems = document.getElementById("cartItems");
+        const newItem = document.createElement("div");
+        newItem.className = "cart-item";
+        newItem.innerHTML = `
+          <div class="cart-item-info">
+            <h4>${medication}</h4>
+            <p>${amount} ${frequency} x ${days} days</p>
+          </div>
+          <div class="cart-item-actions">
+            <button class="action-icon" onclick="editCartItem(this)"><i class="fas fa-edit"></i></button>
+            <button class="action-icon delete" onclick="removeCartItem(this)"><i class="fas fa-trash"></i></button>
+          </div>
+        `;
+        cartItems.appendChild(newItem);
+
+        updateInvoiceWithMedication(medication, "");
+        showToast(`${medication} added to prescription`, "success");
+      }
+
+      function removeCartItem(btn) {
+        btn.closest(".cart-item").remove();
+        showToast("Item removed", "warning");
+      }
+
+      function editCartItem(btn) {
+        showToast("Edit medication", "info");
+      }
+
+      // Update invoice with medication
+      function updateInvoiceWithMedication(medicine, strength) {
+        // In a real app, this would update the invoice total
+        showToast(`Added to invoice`, "success");
+        calculateTotal();
+      }
+
+      // Calculate total with discount
+      function calculateTotal() {
+        const discount =
+          parseInt(document.getElementById("discountInput").value) || 0;
+        const subtotal = 28700; // Base amount from services + medications
+        const discountAmount = (subtotal * discount) / 100;
+        const total = subtotal - discountAmount;
+
+        // Update invoice display
+        const invoiceTotal = document.querySelector(
+          ".invoice-total span:last-child",
+        );
+        if (invoiceTotal) {
+          invoiceTotal.textContent = `₦${total.toLocaleString()}`;
+        }
+
+        return total;
+      }
+
+      // Process payment
+      function processPayment() {
+        const patient = document
+          .getElementById("prescriptionPatient")
+          .textContent.replace("Patient: ", "");
+        const total = calculateTotal();
+        const method = selectedPaymentMethod.toUpperCase();
+
+        showToast(
+          `Payment of ₦${total.toLocaleString()} processed via ${method}`,
+          "success",
+        );
+
+        // Add to recent payments
+        addToRecentPayments(patient, total, method);
+      }
+
+      // Add to recent payments
+      function addToRecentPayments(patient, amount, method) {
+        const recentPayments = document.querySelector(".recent-payments");
+        const newPayment = document.createElement("div");
+        newPayment.className = "payment-item";
+        newPayment.setAttribute("onclick", "viewPayment('new')");
+
+        let iconClass = "";
+        let icon = "";
+
+        if (method === "POS") {
+          iconClass = "pos";
+          icon = "fa-credit-card";
+        } else if (method === "CASH") {
+          iconClass = "cash";
+          icon = "fa-money-bill-wave";
+        } else if (method === "TRANSFER") {
+          iconClass = "transfer";
+          icon = "fa-university";
+        } else {
+          iconClass = "free";
+          icon = "fa-heart";
+        }
+
+        newPayment.innerHTML = `
+          <div class="payment-method-icon ${iconClass}">
+            <i class="fas ${icon}"></i>
+          </div>
+          <div style="flex: 1">
+            <div style="font-weight: 500">${patient}</div>
+            <div style="font-size: 0.8rem">${method} • Just now</div>
+          </div>
+          <div style="font-weight: 600; color: var(--success)">₦${amount.toLocaleString()}</div>
+        `;
+
+        recentPayments.insertBefore(
+          newPayment,
+          recentPayments.querySelector("button"),
+        );
+        showToast("Payment recorded", "success");
+      }
+
+      // Prescription functions
+      function printPrescription() {
+        const patient = document.getElementById(
+          "prescriptionPatient",
+        ).textContent;
+
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Prescription - ${patient}</title>
+              <style>
+                body { font-family: 'Courier New', monospace; padding: 20px; max-width: 800px; margin: 0 auto; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #0066cc; padding-bottom: 10px; }
+                .clinic-name { font-size: 1.5rem; font-weight: bold; color: #0066cc; }
+                .prescription { margin: 30px 0; }
+                .medication { margin: 15px 0; }
+                .signature { margin-top: 50px; border-top: 1px dashed #666; padding-top: 20px; }
+                .footer { margin-top: 30px; font-size: 0.8rem; text-align: center; color: #666; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <div class="clinic-name">PERFECTIONS DENTAL SERVICES</div>
+                <div>Excellence in Dental Care</div>
+              </div>
+              <h2>Prescription</h2>
+              <p><strong>Patient:</strong> ${patient.replace("Patient: ", "")}</p>
+              <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+              <div class="prescription">
+                ${Array.from(document.querySelectorAll("#cartItems .cart-item"))
+                  .map(
+                    (item) => `
+                  <div class="medication">
+                    <strong>Rp:</strong> ${item.querySelector("h4").textContent}<br>
+                    <strong>Sig:</strong> ${item.querySelector("p").textContent}
+                  </div>
+                `,
+                  )
+                  .join("")}
+              </div>
+              <div class="signature">
+                <p><strong>Dr. Sarah Smith</strong><br>Dental Surgeon<br>License: DENT/2025/123</p>
+              </div>
+              <div class="footer">Perfections Dental - Electronic Prescription</div>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+
+        showToast("Prescription print window opened", "success");
+      }
+
+      function savePrescription() {
+        showToast("Prescription saved successfully", "success");
+      }
+
+      function sendToPharmacy() {
+        const patient = document
+          .getElementById("prescriptionPatient")
+          .textContent.replace("Patient: ", "");
+        showToast(`Prescription sent to pharmacy for ${patient}`, "success");
+      }
+
+      // Reset form
+      function resetForm() {
+        if (confirm("Clear all items?")) {
+          document.getElementById("cartItems").innerHTML = "";
+          document.getElementById("discountInput").value = 10;
+          document.getElementById("freeReason").style.display = "none";
+          document
+            .querySelectorAll(".payment-method-card")
+            .forEach((c) => c.classList.remove("selected"));
+          document
+            .querySelector(".payment-method-card")
+            .classList.add("selected");
+          selectedPaymentMethod = "pos";
+          showToast("Form reset", "info");
+        }
+      }
+
+      // View functions
+      function viewPayment(patient) {
+        showToast(`Viewing payment details for ${patient}`, "info");
+      }
+
+      function viewAllTransactions() {
+        showToast("Viewing all transactions", "info");
+      }
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        if (!toast) {
+          // Create toast if it doesn't exist
+          const toastDiv = document.createElement("div");
+          toastDiv.className = "toast";
+          toastDiv.id = "toast";
+          toastDiv.innerHTML = `
+            <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="toast-message" id="toastMessage">${message}</div>
+            <button class="toast-close" onclick="this.parentElement.classList.remove('show')">&times;</button>
+          `;
+          document.body.appendChild(toastDiv);
+        }
+
+        const toastEl = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toastEl.querySelector(".toast-icon i");
+
+        toastMessage.innerText = message;
+        toastEl.className = "toast show " + type;
+
+        if (type === "success") {
+          toastIcon.className = "fas fa-check-circle";
+        } else if (type === "error") {
+          toastIcon.className = "fas fa-exclamation-circle";
+        } else if (type === "warning") {
+          toastIcon.className = "fas fa-exclamation-triangle";
+        } else if (type === "info") {
+          toastIcon.className = "fas fa-info-circle";
+        }
+
+        setTimeout(() => {
+          toastEl.classList.remove("show");
+        }, 3000);
+      }
+
+      // Sidebar toggle
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+    </script>
+  </body>
+</html>

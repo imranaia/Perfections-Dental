@@ -1,0 +1,1840 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Profile - Nurse - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      /* ========== OVERRIDE / CUSTOM STYLES ========== */
+      .profile-container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .profile-header {
+        background: linear-gradient(145deg, var(--primary-blue-dark), #0066cc);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        margin-bottom: var(--space-xl);
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .profile-header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.2) 0%,
+          transparent 70%
+        );
+        animation: rotateGradient 20s linear infinite;
+      }
+
+      .profile-header-content {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xl);
+        position: relative;
+        z-index: 2;
+        flex-wrap: wrap;
+      }
+
+      .profile-avatar-large {
+        width: 120px;
+        height: 120px;
+        background: white;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        box-shadow: var(--shadow-lg);
+        cursor: pointer;
+        transition: transform var(--transition-base);
+      }
+
+      .profile-avatar-large:hover {
+        transform: scale(1.05);
+      }
+
+      .profile-title h1 {
+        font-size: 2rem;
+        margin-bottom: 4px;
+      }
+
+      .profile-title p {
+        opacity: 0.9;
+        font-size: 1rem;
+      }
+
+      .profile-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: var(--space-xs) var(--space-md);
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        display: inline-block;
+        margin-top: var(--space-sm);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .profile-badge:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .profile-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--space-xl);
+      }
+
+      .profile-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+        transition:
+          transform var(--transition-base),
+          box-shadow var(--transition-base);
+      }
+
+      .profile-card:hover {
+        box-shadow: var(--shadow-lg);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .card-header h3 {
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        color: var(--primary-blue);
+      }
+
+      .edit-toggle {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        transition: color var(--transition-fast);
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--radius-full);
+      }
+
+      .edit-toggle:hover {
+        color: var(--primary-blue);
+        background: rgba(0, 102, 204, 0.1);
+      }
+
+      .info-row {
+        display: flex;
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-md);
+        border-bottom: 1px dashed var(--light-gray);
+        transition: background var(--transition-fast);
+      }
+
+      .info-row:hover {
+        background: rgba(0, 102, 204, 0.02);
+      }
+
+      .info-label {
+        width: 140px;
+        font-weight: 500;
+        color: var(--text-light);
+      }
+
+      .info-value {
+        flex: 1;
+        color: var(--text-dark);
+      }
+
+      .info-value.editable {
+        display: none;
+      }
+
+      .info-input {
+        display: none;
+        width: 100%;
+        padding: var(--space-xs) var(--space-sm);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        font-size: 0.95rem;
+        transition: border-color var(--transition-fast);
+      }
+
+      .info-input:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+      }
+
+      .info-row.editing .info-value {
+        display: none;
+      }
+
+      .info-row.editing .info-input {
+        display: block;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: var(--space-sm);
+        margin-top: var(--space-md);
+        justify-content: flex-end;
+      }
+
+      .btn-save {
+        background: var(--success);
+        color: white;
+        transition: all var(--transition-fast);
+      }
+
+      .btn-save:hover {
+        background: #27ae60;
+        transform: translateY(-2px);
+      }
+
+      .btn-cancel {
+        background: var(--light-gray);
+        color: var(--text-dark);
+        transition: all var(--transition-fast);
+      }
+
+      .btn-cancel:hover {
+        background: #bdc3c7;
+        transform: translateY(-2px);
+      }
+
+      .skills-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        margin-top: var(--space-sm);
+      }
+
+      .skill-tag {
+        background: var(--off-white);
+        padding: var(--space-xs) var(--space-md);
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        border: 1px solid var(--light-gray);
+        transition: all var(--transition-fast);
+        cursor: default;
+      }
+
+      .skill-tag:not(.add-skill):hover {
+        background: rgba(255, 59, 48, 0.1);
+        border-color: var(--error);
+      }
+
+      .skill-tag i {
+        color: var(--primary-blue);
+        cursor: pointer;
+        transition: color var(--transition-fast);
+      }
+
+      .skill-tag i:hover {
+        color: var(--error);
+        transform: scale(1.1);
+      }
+
+      .add-skill {
+        background: none;
+        border: 2px dashed var(--light-gray);
+        color: var(--text-light);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .add-skill:hover {
+        border-color: var(--primary-blue);
+        color: var(--primary-blue);
+        background: rgba(0, 102, 204, 0.05);
+      }
+
+      .shift-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+        margin-top: var(--space-md);
+      }
+
+      .shift-day {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .shift-day:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        background: var(--pure-white);
+      }
+
+      .day-name {
+        font-weight: 600;
+        margin-bottom: var(--space-xs);
+        color: var(--primary-blue);
+      }
+
+      .day-hours {
+        font-size: 0.9rem;
+        color: var(--text-dark);
+      }
+
+      .security-card {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-lg);
+        transition: all var(--transition-fast);
+      }
+
+      .security-card:hover {
+        box-shadow: var(--shadow-sm);
+      }
+
+      .password-strength {
+        margin-top: var(--space-sm);
+      }
+
+      .strength-bar {
+        height: 4px;
+        background: var(--light-gray);
+        border-radius: var(--radius-full);
+        margin: var(--space-xs) 0;
+      }
+
+      .strength-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: var(--radius-full);
+        transition: width var(--transition-base);
+      }
+
+      .strength-fill.weak {
+        background: var(--error);
+        width: 33%;
+      }
+
+      .strength-fill.medium {
+        background: var(--warning);
+        width: 66%;
+      }
+
+      .strength-fill.strong {
+        background: var(--success);
+        width: 100%;
+      }
+
+      .strength-text {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .two-factor-section {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-md) 0;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .two-factor-section:last-child {
+        border-bottom: none;
+      }
+
+      /* Toggle Switch */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--light-gray);
+        transition: var(--transition-base);
+        border-radius: var(--radius-full);
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        transition: var(--transition-base);
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: var(--success);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(26px);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+        margin-bottom: var(--space-lg);
+      }
+
+      .stat-box {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .stat-box:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        background: var(--pure-white);
+      }
+
+      .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .task-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px solid var(--light-gray);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .task-item:hover {
+        background: rgba(0, 102, 204, 0.05);
+        border-radius: var(--radius-md);
+        padding-left: var(--space-sm);
+      }
+
+      .task-check {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      .task-info {
+        flex: 1;
+      }
+
+      .task-name {
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      .task-deadline {
+        font-size: 0.7rem;
+        color: var(--text-light);
+      }
+
+      .task-priority {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: var(--radius-full);
+      }
+
+      .priority-high {
+        background: rgba(255, 59, 48, 0.1);
+        color: var(--error);
+      }
+
+      .priority-medium {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .priority-low {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: var(--space-sm) var(--space-md);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        font-size: 0.95rem;
+        transition: all var(--transition-fast);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 400px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      /* Toast Notification */
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md) var(--space-lg);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 2000;
+        border-left: 4px solid var(--success);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.warning {
+        border-left-color: var(--warning);
+      }
+
+      .toast.error {
+        border-left-color: var(--error);
+      }
+
+      .toast-icon {
+        font-size: 1.2rem;
+      }
+
+      .toast.success .toast-icon {
+        color: var(--success);
+      }
+
+      .toast.warning .toast-icon {
+        color: var(--warning);
+      }
+
+      .toast.error .toast-icon {
+        color: var(--error);
+      }
+
+      .toast-close {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        font-size: 1rem;
+        margin-left: var(--space-sm);
+        transition: color var(--transition-fast);
+      }
+
+      .toast-close:hover {
+        color: var(--error);
+      }
+
+      @media (max-width: 768px) {
+        .profile-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .profile-header-content {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .info-row {
+          flex-direction: column;
+        }
+
+        .info-label {
+          width: 100%;
+          margin-bottom: var(--space-xs);
+        }
+
+        .shift-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading Profile...</p>
+    </div>
+
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu">
+          <!-- Nurse Menu -->
+          <div class="menu-section">
+            <div class="menu-item" onclick="navigateTo('my-tasks.html')">
+              <i class="fas fa-tasks"></i>
+              <span>My Tasks</span>
+            </div>
+            <div class="menu-item" onclick="navigateTo('my-assists.html')">
+              <i class="fas fa-hand-holding-heart"></i>
+              <span>My Assists</span>
+            </div>
+            <div class="menu-item" onclick="navigateTo('notes.html')">
+              <i class="fas fa-notes-medical"></i>
+              <span>Notes</span>
+            </div>
+            <div class="menu-item" onclick="navigateTo('procedures.html')">
+              <i class="fas fa-syringe"></i>
+              <span>Procedures</span>
+            </div>
+            <div class="menu-item" onclick="navigateTo('prescribe.html')">
+              <i class="fas fa-prescription"></i>
+              <span>Prescriptions</span>
+            </div>
+            <div class="menu-item" onclick="navigateTo('records.html')">
+              <i class="fas fa-file-medical"></i>
+              <span>Records</span>
+            </div>
+            <div class="menu-item active" onclick="navigateTo('profile.html')">
+              <i class="fas fa-user-nurse"></i>
+              <span>My Profile</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">My Profile</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div
+              class="user-profile"
+              onclick="window.location.href = 'profile.html'"
+            >
+              <div class="user-avatar-small">NC</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Container -->
+        <div class="profile-container">
+          <!-- Profile Header -->
+          <div class="profile-header">
+            <div class="profile-header-content">
+              <div class="profile-avatar-large" onclick="changeAvatar()">
+                NC
+              </div>
+              <div class="profile-title">
+                <h1>Chinwe Okafor</h1>
+                <p>Senior Dental Nurse · Surgical Assistant</p>
+                <span class="profile-badge" onclick="viewLicense()">
+                  <i class="fas fa-id-card"></i> License: NRS-2026-089
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Grid -->
+          <div class="profile-grid">
+            <!-- Left Column -->
+            <div>
+              <!-- Personal Information -->
+              <div class="profile-card">
+                <div class="card-header">
+                  <h3>
+                    <i class="fas fa-user-circle"></i> Personal Information
+                  </h3>
+                  <button class="edit-toggle" onclick="toggleEdit('personal')">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </div>
+
+                <div id="personal-info">
+                  <div class="info-row" id="row-fullname">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value">Chinwe Okafor</div>
+                    <input
+                      type="text"
+                      class="info-input"
+                      id="input-fullname"
+                      value="Chinwe Okafor"
+                    />
+                  </div>
+
+                  <div class="info-row" id="row-email">
+                    <div class="info-label">Email Address</div>
+                    <div class="info-value">c.okafor@perfectionsdental.com</div>
+                    <input
+                      type="email"
+                      class="info-input"
+                      id="input-email"
+                      value="c.okafor@perfectionsdental.com"
+                    />
+                  </div>
+
+                  <div class="info-row" id="row-phone">
+                    <div class="info-label">Phone Number</div>
+                    <div class="info-value">+234 805 678 1234</div>
+                    <input
+                      type="tel"
+                      class="info-input"
+                      id="input-phone"
+                      value="+234 805 678 1234"
+                    />
+                  </div>
+
+                  <div class="info-row" id="row-dob">
+                    <div class="info-label">Date of Birth</div>
+                    <div class="info-value">10 November 1990</div>
+                    <input
+                      type="date"
+                      class="info-input"
+                      id="input-dob"
+                      value="1990-11-10"
+                    />
+                  </div>
+
+                  <div class="info-row" id="row-address">
+                    <div class="info-label">Address</div>
+                    <div class="info-value">23 Lekki Phase 1, Lagos</div>
+                    <input
+                      type="text"
+                      class="info-input"
+                      id="input-address"
+                      value="23 Lekki Phase 1, Lagos"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  class="action-buttons"
+                  id="personal-actions"
+                  style="display: none"
+                >
+                  <button class="btn btn-save" onclick="saveInfo('personal')">
+                    <i class="fas fa-save"></i> Save Changes
+                  </button>
+                  <button
+                    class="btn btn-cancel"
+                    onclick="cancelEdit('personal')"
+                  >
+                    <i class="fas fa-times"></i> Cancel
+                  </button>
+                </div>
+              </div>
+
+              <!-- Professional Information -->
+              <div class="profile-card">
+                <div class="card-header">
+                  <h3>
+                    <i class="fas fa-briefcase"></i> Professional Information
+                  </h3>
+                  <button
+                    class="edit-toggle"
+                    onclick="toggleEdit('professional')"
+                  >
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </div>
+
+                <div id="professional-info">
+                  <div class="info-row" id="row-employeeid">
+                    <div class="info-label">Employee ID</div>
+                    <div class="info-value">NRS-2026-089</div>
+                    <input
+                      type="text"
+                      class="info-input"
+                      id="input-employeeid"
+                      value="NRS-2026-089"
+                      readonly
+                    />
+                  </div>
+
+                  <div class="info-row" id="row-license">
+                    <div class="info-label">License Number</div>
+                    <div class="info-value">NRN-042-2026</div>
+                    <input
+                      type="text"
+                      class="info-input"
+                      id="input-license"
+                      value="NRN-042-2026"
+                    />
+                  </div>
+
+                  <div class="info-row" id="row-position">
+                    <div class="info-label">Position</div>
+                    <div class="info-value">Senior Dental Nurse</div>
+                    <select class="info-input" id="input-position">
+                      <option value="Senior Dental Nurse" selected>
+                        Senior Dental Nurse
+                      </option>
+                      <option value="Dental Nurse">Dental Nurse</option>
+                      <option value="Trainee Nurse">Trainee Nurse</option>
+                      <option value="Surgical Nurse">Surgical Nurse</option>
+                    </select>
+                  </div>
+
+                  <div class="info-row" id="row-experience">
+                    <div class="info-label">Years Experience</div>
+                    <div class="info-value">8 years</div>
+                    <input
+                      type="number"
+                      class="info-input"
+                      id="input-experience"
+                      value="8"
+                    />
+                  </div>
+
+                  <div class="info-row" id="row-joined">
+                    <div class="info-label">Joined Date</div>
+                    <div class="info-value">20 June 2019</div>
+                    <input
+                      type="date"
+                      class="info-input"
+                      id="input-joined"
+                      value="2019-06-20"
+                      readonly
+                    />
+                  </div>
+
+                  <div class="info-row" id="row-certification">
+                    <div class="info-label">Certifications</div>
+                    <div class="info-value">Dip. Dental Nursing, BLS</div>
+                    <input
+                      type="text"
+                      class="info-input"
+                      id="input-certification"
+                      value="Dip. Dental Nursing, BLS"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  class="action-buttons"
+                  id="professional-actions"
+                  style="display: none"
+                >
+                  <button
+                    class="btn btn-save"
+                    onclick="saveInfo('professional')"
+                  >
+                    <i class="fas fa-save"></i> Save Changes
+                  </button>
+                  <button
+                    class="btn btn-cancel"
+                    onclick="cancelEdit('professional')"
+                  >
+                    <i class="fas fa-times"></i> Cancel
+                  </button>
+                </div>
+              </div>
+
+              <!-- Skills & Competencies -->
+              <div class="profile-card">
+                <div class="card-header">
+                  <h3><i class="fas fa-star"></i> Skills & Competencies</h3>
+                </div>
+
+                <div class="skills-tags" id="skillsContainer">
+                  <span class="skill-tag">
+                    Surgical Assistance
+                    <i
+                      class="fas fa-times"
+                      onclick="removeSkill('Surgical Assistance', event)"
+                    ></i>
+                  </span>
+                  <span class="skill-tag">
+                    X-Ray
+                    <i
+                      class="fas fa-times"
+                      onclick="removeSkill('X-Ray', event)"
+                    ></i>
+                  </span>
+                  <span class="skill-tag">
+                    Sterilization
+                    <i
+                      class="fas fa-times"
+                      onclick="removeSkill('Sterilization', event)"
+                    ></i>
+                  </span>
+                  <span class="skill-tag">
+                    Patient Monitoring
+                    <i
+                      class="fas fa-times"
+                      onclick="removeSkill('Patient Monitoring', event)"
+                    ></i>
+                  </span>
+                  <span class="skill-tag">
+                    Impressions
+                    <i
+                      class="fas fa-times"
+                      onclick="removeSkill('Impressions', event)"
+                    ></i>
+                  </span>
+                  <span class="skill-tag">
+                    Emergency Response
+                    <i
+                      class="fas fa-times"
+                      onclick="removeSkill('Emergency Response', event)"
+                    ></i>
+                  </span>
+                  <span class="skill-tag add-skill" onclick="addSkill()">
+                    <i class="fas fa-plus"></i> Add Skill
+                  </span>
+                </div>
+              </div>
+
+              <!-- Work Schedule -->
+              <div class="profile-card">
+                <div class="card-header">
+                  <h3><i class="fas fa-calendar-alt"></i> Shift Schedule</h3>
+                  <button class="edit-toggle" onclick="toggleEdit('shift')">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </div>
+
+                <div class="shift-grid">
+                  <div class="shift-day" onclick="editShift('Monday')">
+                    <div class="day-name">Monday</div>
+                    <div class="day-hours">8:00 AM - 4:00 PM</div>
+                  </div>
+                  <div class="shift-day" onclick="editShift('Tuesday')">
+                    <div class="day-name">Tuesday</div>
+                    <div class="day-hours">8:00 AM - 4:00 PM</div>
+                  </div>
+                  <div class="shift-day" onclick="editShift('Wednesday')">
+                    <div class="day-name">Wednesday</div>
+                    <div class="day-hours">8:00 AM - 4:00 PM</div>
+                  </div>
+                  <div class="shift-day" onclick="editShift('Thursday')">
+                    <div class="day-name">Thursday</div>
+                    <div class="day-hours">8:00 AM - 4:00 PM</div>
+                  </div>
+                  <div class="shift-day" onclick="editShift('Friday')">
+                    <div class="day-name">Friday</div>
+                    <div class="day-hours">8:00 AM - 2:00 PM</div>
+                  </div>
+                  <div class="shift-day" onclick="editShift('Saturday')">
+                    <div class="day-name">Saturday</div>
+                    <div class="day-hours">Off</div>
+                  </div>
+                  <div class="shift-day" onclick="editShift('Sunday')">
+                    <div class="day-name">Sunday</div>
+                    <div class="day-hours">Off</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column -->
+            <div>
+              <!-- Stats -->
+              <div class="profile-card">
+                <div class="card-header">
+                  <h3><i class="fas fa-chart-line"></i> Performance Stats</h3>
+                </div>
+
+                <div class="stats-grid">
+                  <div class="stat-box" onclick="viewDetails('assists')">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Assists</div>
+                  </div>
+                  <div class="stat-box" onclick="viewDetails('procedures')">
+                    <div class="stat-number">89</div>
+                    <div class="stat-label">Procedures</div>
+                  </div>
+                  <div class="stat-box" onclick="viewDetails('satisfaction')">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Satisfaction</div>
+                  </div>
+                  <div class="stat-box" onclick="viewDetails('experience')">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Years Exp</div>
+                  </div>
+                </div>
+
+                <div
+                  style="margin-top: var(--space-md)"
+                  onclick="viewProgress()"
+                >
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      margin-bottom: var(--space-xs);
+                    "
+                  >
+                    <span>Tasks Completed</span>
+                    <span style="font-weight: 600" id="taskProgress"
+                      >42/50</span
+                    >
+                  </div>
+                  <div
+                    style="
+                      height: 8px;
+                      background: var(--light-gray);
+                      border-radius: var(--radius-full);
+                      cursor: pointer;
+                    "
+                  >
+                    <div
+                      id="taskProgressBar"
+                      style="
+                        width: 84%;
+                        height: 100%;
+                        background: var(--primary-blue);
+                        border-radius: var(--radius-full);
+                        transition: width var(--transition-base);
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security Settings -->
+              <div class="profile-card">
+                <div class="card-header">
+                  <h3><i class="fas fa-lock"></i> Security</h3>
+                </div>
+
+                <!-- Change Password -->
+                <div class="security-card">
+                  <h4 style="margin-bottom: var(--space-md)">
+                    Change Password
+                  </h4>
+                  <div
+                    class="form-group"
+                    style="margin-bottom: var(--space-sm)"
+                  >
+                    <label>Current Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="currentPassword"
+                      placeholder="Enter current password"
+                    />
+                  </div>
+                  <div
+                    class="form-group"
+                    style="margin-bottom: var(--space-sm)"
+                  >
+                    <label>New Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="newPassword"
+                      placeholder="Enter new password"
+                      onkeyup="checkPasswordStrength()"
+                    />
+                  </div>
+                  <div class="password-strength">
+                    <div class="strength-bar">
+                      <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <span class="strength-text" id="strengthText"
+                      >Enter a password</span
+                    >
+                  </div>
+                  <div
+                    class="form-group"
+                    style="margin-bottom: var(--space-md)"
+                  >
+                    <label>Confirm New Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="confirmPassword"
+                      placeholder="Confirm new password"
+                    />
+                  </div>
+                  <button class="btn btn-primary" onclick="changePassword()">
+                    <i class="fas fa-key"></i> Update Password
+                  </button>
+                </div>
+
+                <!-- Two-Factor Authentication -->
+                <div class="security-card">
+                  <h4 style="margin-bottom: var(--space-md)">
+                    Two-Factor Authentication
+                  </h4>
+
+                  <div class="two-factor-section">
+                    <div>
+                      <div style="font-weight: 500">Authenticator App</div>
+                      <div style="font-size: 0.8rem; color: var(--text-light)">
+                        Use Google Authenticator
+                      </div>
+                    </div>
+                    <label class="switch">
+                      <input
+                        type="checkbox"
+                        id="2faApp"
+                        checked
+                        onchange="toggle2FA(this)"
+                      />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pending Tasks -->
+              <div class="profile-card">
+                <div class="card-header">
+                  <h3><i class="fas fa-tasks"></i> Pending Tasks</h3>
+                </div>
+
+                <div
+                  class="task-item"
+                  onclick="viewTask('Sterilize equipment for Dr. Smith')"
+                >
+                  <input
+                    type="checkbox"
+                    class="task-check"
+                    onclick="
+                      event.stopPropagation();
+                      toggleTaskComplete(
+                        this,
+                        'Sterilize equipment for Dr. Smith',
+                      );
+                    "
+                  />
+                  <div class="task-info">
+                    <div class="task-name">
+                      Sterilize equipment for Dr. Smith
+                    </div>
+                    <div class="task-deadline">Due: Today, 2:00 PM</div>
+                  </div>
+                  <span class="task-priority priority-high">High</span>
+                </div>
+
+                <div
+                  class="task-item"
+                  onclick="viewTask('Prepare surgical kit for extraction')"
+                >
+                  <input
+                    type="checkbox"
+                    class="task-check"
+                    onclick="
+                      event.stopPropagation();
+                      toggleTaskComplete(
+                        this,
+                        'Prepare surgical kit for extraction',
+                      );
+                    "
+                  />
+                  <div class="task-info">
+                    <div class="task-name">
+                      Prepare surgical kit for extraction
+                    </div>
+                    <div class="task-deadline">Due: Today, 3:30 PM</div>
+                  </div>
+                  <span class="task-priority priority-medium">Medium</span>
+                </div>
+
+                <div
+                  class="task-item"
+                  onclick="viewTask('Update patient records')"
+                >
+                  <input
+                    type="checkbox"
+                    class="task-check"
+                    onclick="
+                      event.stopPropagation();
+                      toggleTaskComplete(this, 'Update patient records');
+                    "
+                  />
+                  <div class="task-info">
+                    <div class="task-name">Update patient records</div>
+                    <div class="task-deadline">Due: Tomorrow, 10:00 AM</div>
+                  </div>
+                  <span class="task-priority priority-low">Low</span>
+                </div>
+
+                <button
+                  class="btn btn-secondary btn-sm"
+                  style="width: 100%; margin-top: var(--space-sm)"
+                  onclick="viewAllTasks()"
+                >
+                  View All Tasks
+                </button>
+              </div>
+
+              <!-- Leave Balance -->
+              <div class="profile-card">
+                <div class="card-header">
+                  <h3><i class="fas fa-umbrella-beach"></i> Leave Balance</h3>
+                </div>
+
+                <div
+                  style="margin-bottom: var(--space-md)"
+                  onclick="requestLeave('annual')"
+                >
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      margin-bottom: var(--space-xs);
+                    "
+                  >
+                    <span>Annual Leave</span>
+                    <span style="font-weight: 600">12 days remaining</span>
+                  </div>
+                  <div
+                    style="
+                      height: 8px;
+                      background: var(--light-gray);
+                      border-radius: var(--radius-full);
+                      cursor: pointer;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 60%;
+                        height: 100%;
+                        background: var(--success);
+                        border-radius: var(--radius-full);
+                      "
+                    ></div>
+                  </div>
+                </div>
+
+                <div onclick="requestLeave('sick')">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      margin-bottom: var(--space-xs);
+                    "
+                  >
+                    <span>Sick Leave</span>
+                    <span style="font-weight: 600">10 days remaining</span>
+                  </div>
+                  <div
+                    style="
+                      height: 8px;
+                      background: var(--light-gray);
+                      border-radius: var(--radius-full);
+                      cursor: pointer;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 20%;
+                        height: 100%;
+                        background: var(--warning);
+                        border-radius: var(--radius-full);
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Skill Modal -->
+    <div class="modal-overlay" id="skillModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Add Skill</span>
+          <button class="modal-close" onclick="closeModal('skillModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Skill Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="newSkill"
+              placeholder="e.g., IV Sedation"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('skillModal')">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveSkill()">
+            Add Skill
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Shift Modal -->
+    <div class="modal-overlay" id="shiftModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Edit Shift</span>
+          <button class="modal-close" onclick="closeModal('shiftModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Day</label>
+            <input type="text" class="form-control" id="shiftDay" readonly />
+          </div>
+          <div class="form-group">
+            <label>Start Time</label>
+            <input
+              type="time"
+              class="form-control"
+              id="shiftStart"
+              value="08:00"
+            />
+          </div>
+          <div class="form-group">
+            <label>End Time</label>
+            <input
+              type="time"
+              class="form-control"
+              id="shiftEnd"
+              value="16:00"
+            />
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                id="shiftOff"
+                onchange="toggleShiftOff()"
+              />
+              Day Off
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('shiftModal')">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveShift()">
+            Save Shift
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+      <div class="toast-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="toast-message" id="toastMessage">
+        Profile updated successfully
+      </div>
+      <button class="toast-close" onclick="hideToast()">&times;</button>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // ========== OVERRIDE / CUSTOM SCRIPTS ==========
+      let currentEdit = null;
+      let currentShiftDay = "";
+
+      // Navigation
+      function navigateTo(page) {
+        window.location.href = page;
+      }
+
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      function logout() {
+        window.location.href = "../../login.html";
+      }
+
+      // Profile actions
+      function changeAvatar() {
+        showToast("Avatar change feature coming soon", "info");
+      }
+
+      function viewLicense() {
+        showToast("License: NRS-2026-089 (Valid until 2028)", "info");
+      }
+
+      // Edit functions
+      function toggleEdit(section) {
+        if (currentEdit === section) {
+          cancelEdit(section);
+          return;
+        }
+
+        if (currentEdit) {
+          cancelEdit(currentEdit);
+        }
+
+        currentEdit = section;
+
+        document
+          .querySelectorAll(`#${section}-info .info-row`)
+          .forEach((row) => {
+            row.classList.add("editing");
+          });
+
+        document.getElementById(`${section}-actions`).style.display = "flex";
+
+        const editBtn = event.currentTarget;
+        editBtn.innerHTML = '<i class="fas fa-times"></i> Cancel';
+        editBtn.style.background = "rgba(255, 59, 48, 0.1)";
+        editBtn.style.color = "var(--error)";
+      }
+
+      function cancelEdit(section) {
+        currentEdit = null;
+
+        document
+          .querySelectorAll(`#${section}-info .info-row`)
+          .forEach((row) => {
+            row.classList.remove("editing");
+          });
+
+        document.getElementById(`${section}-actions`).style.display = "none";
+
+        const editBtn = document.querySelector(`.profile-card .edit-toggle`);
+        if (editBtn) {
+          editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+          editBtn.style.background = "";
+          editBtn.style.color = "";
+        }
+      }
+
+      function saveInfo(section) {
+        document
+          .querySelectorAll(`#${section}-info .info-row`)
+          .forEach((row) => {
+            const input = row.querySelector(".info-input");
+            const valueDisplay = row.querySelector(".info-value");
+
+            if (input && valueDisplay) {
+              if (input.tagName === "SELECT") {
+                valueDisplay.textContent =
+                  input.options[input.selectedIndex].text;
+              } else if (input.type === "date") {
+                const date = new Date(input.value);
+                valueDisplay.textContent = date.toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                });
+              } else {
+                valueDisplay.textContent = input.value;
+              }
+            }
+          });
+
+        cancelEdit(section);
+        showToast("Profile information updated successfully");
+      }
+
+      // Skills
+      function addSkill() {
+        document.getElementById("skillModal").classList.add("active");
+      }
+
+      function saveSkill() {
+        const skill = document.getElementById("newSkill").value.trim();
+        if (skill) {
+          const skillsContainer = document.getElementById("skillsContainer");
+          const newSkillTag = document.createElement("span");
+          newSkillTag.className = "skill-tag";
+          newSkillTag.innerHTML = `
+            ${skill}
+            <i class="fas fa-times" onclick="removeSkill('${skill}', event)"></i>
+          `;
+          skillsContainer.insertBefore(
+            newSkillTag,
+            skillsContainer.lastElementChild,
+          );
+
+          showToast(`Skill "${skill}" added`);
+          closeModal("skillModal");
+          document.getElementById("newSkill").value = "";
+        } else {
+          showToast("Please enter a skill name", "error");
+        }
+      }
+
+      function removeSkill(skill, event) {
+        event.stopPropagation();
+        event.target.closest(".skill-tag").remove();
+        showToast(`Skill "${skill}" removed`, "warning");
+      }
+
+      // Shift management
+      function editShift(day) {
+        currentShiftDay = day;
+        document.getElementById("shiftDay").value = day;
+        document.getElementById("shiftStart").value = "08:00";
+        document.getElementById("shiftEnd").value = "16:00";
+        document.getElementById("shiftOff").checked = false;
+        document.getElementById("shiftModal").classList.add("active");
+      }
+
+      function toggleShiftOff() {
+        const off = document.getElementById("shiftOff").checked;
+        document.getElementById("shiftStart").disabled = off;
+        document.getElementById("shiftEnd").disabled = off;
+      }
+
+      function saveShift() {
+        const day = currentShiftDay;
+        const off = document.getElementById("shiftOff").checked;
+
+        if (off) {
+          showToast(`${day} set as Day Off`, "success");
+        } else {
+          const start = document.getElementById("shiftStart").value;
+          const end = document.getElementById("shiftEnd").value;
+          const startFormatted = formatTime(start);
+          const endFormatted = formatTime(end);
+          showToast(
+            `${day} shift updated to ${startFormatted} - ${endFormatted}`,
+            "success",
+          );
+        }
+
+        closeModal("shiftModal");
+      }
+
+      function formatTime(time) {
+        const [hours, minutes] = time.split(":");
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? "PM" : "AM";
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minutes} ${ampm}`;
+      }
+
+      // Password functions
+      function checkPasswordStrength() {
+        const password = document.getElementById("newPassword").value;
+        const strengthFill = document.getElementById("strengthFill");
+        const strengthText = document.getElementById("strengthText");
+
+        let strength = 0;
+
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+        strengthFill.className = "strength-fill";
+
+        if (password.length === 0) {
+          strengthFill.style.width = "0%";
+          strengthText.textContent = "Enter a password";
+        } else if (strength <= 1) {
+          strengthFill.classList.add("weak");
+          strengthText.textContent = "Weak password";
+        } else if (strength <= 2) {
+          strengthFill.classList.add("medium");
+          strengthText.textContent = "Medium password";
+        } else {
+          strengthFill.classList.add("strong");
+          strengthText.textContent = "Strong password";
+        }
+      }
+
+      function changePassword() {
+        const current = document.getElementById("currentPassword").value;
+        const newPass = document.getElementById("newPassword").value;
+        const confirm = document.getElementById("confirmPassword").value;
+
+        if (!current || !newPass || !confirm) {
+          showToast("Please fill all password fields", "error");
+          return;
+        }
+
+        if (newPass !== confirm) {
+          showToast("New passwords do not match", "error");
+          return;
+        }
+
+        if (newPass.length < 8) {
+          showToast("Password must be at least 8 characters", "error");
+          return;
+        }
+
+        document.getElementById("currentPassword").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+        document.getElementById("strengthFill").style.width = "0%";
+        document.getElementById("strengthText").textContent =
+          "Enter a password";
+
+        showToast("Password changed successfully");
+      }
+
+      // Two-factor authentication
+      function toggle2FA(checkbox) {
+        if (checkbox.checked) {
+          showToast("Two-factor authentication enabled", "success");
+        } else {
+          showToast("Two-factor authentication disabled", "warning");
+        }
+      }
+
+      // Stats and tasks
+      function viewDetails(type) {
+        showToast(`Viewing ${type} details`, "info");
+      }
+
+      function viewProgress() {
+        showToast("Viewing task progress", "info");
+      }
+
+      function toggleTaskComplete(checkbox, taskName) {
+        if (checkbox.checked) {
+          const taskItem = checkbox.closest(".task-item");
+          taskItem.style.opacity = "0.7";
+          updateTaskProgress();
+          showToast(`Task "${taskName}" completed`, "success");
+        } else {
+          checkbox.closest(".task-item").style.opacity = "1";
+          updateTaskProgress();
+        }
+      }
+
+      function updateTaskProgress() {
+        const totalTasks = document.querySelectorAll(".task-item").length;
+        const completedTasks = document.querySelectorAll(
+          ".task-check:checked",
+        ).length;
+        const progress = Math.round((completedTasks / totalTasks) * 100);
+
+        document.getElementById("taskProgress").textContent =
+          `${completedTasks}/${totalTasks}`;
+        document.getElementById("taskProgressBar").style.width = progress + "%";
+      }
+
+      function viewTask(taskName) {
+        showToast(`Viewing task: ${taskName}`, "info");
+      }
+
+      function viewAllTasks() {
+        navigateTo("my-tasks.html");
+      }
+
+      // Leave requests
+      function requestLeave(type) {
+        showToast(`Request ${type} leave form opening`, "info");
+      }
+
+      // Modal functions
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      // Toast functions
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toast.querySelector(".toast-icon i");
+
+        toastMessage.innerText = message;
+        toast.className = "toast show " + type;
+
+        if (type === "success") {
+          toastIcon.className = "fas fa-check-circle";
+        } else if (type === "error") {
+          toastIcon.className = "fas fa-exclamation-circle";
+        } else if (type === "warning") {
+          toastIcon.className = "fas fa-exclamation-triangle";
+        } else if (type === "info") {
+          toastIcon.className = "fas fa-info-circle";
+        }
+
+        setTimeout(hideToast, 3000);
+      }
+
+      function hideToast() {
+        document.getElementById("toast").classList.remove("show");
+      }
+
+      // Initialize loading screen
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.body.classList.remove("loading-active");
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+
+        // Initialize task progress
+        updateTaskProgress();
+      });
+    </script>
+  </body>
+</html>

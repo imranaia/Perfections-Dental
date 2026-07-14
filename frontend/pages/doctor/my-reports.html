@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>My Reports — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0 0 20px; }
+      .bars { display: flex; align-items: flex-end; gap: 8px; height: 140px; margin-top: 16px; }
+      .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; height: 100%; }
+      .bar-fill { width: 100%; max-width: 26px; background: linear-gradient(180deg, var(--blue-mid), var(--blue)); border-radius: 6px 6px 0 0; }
+      .bar-label { font-size: 0.68rem; color: var(--mid-gray); }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Doctor</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="schedule.html"><i class="fas fa-calendar-days"></i> Schedule</a>
+        <a class="glass-nav-link" href="my-patients.html"><i class="fas fa-users"></i> My Patients</a>
+        <a class="glass-nav-link" href="consult.html"><i class="fas fa-stethoscope"></i> Consultation</a>
+        <a class="glass-nav-link" href="prescribe.html"><i class="fas fa-pills"></i> Prescribe</a>
+        <a class="glass-nav-link" href="records.html"><i class="fas fa-file-waveform"></i> Records</a>
+        <a class="glass-nav-link active" href="my-reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>My Reports</h1></div>
+
+        <div class="glass-grid glass-grid-4" style="margin-bottom:20px;">
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-users"></i></div><div><div class="glass-stat-num" id="statPatients">–</div><div class="glass-stat-label">Total Patients</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon green"><i class="fas fa-calendar-check"></i></div><div><div class="glass-stat-num" id="statAppointments">–</div><div class="glass-stat-label">Total Appointments</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon gold"><i class="fas fa-percent"></i></div><div><div class="glass-stat-num" id="statCompletion">–</div><div class="glass-stat-label">Completion Rate</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-pills"></i></div><div><div class="glass-stat-num" id="statRx">–</div><div class="glass-stat-label">Prescriptions Today</div></div></div>
+        </div>
+
+        <div class="glass-card">
+          <h3><i class="fas fa-chart-column"></i> Clinic Revenue — Last 7 Days</h3>
+          <div class="bars" id="revenueBars"></div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      async function api(path) {
+        const res = await fetch('/api' + path, { credentials: 'include' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+
+        const { profile: p } = await api('/doctor/profile/');
+        document.getElementById('statPatients').textContent = p.stats?.total_patients ?? 0;
+        document.getElementById('statAppointments').textContent = p.stats?.total_appointments ?? 0;
+        document.getElementById('statCompletion').textContent = (p.stats?.completion_rate ?? 0) + '%';
+
+        try {
+          const { stats } = await api('/doctor/dashboard/stats');
+          document.getElementById('statRx').textContent = stats.prescriptions_today ?? 0;
+        } catch (e) { console.error(e); }
+
+        try {
+          const { revenue_data } = await api('/dashboard/chart-data');
+          const values = revenue_data.values.slice(-7);
+          const labels = revenue_data.labels.slice(-7);
+          const max = Math.max(...values, 1);
+          document.getElementById('revenueBars').innerHTML = values.map((v, i) => `
+            <div class="bar-col"><div class="bar-fill" style="height:${Math.max((v / max) * 100, 3)}%"></div><div class="bar-label">${labels[i]}</div></div>
+          `).join('');
+        } catch (e) { console.error(e); }
+      }
+      init();
+    </script>
+  </body>
+</html>

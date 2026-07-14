@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Access Control — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0 0 20px; }
+      .perm-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.82rem; }
+      .avatar-sm { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,var(--blue),var(--blue-mid)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; }
+      .log-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--light-border); font-size: 0.82rem; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Superadmin</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="doctors.html"><i class="fas fa-user-doctor"></i> Doctors</a>
+        <a class="glass-nav-link" href="nurses.html"><i class="fas fa-user-nurse"></i> Nurses</a>
+        <a class="glass-nav-link" href="reception.html"><i class="fas fa-desk"></i> Reception Staff</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="financial.html"><i class="fas fa-sack-dollar"></i> Financial</a>
+        <a class="glass-nav-link" href="analytics.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a class="glass-nav-link" href="performance.html"><i class="fas fa-ranking-star"></i> Performance</a>
+        <a class="glass-nav-link active" href="access-control.html"><i class="fas fa-shield-halved"></i> Access Control</a>
+        <a class="glass-nav-link" href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head"><h1>Access Control</h1></div>
+
+        <div class="glass-grid glass-grid-4" id="roleCards" style="margin-bottom:20px;"></div>
+
+        <div class="glass-grid glass-grid-2">
+          <div class="glass-card">
+            <h3><i class="fas fa-users"></i> Staff Roles</h3>
+            <div id="staffList" style="margin-top:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h3><i class="fas fa-list-check"></i> Recent Audit Log</h3>
+            <div id="auditLog" style="margin-top:10px; max-height:420px; overflow-y:auto;"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/superadmin/access-control';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      let staff = [];
+      let roleOptions = [];
+
+      async function loadRoles() {
+        const { roles } = await api('/roles');
+        roleOptions = roles;
+        document.getElementById('roleCards').innerHTML = roles.map(r => `
+          <div class="glass-card">
+            <h3 style="text-transform:capitalize;">${r.name}</h3>
+            <p>${r.description || ''}</p>
+          </div>
+        `).join('');
+      }
+
+      async function loadStaff() {
+        const { staff: s } = await api('/staff');
+        staff = s;
+        document.getElementById('staffList').innerHTML = s.length ? s.map(m => `
+          <div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--light-border);">
+            <div class="avatar-sm">${(m.name || '??').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase()}</div>
+            <div style="flex:1"><div style="font-weight:700; font-size:0.86rem;">${m.name}</div><div style="font-size:0.75rem;color:var(--mid-gray);">${m.email}</div></div>
+            <select class="glass-select role-select" data-id="${m.id}" style="width:auto; padding:6px 10px;">
+              ${roleOptions.map(r => `<option value="${r.id}" ${r.name === m.role ? 'selected' : ''}>${r.name}</option>`).join('')}
+            </select>
+          </div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-users"></i>No staff found</div>';
+
+        document.querySelectorAll('.role-select').forEach(sel => {
+          sel.addEventListener('change', () => changeRole(sel.dataset.id, sel.value));
+        });
+      }
+
+      async function changeRole(staffId, roleId) {
+        try {
+          await api(`/staff/${staffId}/role`, { method: 'PUT', body: JSON.stringify({ role_id: Number(roleId) }) });
+          loadStaff();
+        } catch (e) { alert(e.message); }
+      }
+
+      async function loadAuditLog() {
+        const { logs } = await api('/audit-logs');
+        document.getElementById('auditLog').innerHTML = logs.length ? logs.map(l => `
+          <div class="log-row"><span>${l.first_name || ''} ${l.last_name || ''} · ${l.action}</span><span style="color:var(--mid-gray);">${l.created_at || ''}</span></div>
+        `).join('') : '<div class="glass-empty"><i class="fas fa-list-check"></i>No activity logged yet</div>';
+      }
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await loadRoles();
+        await Promise.all([loadStaff(), loadAuditLog()]);
+      }
+      init();
+    </script>
+  </body>
+</html>

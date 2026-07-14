@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Clinical Notes - Nurse - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .notes-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: var(--space-xl);
+      }
+
+      .patient-selector {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .patient-selector:hover {
+        box-shadow: var(--shadow-lg);
+      }
+
+      .notes-form {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        box-shadow: var(--shadow-md);
+      }
+
+      .note-type-selector {
+        display: flex;
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+      }
+
+      .note-type {
+        flex: 1;
+        padding: var(--space-md);
+        text-align: center;
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        border: 2px solid transparent;
+      }
+
+      .note-type:hover {
+        border-color: var(--warning);
+        transform: translateY(-2px);
+      }
+
+      .note-type.active {
+        background: var(--warning);
+        color: white;
+        border-color: var(--warning);
+      }
+
+      .note-type i {
+        font-size: 1.5rem;
+        margin-bottom: var(--space-xs);
+      }
+
+      .template-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-sm);
+        margin: var(--space-md) 0;
+      }
+
+      .template-item {
+        padding: var(--space-sm);
+        background: var(--off-white);
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        border: 1px solid transparent;
+      }
+
+      .template-item:hover {
+        background: var(--warning);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .vitals-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-md);
+        margin: var(--space-lg) 0;
+      }
+
+      .vital-input {
+        text-align: center;
+      }
+
+      .vital-input label {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        display: block;
+        margin-bottom: var(--space-xs);
+      }
+
+      .vital-input input {
+        width: 100%;
+        padding: var(--space-sm);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        text-align: center;
+        transition: all var(--transition-fast);
+      }
+
+      .vital-input input:focus {
+        outline: none;
+        border-color: var(--warning);
+        box-shadow: 0 0 0 3px rgba(255, 159, 10, 0.2);
+      }
+
+      .textarea-field {
+        width: 100%;
+        padding: var(--space-md);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 0.95rem;
+        resize: vertical;
+        min-height: 200px;
+        transition: all var(--transition-fast);
+      }
+
+      .textarea-field:focus {
+        outline: none;
+        border-color: var(--warning);
+        box-shadow: 0 0 0 3px rgba(255, 159, 10, 0.2);
+      }
+
+      .upload-area {
+        border: 2px dashed var(--light-gray);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .upload-area:hover {
+        border-color: var(--warning);
+        background: rgba(255, 159, 10, 0.05);
+      }
+
+      .recent-notes {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+      }
+
+      .note-history-item {
+        padding: var(--space-md) 0;
+        border-bottom: 1px solid var(--light-gray);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .note-history-item:hover {
+        background: rgba(255, 159, 10, 0.05);
+        padding-left: var(--space-sm);
+        border-radius: var(--radius-lg);
+      }
+
+      .note-history-item:last-child {
+        border-bottom: none;
+      }
+
+      .note-history-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: var(--space-xs);
+      }
+
+      .note-history-patient {
+        font-weight: 600;
+      }
+
+      .note-history-date {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .note-history-preview {
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        margin-bottom: var(--space-xs);
+        line-height: 1.4;
+      }
+
+      .note-history-type {
+        display: inline-block;
+        padding: 2px 8px;
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      .note-detail-item {
+        display: flex;
+        margin-bottom: var(--space-sm);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+      }
+
+      .note-detail-label {
+        width: 100px;
+        font-weight: 600;
+        color: var(--text-light);
+      }
+
+      .note-detail-value {
+        flex: 1;
+      }
+
+      .note-full-content {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin: var(--space-md) 0;
+        line-height: 1.6;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md) var(--space-lg);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 2000;
+        border-left: 4px solid var(--success);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.warning {
+        border-left-color: var(--warning);
+      }
+
+      .toast-icon {
+        font-size: 1.2rem;
+        color: var(--success);
+      }
+
+      .toast.warning .toast-icon {
+        color: var(--warning);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading Clinical Notes...</p>
+    </div>
+
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Clinical Notes</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile" onclick="navigateToProfile()"></div>
+          </div>
+        </div>
+
+        <!-- Patient Selector -->
+        <div class="patient-selector" onclick="openPatientSelector()">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: var(--space-md);
+            "
+          >
+            <h3>Select Patient</h3>
+            <span class="badge badge-warning">Nurse Notes</span>
+          </div>
+          <select
+            style="
+              width: 100%;
+              padding: var(--space-md);
+              border-radius: var(--radius-md);
+              border: 2px solid var(--light-gray);
+            "
+            id="patientSelect"
+            onclick="event.stopPropagation()"
+            onchange="selectPatient(this)"
+          >
+            <option value="Mr. Ade - Teeth Cleaning (11:00 AM)">
+              Mr. Ade - Teeth Cleaning (11:00 AM)
+            </option>
+            <option value="Baby Grace - Fluoride Treatment (12:00 PM)">
+              Baby Grace - Fluoride Treatment (12:00 PM)
+            </option>
+            <option value="Chioma Obi - Dental Sealants (2:30 PM)">
+              Chioma Obi - Dental Sealants (2:30 PM)
+            </option>
+            <option value="New Patient - Oral Hygiene (3:00 PM)">
+              New Patient - Oral Hygiene (3:00 PM)
+            </option>
+          </select>
+        </div>
+
+        <!-- Notes Container -->
+        <div class="notes-container">
+          <!-- Notes Form Column -->
+          <div>
+            <div class="notes-form">
+              <h3 style="margin-bottom: var(--space-lg)">Add Clinical Notes</h3>
+
+              <!-- Note Type Selector -->
+              <div class="note-type-selector">
+                <div
+                  class="note-type active"
+                  onclick="selectNoteType('pre', this)"
+                >
+                  <i class="fas fa-notes-medical"></i>
+                  <div>Pre-Procedure</div>
+                </div>
+                <div
+                  class="note-type"
+                  onclick="selectNoteType('procedure', this)"
+                >
+                  <i class="fas fa-procedures"></i>
+                  <div>Procedure Notes</div>
+                </div>
+                <div class="note-type" onclick="selectNoteType('post', this)">
+                  <i class="fas fa-heartbeat"></i>
+                  <div>Post-Procedure</div>
+                </div>
+              </div>
+
+              <!-- Quick Templates -->
+              <div style="margin-bottom: var(--space-lg)">
+                <label
+                  style="
+                    font-weight: 600;
+                    margin-bottom: var(--space-sm);
+                    display: block;
+                  "
+                  >Quick Templates</label
+                >
+                <div class="template-list">
+                  <div
+                    class="template-item"
+                    onclick="insertTemplate('Vital Signs')"
+                  >
+                    Vital Signs
+                  </div>
+                  <div
+                    class="template-item"
+                    onclick="insertTemplate('Pre-op Check')"
+                  >
+                    Pre-op Check
+                  </div>
+                  <div
+                    class="template-item"
+                    onclick="insertTemplate('Post-op Inst')"
+                  >
+                    Post-op Inst
+                  </div>
+                  <div
+                    class="template-item"
+                    onclick="insertTemplate('Allergy Check')"
+                  >
+                    Allergy Check
+                  </div>
+                  <div
+                    class="template-item"
+                    onclick="insertTemplate('Medication')"
+                  >
+                    Medication
+                  </div>
+                  <div
+                    class="template-item"
+                    onclick="insertTemplate('Follow-up')"
+                  >
+                    Follow-up
+                  </div>
+                </div>
+              </div>
+
+              <!-- Vital Signs -->
+              <div class="vitals-grid">
+                <div class="vital-input">
+                  <label>BP (Systolic/Diastolic)</label>
+                  <input
+                    type="text"
+                    id="bpInput"
+                    placeholder="120/80"
+                    value="120/80"
+                  />
+                </div>
+                <div class="vital-input">
+                  <label>HR (bpm)</label>
+                  <input type="text" id="hrInput" placeholder="72" value="72" />
+                </div>
+                <div class="vital-input">
+                  <label>Temp (°C)</label>
+                  <input
+                    type="text"
+                    id="tempInput"
+                    placeholder="36.6"
+                    value="36.6"
+                  />
+                </div>
+              </div>
+
+              <!-- Notes Textarea -->
+              <div style="margin-bottom: var(--space-lg)">
+                <label
+                  style="
+                    font-weight: 600;
+                    margin-bottom: var(--space-sm);
+                    display: block;
+                  "
+                  >Notes</label
+                >
+                <textarea
+                  class="textarea-field"
+                  id="notesTextarea"
+                  placeholder="Enter clinical notes..."
+                  style="min-height: 200px; width: 100%"
+                >
+Pre-procedure assessment complete. Patient vitals stable. Allergies: None reported. Local anesthesia administered - 2% Lidocaine with epinephrine 1:100,000, 1.8ml. Patient tolerated well.</textarea
+                >
+              </div>
+
+              <!-- Attachments -->
+              <div style="margin-bottom: var(--space-lg)">
+                <label
+                  style="
+                    font-weight: 600;
+                    margin-bottom: var(--space-sm);
+                    display: block;
+                  "
+                  >Attachments</label
+                >
+                <div class="upload-area" onclick="uploadFile()">
+                  <i
+                    class="fas fa-cloud-upload-alt"
+                    style="
+                      font-size: 2rem;
+                      color: var(--warning);
+                      margin-bottom: var(--space-sm);
+                    "
+                  ></i>
+                  <p style="color: var(--text-light)">
+                    Drag & drop or click to upload images
+                  </p>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    style="display: none"
+                    multiple
+                    accept="image/*"
+                    onchange="handleFileSelect(event)"
+                  />
+                </div>
+                <div id="fileList" style="margin-top: var(--space-sm)"></div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div style="display: flex; gap: var(--space-md)">
+                <button
+                  class="btn btn-primary"
+                  style="flex: 2"
+                  onclick="saveNotes()"
+                >
+                  <i class="fas fa-save"></i>
+                  Save Notes
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  style="flex: 1"
+                  onclick="printNotes()"
+                >
+                  <i class="fas fa-print"></i>
+                  Print
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  style="flex: 1"
+                  onclick="clearNotes()"
+                >
+                  <i class="fas fa-eraser"></i>
+                  Clear
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Notes Sidebar -->
+          <div>
+            <div class="recent-notes">
+              <h3 style="margin-bottom: var(--space-lg)">Recent Notes</h3>
+
+              <div
+                class="note-history-item"
+                onclick="
+                  openNoteDetails(
+                    'Sarah Jones',
+                    '10 min ago',
+                    'Pre-op: BP 118/76, HR 70, Temp 36.5°C. Allergies confirmed. Patient calm and ready for procedure.',
+                    'Pre-Procedure',
+                  )
+                "
+              >
+                <div class="note-history-header">
+                  <span class="note-history-patient">Sarah Jones</span>
+                  <span class="note-history-date">10 min ago</span>
+                </div>
+                <div class="note-history-preview">
+                  Pre-op: BP 118/76, HR 70, Temp 36.5°C. Allergies confirmed...
+                </div>
+                <span class="note-history-type">Pre-Procedure</span>
+              </div>
+
+              <div
+                class="note-history-item"
+                onclick="
+                  openNoteDetails(
+                    'Michael Obi',
+                    '1 hour ago',
+                    'Post-op: Patient stable. Bleeding controlled. Instructions given for next 24 hours. Follow-up scheduled.',
+                    'Post-Procedure',
+                  )
+                "
+              >
+                <div class="note-history-header">
+                  <span class="note-history-patient">Michael Obi</span>
+                  <span class="note-history-date">1 hour ago</span>
+                </div>
+                <div class="note-history-preview">
+                  Post-op: Patient stable. Bleeding controlled. Instructions
+                  given...
+                </div>
+                <span class="note-history-type">Post-Procedure</span>
+              </div>
+
+              <div
+                class="note-history-item"
+                onclick="
+                  openNoteDetails(
+                    'Tunde Bakare',
+                    '2 hours ago',
+                    'Procedure: Teeth cleaning completed. Moderate calculus removed. Patient tolerated well. No complications.',
+                    'Procedure Notes',
+                  )
+                "
+              >
+                <div class="note-history-header">
+                  <span class="note-history-patient">Tunde Bakare</span>
+                  <span class="note-history-date">2 hours ago</span>
+                </div>
+                <div class="note-history-preview">
+                  Procedure: Teeth cleaning completed. Moderate calculus
+                  removed...
+                </div>
+                <span class="note-history-type">Procedure Notes</span>
+              </div>
+
+              <div
+                class="note-history-item"
+                onclick="
+                  openNoteDetails(
+                    'Ada Eze',
+                    '3 hours ago',
+                    'Vital signs: BP 124/82, HR 75, Temp 36.7°C, O2 Sat 98%. All stable for procedure.',
+                    'Vitals',
+                  )
+                "
+              >
+                <div class="note-history-header">
+                  <span class="note-history-patient">Ada Eze</span>
+                  <span class="note-history-date">3 hours ago</span>
+                </div>
+                <div class="note-history-preview">
+                  Vital signs recorded: BP 124/82, HR 75, Temp 36.7°C...
+                </div>
+                <span class="note-history-type">Vitals</span>
+              </div>
+
+              <button
+                class="btn btn-secondary btn-sm"
+                style="width: 100%; margin-top: var(--space-md)"
+                onclick="viewAllNotes()"
+              >
+                View All Notes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note Details Modal -->
+    <div class="modal-overlay" id="noteModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Note Details</span>
+          <button class="modal-close" onclick="closeModal('noteModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="note-detail-item">
+            <span class="note-detail-label">Patient:</span>
+            <span class="note-detail-value" id="modalPatient">Sarah Jones</span>
+          </div>
+          <div class="note-detail-item">
+            <span class="note-detail-label">Time:</span>
+            <span class="note-detail-value" id="modalTime">10 min ago</span>
+          </div>
+          <div class="note-detail-item">
+            <span class="note-detail-label">Type:</span>
+            <span class="note-detail-value" id="modalType">Pre-Procedure</span>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">
+            Note Content
+          </h4>
+          <div class="note-full-content" id="modalContent">
+            Pre-op: BP 118/76, HR 70, Temp 36.5°C. Allergies confirmed. Patient
+            calm and ready for procedure.
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Attachments</h4>
+          <div style="color: var(--text-light); font-style: italic">
+            No attachments
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('noteModal')">
+            Close
+          </button>
+          <button class="btn btn-primary" onclick="editNote()">
+            Edit Note
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+      <div class="toast-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="toast-message" id="toastMessage">
+        Notes saved successfully
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Navigation functions
+      function navigateToProfile() {
+        window.location.href = "profile.html";
+      }
+
+      // Note type selector
+      let currentNoteType = "pre";
+
+      function selectNoteType(type, element) {
+        currentNoteType = type;
+
+        document
+          .querySelectorAll(".note-type")
+          .forEach((t) => t.classList.remove("active"));
+        element.classList.add("active");
+
+        // Update placeholder text based on type
+        const textarea = document.getElementById("notesTextarea");
+        if (type === "pre") {
+          textarea.placeholder = "Enter pre-procedure notes...";
+        } else if (type === "procedure") {
+          textarea.placeholder = "Enter procedure notes...";
+        } else if (type === "post") {
+          textarea.placeholder = "Enter post-procedure notes...";
+        }
+
+        showToast(`Switched to ${element.textContent.trim()} notes`, "info");
+      }
+
+      // Template items
+      function insertTemplate(templateName) {
+        const textarea = document.getElementById("notesTextarea");
+        const templates = {
+          "Vital Signs": `Vital signs: BP ${document.getElementById("bpInput").value || "120/80"}, HR ${document.getElementById("hrInput").value || "72"}, Temp ${document.getElementById("tempInput").value || "36.6"}°C, O2 Sat 98%`,
+          "Pre-op Check":
+            "Pre-operative assessment complete. Patient nil by mouth for 6 hours. Consent verified. Medical history reviewed.",
+          "Post-op Inst":
+            "Post-operative instructions given. Avoid hot food/drinks for 24h. No strenuous activity. Take prescribed medication as directed.",
+          "Allergy Check":
+            "Allergies reviewed: No known allergies. Patient confirmed.",
+          Medication: `Medication administered: ${prompt("Enter medication name and dosage:", "2% Lidocaine 1.8ml")} as prescribed. No adverse reactions observed.`,
+          "Follow-up":
+            "Follow-up scheduled in 2 weeks. Instructions provided. Patient to return if any issues.",
+        };
+
+        const templateText = templates[templateName];
+        if (templateText) {
+          // Append to existing text or replace
+          if (
+            confirm(
+              "Replace current notes or append? (OK to replace, Cancel to append)",
+            )
+          ) {
+            textarea.value = templateText;
+          } else {
+            textarea.value += "\n\n" + templateText;
+          }
+          showToast(`Template inserted: ${templateName}`);
+        }
+      }
+
+      // Patient selector
+      function selectPatient(select) {
+        const patient = select.value;
+        showToast(`Selected patient: ${patient}`);
+
+        // Auto-fill some notes based on patient
+        const textarea = document.getElementById("notesTextarea");
+        if (patient.includes("Teeth Cleaning")) {
+          textarea.value = `Pre-procedure assessment for teeth cleaning. Patient vitals stable. No contraindications.`;
+        } else if (patient.includes("Fluoride")) {
+          textarea.value = `Fluoride treatment preparation complete. Patient advised on post-treatment care.`;
+        }
+      }
+
+      function openPatientSelector() {
+        document.getElementById("patientSelect").focus();
+      }
+
+      // File upload
+      function uploadFile() {
+        document.getElementById("fileInput").click();
+      }
+
+      function handleFileSelect(event) {
+        const files = event.target.files;
+        const fileList = document.getElementById("fileList");
+        fileList.innerHTML = "";
+
+        if (files.length > 0) {
+          fileList.innerHTML = "<strong>Selected files:</strong><br>";
+          for (let i = 0; i < files.length; i++) {
+            fileList.innerHTML += `<span style="font-size: 0.8rem; display: block; margin-top: 4px;">✓ ${files[i].name}</span>`;
+          }
+          showToast(`${files.length} file(s) selected for upload`);
+        }
+      }
+
+      // Save notes
+      function saveNotes() {
+        const patient = document.getElementById("patientSelect").value;
+        const noteType = document
+          .querySelector(".note-type.active")
+          .textContent.trim();
+        const notes = document.getElementById("notesTextarea").value;
+        const bp = document.getElementById("bpInput").value;
+        const hr = document.getElementById("hrInput").value;
+        const temp = document.getElementById("tempInput").value;
+
+        if (!patient) {
+          showToast("Please select a patient", "warning");
+          return;
+        }
+
+        if (!notes) {
+          showToast("Please enter notes", "warning");
+          return;
+        }
+
+        // Here you would save to database
+        console.log("Saving notes:", {
+          patient,
+          noteType,
+          notes,
+          bp,
+          hr,
+          temp,
+        });
+
+        showToast("Notes saved successfully!");
+
+        // Add to recent notes (simulated)
+        const recentNotesContainer = document.querySelector(".recent-notes");
+        const newNote = document.createElement("div");
+        newNote.className = "note-history-item";
+        newNote.setAttribute(
+          "onclick",
+          "openNoteDetails('Current Patient', 'Just now', '" +
+            notes.substring(0, 50) +
+            "...', '" +
+            noteType +
+            "')",
+        );
+        newNote.innerHTML = `
+          <div class="note-history-header">
+            <span class="note-history-patient">Current Patient</span>
+            <span class="note-history-date">Just now</span>
+          </div>
+          <div class="note-history-preview">${notes.substring(0, 50)}...</div>
+          <span class="note-history-type">${noteType}</span>
+        `;
+
+        recentNotesContainer.insertBefore(
+          newNote,
+          recentNotesContainer.querySelector("button"),
+        );
+      }
+
+      // Print notes
+      function printNotes() {
+        const patient = document.getElementById("patientSelect").value;
+        const notes = document.getElementById("notesTextarea").value;
+
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Clinical Notes - ${patient}</title>
+              <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h1 { color: #0066cc; }
+                .note { margin-top: 20px; line-height: 1.6; }
+                .footer { margin-top: 40px; font-size: 0.8rem; color: #666; }
+              </style>
+            </head>
+            <body>
+              <h1>Clinical Notes</h1>
+              <p><strong>Patient:</strong> ${patient}</p>
+              <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+              <p><strong>Type:</strong> ${document.querySelector(".note-type.active").textContent.trim()}</p>
+              <div class="note">${notes.replace(/\n/g, "<br>")}</div>
+              <div class="footer">Perfections Dental - Nurse Notes</div>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+
+        showToast("Print window opened");
+      }
+
+      // Clear notes
+      function clearNotes() {
+        if (confirm("Clear all notes?")) {
+          document.getElementById("notesTextarea").value = "";
+          document.getElementById("bpInput").value = "120/80";
+          document.getElementById("hrInput").value = "72";
+          document.getElementById("tempInput").value = "36.6";
+          document.getElementById("fileList").innerHTML = "";
+          document.getElementById("fileInput").value = "";
+          showToast("Notes cleared");
+        }
+      }
+
+      // Modal functions
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      function openNoteDetails(patient, time, content, type) {
+        document.getElementById("modalPatient").textContent = patient;
+        document.getElementById("modalTime").textContent = time;
+        document.getElementById("modalType").textContent = type;
+        document.getElementById("modalContent").textContent = content;
+
+        openModal("noteModal");
+      }
+
+      function editNote() {
+        closeModal("noteModal");
+        // Load note into form (simulated)
+        document.getElementById("notesTextarea").value =
+          document.getElementById("modalContent").textContent;
+        showToast("Note loaded for editing");
+      }
+
+      function viewAllNotes() {
+        alert("Navigating to all notes...");
+        // window.location.href = 'all-notes.html';
+      }
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toast.querySelector(".toast-icon i");
+
+        toastMessage.innerText = message;
+        toast.className = "toast show " + type;
+
+        if (type === "success") {
+          toastIcon.className = "fas fa-check-circle";
+        } else if (type === "warning") {
+          toastIcon.className = "fas fa-exclamation-triangle";
+        } else if (type === "info") {
+          toastIcon.className = "fas fa-info-circle";
+        }
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+
+      // Sidebar toggle function
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      // Initialize loading screen
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.body.classList.remove("loading-active");
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

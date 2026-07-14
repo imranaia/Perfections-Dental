@@ -1,0 +1,1214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>My Procedures - Nurse - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .procedures-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-xl);
+      }
+
+      /* Enhanced Stats Cards */
+      .stats-grid-small {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .stat-card-small {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        transition: all var(--transition-base);
+        border-left: 4px solid transparent;
+        cursor: pointer;
+      }
+
+      .stat-card-small:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .stat-card-small.orange {
+        border-left-color: var(--warning);
+      }
+
+      .stat-card-small.green {
+        border-left-color: var(--success);
+      }
+
+      .stat-card-small.blue {
+        border-left-color: var(--primary-blue);
+      }
+
+      .stat-icon-small {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+      }
+
+      .stat-icon-small.orange-bg {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+      }
+
+      .stat-icon-small.green-bg {
+        background: rgba(52, 199, 89, 0.1);
+        color: var(--success);
+      }
+
+      .stat-icon-small.blue-bg {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .stat-content {
+        flex: 1;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        line-height: 1.2;
+        margin-bottom: 2px;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .procedure-categories {
+        display: flex;
+        gap: var(--space-sm);
+        margin-bottom: var(--space-xl);
+        flex-wrap: wrap;
+      }
+
+      .category-pill {
+        padding: var(--space-sm) var(--space-lg);
+        background: var(--pure-white);
+        border: 2px solid var(--light-gray);
+        border-radius: var(--radius-full);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .category-pill:hover {
+        border-color: var(--warning);
+      }
+
+      .category-pill.active {
+        background: var(--warning);
+        border-color: var(--warning);
+        color: white;
+      }
+
+      .procedure-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--space-lg);
+      }
+
+      .procedure-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-base);
+        border: 1px solid transparent;
+        cursor: pointer;
+      }
+
+      .procedure-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--warning);
+      }
+
+      .procedure-card.eligible {
+        border-left: 4px solid var(--warning);
+      }
+
+      .procedure-image {
+        height: 120px;
+        background: linear-gradient(145deg, var(--warning), #f39c12);
+        position: relative;
+        padding: var(--space-md);
+        color: white;
+      }
+
+      .procedure-image.blue {
+        background: linear-gradient(
+          145deg,
+          var(--primary-blue),
+          var(--primary-blue-dark)
+        );
+      }
+
+      .procedure-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: var(--space-sm);
+      }
+
+      .procedure-body {
+        padding: var(--space-lg);
+      }
+
+      .procedure-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .procedure-meta {
+        display: flex;
+        justify-content: space-between;
+        margin: var(--space-sm) 0;
+        color: var(--text-light);
+        font-size: 0.9rem;
+      }
+
+      .procedure-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .procedure-badge.blue {
+        background: rgba(0, 102, 204, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .schedule-note {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin-top: var(--space-md);
+        font-size: 0.9rem;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      .procedure-detail-item {
+        display: flex;
+        margin-bottom: var(--space-sm);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+      }
+
+      .procedure-detail-label {
+        width: 120px;
+        font-weight: 600;
+        color: var(--text-light);
+      }
+
+      .procedure-detail-value {
+        flex: 1;
+      }
+
+      .steps-list {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin: var(--space-md) 0;
+      }
+
+      .step-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-xs) 0;
+      }
+
+      .step-checkbox {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--primary-blue);
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all var(--transition-fast);
+      }
+
+      .step-checkbox.checked {
+        background: var(--primary-blue);
+      }
+
+      .step-checkbox.checked i {
+        opacity: 1 !important;
+      }
+
+      .table-row {
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .table-row:hover {
+        background: rgba(255, 159, 10, 0.05);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading My Procedures...</p>
+    </div>
+
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">My Procedures</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile" onclick="navigateToProfile()"></div>
+          </div>
+        </div>
+
+        <!-- Enhanced Stats Cards -->
+        <div class="stats-grid-small">
+          <!-- Today's Procedures Card -->
+          <div
+            class="stat-card-small orange"
+            onclick="filterProcedures('today')"
+          >
+            <div class="stat-icon-small orange-bg">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" style="color: var(--warning)">4</div>
+              <div class="stat-label">Today's Procedures</div>
+            </div>
+          </div>
+
+          <!-- Completed Card -->
+          <div
+            class="stat-card-small green"
+            onclick="filterProcedures('completed')"
+          >
+            <div class="stat-icon-small green-bg">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" style="color: var(--success)">1</div>
+              <div class="stat-label">Completed</div>
+            </div>
+          </div>
+
+          <!-- This Week Card -->
+          <div class="stat-card-small blue" onclick="filterProcedures('week')">
+            <div class="stat-icon-small blue-bg">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" style="color: var(--primary-blue)">8</div>
+              <div class="stat-label">This Week</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="procedure-categories">
+          <span
+            class="category-pill active"
+            onclick="filterCategory('all', this)"
+            >All Procedures</span
+          >
+          <span class="category-pill" onclick="filterCategory('eligible', this)"
+            >My Eligible</span
+          >
+          <span class="category-pill" onclick="filterCategory('today', this)"
+            >Scheduled Today</span
+          >
+          <span
+            class="category-pill"
+            onclick="filterCategory('completed', this)"
+            >Completed</span
+          >
+          <span class="category-pill" onclick="filterCategory('doctor', this)"
+            >Requires Doctor</span
+          >
+        </div>
+
+        <!-- Procedures Grid -->
+        <div class="procedure-grid" id="proceduresGrid">
+          <!-- Teeth Cleaning - Eligible -->
+          <div
+            class="procedure-card eligible"
+            onclick="
+              openProcedureDetails(
+                'Teeth Cleaning',
+                'Mr. Ade',
+                '11:00 AM',
+                'Room 3',
+                'eligible',
+                'cleaning',
+              )
+            "
+          >
+            <div class="procedure-image">
+              <div class="procedure-icon">
+                <i class="fas fa-tooth"></i>
+              </div>
+            </div>
+            <div class="procedure-body">
+              <div class="procedure-title">Teeth Cleaning</div>
+              <div class="procedure-meta">
+                <span><i class="far fa-clock"></i> 45 min</span>
+                <span class="procedure-badge">Nurse Eligible</span>
+              </div>
+
+              <div class="schedule-note">
+                <strong>Next:</strong> Mr. Ade - 11:00 AM (Room 3)
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-sm);
+                    margin-top: var(--space-sm);
+                  "
+                  onclick="event.stopPropagation()"
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="
+                      startProcedure(
+                        'Teeth Cleaning',
+                        'Mr. Ade',
+                        '11:00 AM',
+                        'Room 3',
+                      )
+                    "
+                  >
+                    Start
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="rescheduleProcedure('Teeth Cleaning', 'Mr. Ade')"
+                  >
+                    Reschedule
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fluoride Treatment - Eligible -->
+          <div
+            class="procedure-card eligible"
+            onclick="
+              openProcedureDetails(
+                'Fluoride Treatment',
+                'Baby Grace',
+                '12:00 PM',
+                'Room 2',
+                'eligible',
+                'fluoride',
+              )
+            "
+          >
+            <div class="procedure-image">
+              <div class="procedure-icon">
+                <i class="fas fa-tint"></i>
+              </div>
+            </div>
+            <div class="procedure-body">
+              <div class="procedure-title">Fluoride Treatment</div>
+              <div class="procedure-meta">
+                <span><i class="far fa-clock"></i> 20 min</span>
+                <span class="procedure-badge">Nurse Eligible</span>
+              </div>
+
+              <div class="schedule-note">
+                <strong>Next:</strong> Baby Grace - 12:00 PM (Room 2)
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-sm);
+                    margin-top: var(--space-sm);
+                  "
+                  onclick="event.stopPropagation()"
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="
+                      prepareProcedure(
+                        'Fluoride Treatment',
+                        'Baby Grace',
+                        'Room 2',
+                      )
+                    "
+                  >
+                    Prepare
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="viewProcedure('Fluoride Treatment', 'Baby Grace')"
+                  >
+                    View
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dental Sealants - Eligible -->
+          <div
+            class="procedure-card eligible"
+            onclick="
+              openProcedureDetails(
+                'Dental Sealants',
+                'Not Scheduled',
+                'N/A',
+                'N/A',
+                'eligible',
+                'sealants',
+              )
+            "
+          >
+            <div class="procedure-image">
+              <div class="procedure-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+            </div>
+            <div class="procedure-body">
+              <div class="procedure-title">Dental Sealants</div>
+              <div class="procedure-meta">
+                <span><i class="far fa-clock"></i> 30 min</span>
+                <span class="procedure-badge">Nurse Eligible</span>
+              </div>
+
+              <div class="schedule-note">
+                <strong>Next:</strong> Not Scheduled
+                <div
+                  style="margin-top: var(--space-sm)"
+                  onclick="event.stopPropagation()"
+                >
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="bookPatient('Dental Sealants')"
+                  >
+                    Book Patient
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Oral Hygiene Instruction - Eligible -->
+          <div
+            class="procedure-card eligible"
+            onclick="
+              openProcedureDetails(
+                'Oral Hygiene Instruction',
+                'New Patient',
+                '3:00 PM',
+                'Room 3',
+                'eligible',
+                'hygiene',
+              )
+            "
+          >
+            <div class="procedure-image">
+              <div class="procedure-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+              </div>
+            </div>
+            <div class="procedure-body">
+              <div class="procedure-title">Oral Hygiene Instruction</div>
+              <div class="procedure-meta">
+                <span><i class="far fa-clock"></i> 15 min</span>
+                <span class="procedure-badge">Nurse Eligible</span>
+              </div>
+
+              <div class="schedule-note">
+                <strong>Next:</strong> New Patient - 3:00 PM
+                <div
+                  style="
+                    display: flex;
+                    gap: var(--space-sm);
+                    margin-top: var(--space-sm);
+                  "
+                  onclick="event.stopPropagation()"
+                >
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="
+                      prepareProcedure(
+                        'Oral Hygiene Instruction',
+                        'New Patient',
+                        'Room 3',
+                      )
+                    "
+                  >
+                    Prepare
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="
+                      viewProcedure('Oral Hygiene Instruction', 'New Patient')
+                    "
+                  >
+                    View
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Temporary Crown - Requires Doctor Review -->
+          <div
+            class="procedure-card"
+            onclick="
+              openProcedureDetails(
+                'Temporary Crown',
+                'Mrs. Obi',
+                '2:00 PM',
+                'Room 1',
+                'doctor',
+                'crown',
+              )
+            "
+          >
+            <div class="procedure-image blue">
+              <div class="procedure-icon">
+                <i class="fas fa-crown"></i>
+              </div>
+            </div>
+            <div class="procedure-body">
+              <div class="procedure-title">Temporary Crown</div>
+              <div class="procedure-meta">
+                <span><i class="far fa-clock"></i> 30 min</span>
+                <span class="procedure-badge blue">Doctor Review</span>
+              </div>
+
+              <div class="schedule-note">
+                <strong>Requires:</strong> Dr. Approval
+                <div
+                  style="margin-top: var(--space-sm)"
+                  onclick="event.stopPropagation()"
+                >
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="requestReview('Temporary Crown', 'Mrs. Obi')"
+                  >
+                    Request Review
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Schedule -->
+        <div class="table-container" style="margin-top: var(--space-xl)">
+          <div class="table-header">
+            <h3 class="table-title">Today's Procedure Schedule</h3>
+            <span class="badge badge-warning">Nurse-Led</span>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Patient</th>
+                <th>Procedure</th>
+                <th>Room</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="scheduleTable">
+              <tr
+                class="table-row"
+                onclick="
+                  openScheduleDetails(
+                    '11:00 AM',
+                    'Mr. Ade',
+                    'Teeth Cleaning',
+                    'Room 3',
+                    'Scheduled',
+                  )
+                "
+              >
+                <td>11:00 AM</td>
+                <td>Mr. Ade</td>
+                <td>Teeth Cleaning</td>
+                <td>Room 3</td>
+                <td><span class="badge badge-info">Scheduled</span></td>
+                <td onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="
+                      startProcedure(
+                        'Teeth Cleaning',
+                        'Mr. Ade',
+                        '11:00 AM',
+                        'Room 3',
+                      )
+                    "
+                  >
+                    Start
+                  </button>
+                </td>
+              </tr>
+
+              <tr
+                class="table-row"
+                onclick="
+                  openScheduleDetails(
+                    '12:00 PM',
+                    'Baby Grace',
+                    'Fluoride Treatment',
+                    'Room 2',
+                    'Scheduled',
+                  )
+                "
+              >
+                <td>12:00 PM</td>
+                <td>Baby Grace</td>
+                <td>Fluoride Treatment</td>
+                <td>Room 2</td>
+                <td><span class="badge badge-info">Scheduled</span></td>
+                <td onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="
+                      prepareProcedure(
+                        'Fluoride Treatment',
+                        'Baby Grace',
+                        'Room 2',
+                      )
+                    "
+                  >
+                    Prepare
+                  </button>
+                </td>
+              </tr>
+
+              <tr
+                class="table-row"
+                onclick="
+                  openScheduleDetails(
+                    '2:30 PM',
+                    'Chioma Obi',
+                    'Dental Sealants',
+                    'Room 1',
+                    'Scheduled',
+                  )
+                "
+              >
+                <td>2:30 PM</td>
+                <td>Chioma Obi</td>
+                <td>Dental Sealants</td>
+                <td>Room 1</td>
+                <td><span class="badge badge-info">Scheduled</span></td>
+                <td onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="viewProcedure('Dental Sealants', 'Chioma Obi')"
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+
+              <tr
+                class="table-row"
+                onclick="
+                  openScheduleDetails(
+                    '3:00 PM',
+                    'New Patient',
+                    'Oral Hygiene Instruction',
+                    'Room 3',
+                    'Scheduled',
+                  )
+                "
+              >
+                <td>3:00 PM</td>
+                <td>New Patient</td>
+                <td>Oral Hygiene Instruction</td>
+                <td>Room 3</td>
+                <td><span class="badge badge-info">Scheduled</span></td>
+                <td onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="
+                      viewProcedure('Oral Hygiene Instruction', 'New Patient')
+                    "
+                  >
+                    View
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Procedure Details Modal -->
+    <div class="modal-overlay" id="procedureModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title" id="procedureModalTitle"
+            >Procedure Details</span
+          >
+          <button class="modal-close" onclick="closeModal('procedureModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="procedure-detail-item">
+            <span class="procedure-detail-label">Procedure:</span>
+            <span class="procedure-detail-value" id="modalProcedureName"
+              >Teeth Cleaning</span
+            >
+          </div>
+          <div class="procedure-detail-item">
+            <span class="procedure-detail-label">Patient:</span>
+            <span class="procedure-detail-value" id="modalPatientName"
+              >Mr. Ade</span
+            >
+          </div>
+          <div class="procedure-detail-item">
+            <span class="procedure-detail-label">Time:</span>
+            <span class="procedure-detail-value" id="modalProcedureTime"
+              >11:00 AM</span
+            >
+          </div>
+          <div class="procedure-detail-item">
+            <span class="procedure-detail-label">Room:</span>
+            <span class="procedure-detail-value" id="modalProcedureRoom"
+              >Room 3</span
+            >
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">
+            Procedure Steps
+          </h4>
+          <div class="steps-list" id="procedureSteps">
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.8rem"
+                ></i>
+              </div>
+              <span>Prepare instruments</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.8rem"
+                ></i>
+              </div>
+              <span>Verify patient identity</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.8rem"
+                ></i>
+              </div>
+              <span>Check vital signs</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.8rem"
+                ></i>
+              </div>
+              <span>Document procedure</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)">
+                <i
+                  class="fas fa-check"
+                  style="opacity: 0; font-size: 0.8rem"
+                ></i>
+              </div>
+              <span>Provide post-op instructions</span>
+            </div>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Notes</h4>
+          <textarea
+            class="form-control"
+            rows="3"
+            placeholder="Add procedure notes..."
+            id="procedureNotes"
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('procedureModal')"
+          >
+            Close
+          </button>
+          <button
+            class="btn btn-primary"
+            id="procedureActionBtn"
+            onclick="startProcedureFromModal()"
+          >
+            Start Procedure
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Navigation functions
+      function navigateToProfile() {
+        window.location.href = "profile.html";
+      }
+
+      // Modal functions
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      // Procedure details modal
+      function openProcedureDetails(
+        procedure,
+        patient,
+        time,
+        room,
+        type,
+        procedureId,
+      ) {
+        document.getElementById("modalProcedureName").textContent = procedure;
+        document.getElementById("modalPatientName").textContent = patient;
+        document.getElementById("modalProcedureTime").textContent = time;
+        document.getElementById("modalProcedureRoom").textContent = room;
+
+        // Set different steps based on procedure type
+        const stepsContainer = document.getElementById("procedureSteps");
+
+        if (procedure === "Teeth Cleaning") {
+          stepsContainer.innerHTML = `
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Prepare cleaning instruments (scaler, polish)</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Check patient vitals</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Perform scaling</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Polish teeth</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Fluoride application</span>
+            </div>
+          `;
+        } else if (procedure === "Fluoride Treatment") {
+          stepsContainer.innerHTML = `
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Prepare fluoride tray</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Dry teeth</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Apply fluoride</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Timer for 4 minutes</span>
+            </div>
+          `;
+        } else {
+          // Default steps
+          stepsContainer.innerHTML = `
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Prepare instruments</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Verify patient identity</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Check vital signs</span>
+            </div>
+            <div class="step-item">
+              <div class="step-checkbox" onclick="toggleStep(this)"><i class="fas fa-check" style="opacity: 0; font-size: 0.8rem;"></i></div>
+              <span>Document procedure</span>
+            </div>
+          `;
+        }
+
+        // Set action button text
+        const actionBtn = document.getElementById("procedureActionBtn");
+        if (type === "completed") {
+          actionBtn.textContent = "View Report";
+        } else if (time !== "N/A" && !time.includes("Not")) {
+          actionBtn.textContent = "Start Procedure";
+        } else {
+          actionBtn.textContent = "Schedule";
+        }
+
+        openModal("procedureModal");
+      }
+
+      function openScheduleDetails(time, patient, procedure, room, status) {
+        openProcedureDetails(procedure, patient, time, room, "scheduled", "");
+      }
+
+      function toggleStep(checkbox) {
+        checkbox.classList.toggle("checked");
+        const icon = checkbox.querySelector("i");
+        if (checkbox.classList.contains("checked")) {
+          icon.style.opacity = "1";
+        } else {
+          icon.style.opacity = "0";
+        }
+      }
+
+      // Procedure actions
+      function startProcedure(procedure, patient, time, room) {
+        closeModal("procedureModal");
+        alert(`Starting ${procedure} for ${patient} in ${room} at ${time}`);
+        // window.location.href = `active-procedure.html?procedure=${encodeURIComponent(procedure)}&patient=${encodeURIComponent(patient)}`;
+      }
+
+      function startProcedureFromModal() {
+        const procedure =
+          document.getElementById("modalProcedureName").textContent;
+        const patient = document.getElementById("modalPatientName").textContent;
+        const time = document.getElementById("modalProcedureTime").textContent;
+        const room = document.getElementById("modalProcedureRoom").textContent;
+
+        startProcedure(procedure, patient, time, room);
+      }
+
+      function prepareProcedure(procedure, patient, room) {
+        alert(`Preparing for ${procedure} for ${patient} in ${room}`);
+        openProcedureDetails(
+          procedure,
+          patient,
+          "12:00 PM",
+          room,
+          "prepare",
+          "",
+        );
+      }
+
+      function viewProcedure(procedure, patient) {
+        alert(`Viewing details for ${procedure} for ${patient}`);
+        openProcedureDetails(procedure, patient, "Viewing", "", "view", "");
+      }
+
+      function rescheduleProcedure(procedure, patient) {
+        alert(`Reschedule ${procedure} for ${patient}`);
+      }
+
+      function bookPatient(procedure) {
+        alert(`Book patient for ${procedure}`);
+      }
+
+      function requestReview(procedure, patient) {
+        alert(`Review requested for ${procedure} for ${patient}`);
+      }
+
+      // Filter functions
+      function filterProcedures(filter) {
+        alert(`Filtering procedures: ${filter}`);
+      }
+
+      function filterCategory(category, element) {
+        // Update active class
+        document
+          .querySelectorAll(".category-pill")
+          .forEach((p) => p.classList.remove("active"));
+        element.classList.add("active");
+
+        // Filter logic here
+        alert(`Filtering by: ${category}`);
+      }
+
+      // Sidebar toggle function
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      // Initialize loading screen
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.body.classList.remove("loading-active");
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

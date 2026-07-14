@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Patient Records - Nurse - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .nurse-records-container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: var(--space-xl);
+      }
+
+      .patient-list-sidebar {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        height: fit-content;
+      }
+
+      .search-box {
+        margin-bottom: var(--space-lg);
+      }
+
+      .filter-input {
+        display: flex;
+        align-items: center;
+        background: var(--pure-white);
+        border-radius: var(--radius-full);
+        padding: var(--space-xs) var(--space-md);
+        box-shadow: var(--shadow-sm);
+        border: 2px solid transparent;
+        transition: all var(--transition-fast);
+      }
+
+      .filter-input:focus-within {
+        border-color: var(--warning);
+        box-shadow: 0 0 0 3px rgba(255, 159, 10, 0.2);
+      }
+
+      .filter-input i {
+        color: var(--text-light);
+        margin-right: var(--space-sm);
+      }
+
+      .filter-input input {
+        border: none;
+        padding: var(--space-sm) 0;
+        width: 100%;
+        font-size: 0.95rem;
+      }
+
+      .filter-input input:focus {
+        outline: none;
+      }
+
+      .patient-list-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-md);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        margin-bottom: 2px;
+        border: 2px solid transparent;
+      }
+
+      .patient-list-item:hover {
+        background: var(--off-white);
+        transform: translateX(4px);
+      }
+
+      .patient-list-item.active {
+        background: rgba(255, 159, 10, 0.1);
+        border-left: 4px solid var(--warning);
+        border-color: var(--warning) transparent transparent transparent;
+      }
+
+      .patient-list-avatar {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(145deg, var(--warning), #f39c12);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.2rem;
+      }
+
+      .patient-list-info h4 {
+        font-size: 1rem;
+        margin-bottom: 2px;
+      }
+
+      .patient-list-info p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .record-view {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-xl);
+        box-shadow: var(--shadow-md);
+      }
+
+      .nurse-notes-section {
+        background: rgba(255, 159, 10, 0.05);
+        border-radius: var(--radius-lg);
+        padding: var(--space-lg);
+        margin: var(--space-lg) 0;
+        border-left: 4px solid var(--warning);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .nurse-notes-section:hover {
+        background: rgba(255, 159, 10, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .vitals-history {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-md);
+        margin: var(--space-md) 0;
+      }
+
+      .vitals-card {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .vitals-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        background: var(--pure-white);
+      }
+
+      .vitals-date {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-xs);
+      }
+
+      .vitals-reading {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--warning);
+      }
+
+      .procedure-history-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .procedure-history-item:hover {
+        background: rgba(255, 159, 10, 0.05);
+        padding-left: var(--space-sm);
+        border-radius: var(--radius-md);
+      }
+
+      .procedure-history-item .date {
+        min-width: 100px;
+        color: var(--text-light);
+      }
+
+      .procedure-history-item .procedure {
+        flex: 1;
+        font-weight: 500;
+      }
+
+      .procedure-history-item .nurse-badge {
+        background: rgba(255, 159, 10, 0.1);
+        color: var(--warning);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+      }
+
+      .attachment-item {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+        width: 100px;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .attachment-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+        background: var(--pure-white);
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      .note-detail-item {
+        display: flex;
+        margin-bottom: var(--space-sm);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+      }
+
+      .note-detail-label {
+        width: 100px;
+        font-weight: 600;
+        color: var(--text-light);
+      }
+
+      .note-detail-value {
+        flex: 1;
+      }
+
+      .note-content-box {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin: var(--space-md) 0;
+        line-height: 1.6;
+      }
+
+      .vital-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-md);
+        margin: var(--space-md) 0;
+      }
+
+      .vital-detail-card {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        text-align: center;
+      }
+
+      .vital-detail-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--warning);
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md) var(--space-lg);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        z-index: 2000;
+        border-left: 4px solid var(--success);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+
+      .toast.warning {
+        border-left-color: var(--warning);
+      }
+
+      .toast-icon {
+        font-size: 1.2rem;
+        color: var(--success);
+      }
+
+      .toast.warning .toast-icon {
+        color: var(--warning);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading Patient Records...</p>
+    </div>
+
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Patient Records</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile" onclick="navigateToProfile()"></div>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div style="margin-bottom: var(--space-xl)" class="search-box">
+          <div class="filter-input">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              placeholder="Search patients..."
+              id="patientSearch"
+              onkeyup="searchPatients()"
+            />
+          </div>
+        </div>
+
+        <!-- Records Container -->
+        <div class="nurse-records-container">
+          <!-- Patient List Sidebar -->
+          <div class="patient-list-sidebar">
+            <h3 style="margin-bottom: var(--space-lg)">My Patients</h3>
+
+            <div
+              class="patient-list-item active"
+              onclick="
+                selectPatient('Mr. Ade', 'MA', 'PAT-00567', 'Male, 45', this)
+              "
+            >
+              <div class="patient-list-avatar">MA</div>
+              <div class="patient-list-info">
+                <h4>Mr. Ade</h4>
+                <p>Last: Mar 15, 2026</p>
+              </div>
+            </div>
+
+            <div
+              class="patient-list-item"
+              onclick="
+                selectPatient(
+                  'Baby Grace',
+                  'BG',
+                  'PAT-00108',
+                  'Female, 2',
+                  this,
+                )
+              "
+            >
+              <div class="patient-list-avatar">BG</div>
+              <div class="patient-list-info">
+                <h4>Baby Grace</h4>
+                <p>Last: Mar 15, 2026</p>
+              </div>
+            </div>
+
+            <div
+              class="patient-list-item"
+              onclick="
+                selectPatient(
+                  'Chioma Obi',
+                  'CO',
+                  'PAT-00342',
+                  'Female, 28',
+                  this,
+                )
+              "
+            >
+              <div class="patient-list-avatar">CO</div>
+              <div class="patient-list-info">
+                <h4>Chioma Obi</h4>
+                <p>Last: Mar 14, 2026</p>
+              </div>
+            </div>
+
+            <div
+              class="patient-list-item"
+              onclick="
+                selectPatient(
+                  'Sarah Jones',
+                  'SJ',
+                  'PAT-00123',
+                  'Female, 34',
+                  this,
+                )
+              "
+            >
+              <div class="patient-list-avatar">SJ</div>
+              <div class="patient-list-info">
+                <h4>Sarah Jones</h4>
+                <p>Last: Mar 10, 2026</p>
+              </div>
+            </div>
+
+            <div
+              class="patient-list-item"
+              onclick="
+                selectPatient(
+                  'Michael Obi',
+                  'MO',
+                  'PAT-00256',
+                  'Male, 52',
+                  this,
+                )
+              "
+            >
+              <div class="patient-list-avatar">MO</div>
+              <div class="patient-list-info">
+                <h4>Michael Obi</h4>
+                <p>Last: Mar 5, 2026</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patient Record View -->
+          <div class="record-view" id="patientRecordView">
+            <!-- Patient Header -->
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: var(--space-lg);
+              "
+            >
+              <div
+                style="display: flex; align-items: center; gap: var(--space-lg)"
+              >
+                <div
+                  class="user-avatar"
+                  style="
+                    width: 70px;
+                    height: 70px;
+                    font-size: 2rem;
+                    background: var(--warning);
+                  "
+                  id="patientAvatar"
+                >
+                  MA
+                </div>
+                <div>
+                  <h2 style="font-size: 1.8rem" id="patientName">Mr. Ade</h2>
+                  <p style="color: var(--text-light)" id="patientInfo">
+                    Male, 45 • Patient ID: PAT-00567
+                  </p>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="openAddNoteModal()">
+                <i class="fas fa-plus"></i>
+                Add Note
+              </button>
+            </div>
+
+            <!-- Nurse's Notes Section -->
+            <div
+              class="nurse-notes-section"
+              onclick="
+                openNoteDetails(
+                  'Today\'s Procedure Note',
+                  'Chinwe Okonkwo, RN',
+                  '11:30 AM',
+                  'Pre-procedure vitals: BP 124/78, HR 72, Temp 36.6°C. Patient reported mild anxiety. Reassured and explained procedure. Local anesthesia administered - 2% Lidocaine with epinephrine 1:100,000, 1.8ml. Patient tolerated well. Post-procedure instructions given.',
+                )
+              "
+            >
+              <h4
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: var(--space-sm);
+                  margin-bottom: var(--space-sm);
+                "
+              >
+                <i class="fas fa-pen" style="color: var(--warning)"></i>
+                Nurse's Notes - Today's Procedure
+              </h4>
+              <p style="margin-bottom: var(--space-sm)" id="nurseNotePreview">
+                Pre-procedure vitals: BP 124/78, HR 72, Temp 36.6°C. Patient
+                reported mild anxiety. Reassured and explained procedure. Local
+                anesthesia administered - 2% Lidocaine with epinephrine
+                1:100,000, 1.8ml. Patient tolerated well. Post-procedure
+                instructions given.
+              </p>
+              <p
+                style="font-size: 0.8rem; color: var(--text-light)"
+                id="nurseNoteSignature"
+              >
+                - Chinwe Okonkwo, RN • 11:30 AM
+              </p>
+            </div>
+
+            <!-- Vital Signs History -->
+            <div style="margin-bottom: var(--space-xl)">
+              <h4 style="margin-bottom: var(--space-md)">
+                Vital Signs History
+              </h4>
+              <div class="vitals-history">
+                <div
+                  class="vitals-card"
+                  onclick="
+                    openVitalDetails(
+                      'Today 11:00 AM',
+                      '124/78',
+                      '72',
+                      '36.6°C',
+                      '98%',
+                    )
+                  "
+                >
+                  <div class="vitals-date">Today 11:00 AM</div>
+                  <div class="vitals-reading">124/78</div>
+                  <div style="font-size: 0.7rem">BP</div>
+                  <div>HR 72 | 36.6°C</div>
+                </div>
+
+                <div
+                  class="vitals-card"
+                  onclick="
+                    openVitalDetails(
+                      'Mar 1, 2026',
+                      '128/82',
+                      '76',
+                      '36.8°C',
+                      '97%',
+                    )
+                  "
+                >
+                  <div class="vitals-date">Mar 1, 2026</div>
+                  <div class="vitals-reading">128/82</div>
+                  <div style="font-size: 0.7rem">BP</div>
+                  <div>HR 76 | 36.8°C</div>
+                </div>
+
+                <div
+                  class="vitals-card"
+                  onclick="
+                    openVitalDetails(
+                      'Feb 15, 2026',
+                      '122/76',
+                      '70',
+                      '36.5°C',
+                      '98%',
+                    )
+                  "
+                >
+                  <div class="vitals-date">Feb 15, 2026</div>
+                  <div class="vitals-reading">122/76</div>
+                  <div style="font-size: 0.7rem">BP</div>
+                  <div>HR 70 | 36.5°C</div>
+                </div>
+
+                <div
+                  class="vitals-card"
+                  onclick="
+                    openVitalDetails(
+                      'Feb 1, 2026',
+                      '126/80',
+                      '74',
+                      '36.7°C',
+                      '98%',
+                    )
+                  "
+                >
+                  <div class="vitals-date">Feb 1, 2026</div>
+                  <div class="vitals-reading">126/80</div>
+                  <div style="font-size: 0.7rem">BP</div>
+                  <div>HR 74 | 36.7°C</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Procedure History -->
+            <div>
+              <h4 style="margin-bottom: var(--space-md)">Procedure History</h4>
+
+              <div
+                class="procedure-history-item"
+                onclick="
+                  openProcedureDetails(
+                    'Teeth Cleaning',
+                    'Today',
+                    'Chinwe Okonkwo, RN',
+                    'Completed successfully. Patient tolerated well.',
+                  )
+                "
+              >
+                <span class="date">Today</span>
+                <span class="procedure">Teeth Cleaning</span>
+                <span class="nurse-badge">Nurse</span>
+                <span style="color: var(--text-light)">Chinwe O.</span>
+              </div>
+
+              <div
+                class="procedure-history-item"
+                onclick="
+                  openProcedureDetails(
+                    'Fluoride Treatment',
+                    'Mar 1, 2026',
+                    'Chinwe Okonkwo, RN',
+                    'Fluoride varnish applied. Patient cooperative.',
+                  )
+                "
+              >
+                <span class="date">Mar 1, 2026</span>
+                <span class="procedure">Fluoride Treatment</span>
+                <span class="nurse-badge">Nurse</span>
+                <span style="color: var(--text-light)">Chinwe O.</span>
+              </div>
+
+              <div
+                class="procedure-history-item"
+                onclick="
+                  openProcedureDetails(
+                    'Oral Hygiene Instruction',
+                    'Feb 15, 2026',
+                    'Chinwe Okonkwo, RN',
+                    'Patient instructed on proper brushing and flossing techniques.',
+                  )
+                "
+              >
+                <span class="date">Feb 15, 2026</span>
+                <span class="procedure">Oral Hygiene Instruction</span>
+                <span class="nurse-badge">Nurse</span>
+                <span style="color: var(--text-light)">Chinwe O.</span>
+              </div>
+
+              <div
+                class="procedure-history-item"
+                onclick="
+                  openProcedureDetails(
+                    'Initial Consultation',
+                    'Feb 1, 2026',
+                    'Dr. Smith',
+                    'Initial examination completed. Treatment plan discussed.',
+                  )
+                "
+              >
+                <span class="date">Feb 1, 2026</span>
+                <span class="procedure">Initial Consultation</span>
+                <span style="color: var(--text-light)">Dr. Smith</span>
+              </div>
+
+              <div
+                class="procedure-history-item"
+                onclick="
+                  openProcedureDetails(
+                    'X-Ray - Bitewing',
+                    'Jan 15, 2026',
+                    'Dr. Perfect',
+                    'Bitewing x-rays taken. No cavities detected.',
+                  )
+                "
+              >
+                <span class="date">Jan 15, 2026</span>
+                <span class="procedure">X-Ray - Bitewing</span>
+                <span style="color: var(--text-light)">Dr. Perfect</span>
+              </div>
+            </div>
+
+            <!-- Attachments -->
+            <div style="margin-top: var(--space-xl)">
+              <h4 style="margin-bottom: var(--space-md)">Attachments</h4>
+              <div style="display: flex; gap: var(--space-md)">
+                <div
+                  class="attachment-item"
+                  onclick="openAttachment('xray', 'Feb 1, 2026')"
+                >
+                  <i
+                    class="fas fa-x-ray"
+                    style="font-size: 2rem; color: var(--warning)"
+                  ></i>
+                  <div style="font-size: 0.7rem">X-Ray</div>
+                  <div style="font-size: 0.6rem">Feb 1, 2026</div>
+                </div>
+                <div
+                  class="attachment-item"
+                  onclick="openAttachment('notes', 'Today')"
+                >
+                  <i
+                    class="fas fa-file-prescription"
+                    style="font-size: 2rem; color: var(--warning)"
+                  ></i>
+                  <div style="font-size: 0.7rem">Notes</div>
+                  <div style="font-size: 0.6rem">Today</div>
+                </div>
+                <div
+                  class="attachment-item"
+                  onclick="openAttachment('prescription', 'Mar 1, 2026')"
+                >
+                  <i
+                    class="fas fa-prescription-bottle"
+                    style="font-size: 2rem; color: var(--warning)"
+                  ></i>
+                  <div style="font-size: 0.7rem">Rx</div>
+                  <div style="font-size: 0.6rem">Mar 1</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note Details Modal -->
+    <div class="modal-overlay" id="noteModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Nurse's Note</span>
+          <button class="modal-close" onclick="closeModal('noteModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="note-detail-item">
+            <span class="note-detail-label">Title:</span>
+            <span class="note-detail-value" id="modalNoteTitle"
+              >Today's Procedure Note</span
+            >
+          </div>
+          <div class="note-detail-item">
+            <span class="note-detail-label">Author:</span>
+            <span class="note-detail-value" id="modalNoteAuthor"
+              >Chinwe Okonkwo, RN</span
+            >
+          </div>
+          <div class="note-detail-item">
+            <span class="note-detail-label">Time:</span>
+            <span class="note-detail-value" id="modalNoteTime">11:30 AM</span>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">
+            Note Content
+          </h4>
+          <div class="note-content-box" id="modalNoteContent">
+            Pre-procedure vitals: BP 124/78, HR 72, Temp 36.6°C. Patient
+            reported mild anxiety. Reassured and explained procedure. Local
+            anesthesia administered - 2% Lidocaine with epinephrine 1:100,000,
+            1.8ml. Patient tolerated well. Post-procedure instructions given.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('noteModal')">
+            Close
+          </button>
+          <button class="btn btn-primary" onclick="editNote()">
+            Edit Note
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vital Signs Modal -->
+    <div class="modal-overlay" id="vitalModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Vital Signs Details</span>
+          <button class="modal-close" onclick="closeModal('vitalModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="note-detail-item">
+            <span class="note-detail-label">Date/Time:</span>
+            <span class="note-detail-value" id="modalVitalDate"
+              >Today 11:00 AM</span
+            >
+          </div>
+
+          <div class="vital-details">
+            <div class="vital-detail-card">
+              <div class="vital-detail-value" id="modalVitalBP">124/78</div>
+              <div>Blood Pressure</div>
+            </div>
+            <div class="vital-detail-card">
+              <div class="vital-detail-value" id="modalVitalHR">72</div>
+              <div>Heart Rate (bpm)</div>
+            </div>
+            <div class="vital-detail-card">
+              <div class="vital-detail-value" id="modalVitalTemp">36.6°C</div>
+              <div>Temperature</div>
+            </div>
+          </div>
+
+          <div class="vital-detail-card" style="margin-top: var(--space-sm)">
+            <div class="vital-detail-value" id="modalVitalO2">98%</div>
+            <div>O2 Saturation</div>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Notes</h4>
+          <p style="color: var(--text-light)" id="modalVitalNotes">
+            Patient stable. No abnormalities detected.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('vitalModal')">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Procedure Details Modal -->
+    <div class="modal-overlay" id="procedureModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Procedure Details</span>
+          <button class="modal-close" onclick="closeModal('procedureModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="note-detail-item">
+            <span class="note-detail-label">Procedure:</span>
+            <span class="note-detail-value" id="modalProcedureName"
+              >Teeth Cleaning</span
+            >
+          </div>
+          <div class="note-detail-item">
+            <span class="note-detail-label">Date:</span>
+            <span class="note-detail-value" id="modalProcedureDate">Today</span>
+          </div>
+          <div class="note-detail-item">
+            <span class="note-detail-label">Provider:</span>
+            <span class="note-detail-value" id="modalProcedureProvider"
+              >Chinwe Okonkwo, RN</span
+            >
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Details</h4>
+          <div class="note-content-box" id="modalProcedureDetails">
+            Completed successfully. Patient tolerated well.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('procedureModal')"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div class="modal-overlay" id="addNoteModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Add Nurse's Note</span>
+          <button class="modal-close" onclick="closeModal('addNoteModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div style="margin-bottom: var(--space-md)">
+            <label class="form-label">Note Type</label>
+            <select class="form-control" id="noteType">
+              <option>Pre-Procedure Note</option>
+              <option>Procedure Note</option>
+              <option>Post-Procedure Note</option>
+              <option>Vital Signs</option>
+              <option>General Observation</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: var(--space-md)">
+            <label class="form-label">Vital Signs</label>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--space-sm);
+              "
+            >
+              <input
+                type="text"
+                class="form-control"
+                placeholder="BP"
+                id="addBP"
+                value="124/78"
+              />
+              <input
+                type="text"
+                class="form-control"
+                placeholder="HR"
+                id="addHR"
+                value="72"
+              />
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Temp"
+                id="addTemp"
+                value="36.6"
+              />
+            </div>
+          </div>
+
+          <div style="margin-bottom: var(--space-md)">
+            <label class="form-label">Notes</label>
+            <textarea
+              class="textarea-field"
+              id="addNoteContent"
+              rows="6"
+              placeholder="Enter your notes here..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('addNoteModal')"
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveNewNote()">
+            Save Note
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+      <div class="toast-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="toast-message" id="toastMessage">
+        Action completed successfully
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Navigation functions
+      function navigateToProfile() {
+        window.location.href = "profile.html";
+      }
+
+      // Patient selection
+      function selectPatient(name, initials, id, info, element) {
+        // Update active class
+        document
+          .querySelectorAll(".patient-list-item")
+          .forEach((i) => i.classList.remove("active"));
+        element.classList.add("active");
+
+        // Update patient header
+        document.getElementById("patientName").textContent = name;
+        document.getElementById("patientInfo").textContent =
+          info + " • Patient ID: " + id;
+        document.getElementById("patientAvatar").textContent = initials;
+
+        showToast(`Selected patient: ${name}`, "success");
+      }
+
+      // Search patients
+      function searchPatients() {
+        const searchTerm = document
+          .getElementById("patientSearch")
+          .value.toLowerCase();
+        const patients = document.querySelectorAll(".patient-list-item");
+
+        patients.forEach((patient) => {
+          const name = patient.querySelector("h4").textContent.toLowerCase();
+          if (name.includes(searchTerm) || searchTerm === "") {
+            patient.style.display = "flex";
+          } else {
+            patient.style.display = "none";
+          }
+        });
+      }
+
+      // Modal functions
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      function openNoteDetails(title, author, time, content) {
+        document.getElementById("modalNoteTitle").textContent = title;
+        document.getElementById("modalNoteAuthor").textContent = author;
+        document.getElementById("modalNoteTime").textContent = time;
+        document.getElementById("modalNoteContent").textContent = content;
+        openModal("noteModal");
+      }
+
+      function openVitalDetails(date, bp, hr, temp, o2) {
+        document.getElementById("modalVitalDate").textContent = date;
+        document.getElementById("modalVitalBP").textContent = bp;
+        document.getElementById("modalVitalHR").textContent = hr;
+        document.getElementById("modalVitalTemp").textContent = temp;
+        document.getElementById("modalVitalO2").textContent = o2;
+        openModal("vitalModal");
+      }
+
+      function openProcedureDetails(procedure, date, provider, details) {
+        document.getElementById("modalProcedureName").textContent = procedure;
+        document.getElementById("modalProcedureDate").textContent = date;
+        document.getElementById("modalProcedureProvider").textContent =
+          provider;
+        document.getElementById("modalProcedureDetails").textContent = details;
+        openModal("procedureModal");
+      }
+
+      function openAddNoteModal() {
+        // Clear form
+        document.getElementById("noteType").value = "Pre-Procedure Note";
+        document.getElementById("addBP").value = "";
+        document.getElementById("addHR").value = "";
+        document.getElementById("addTemp").value = "";
+        document.getElementById("addNoteContent").value = "";
+        openModal("addNoteModal");
+      }
+
+      function saveNewNote() {
+        const noteType = document.getElementById("noteType").value;
+        const bp = document.getElementById("addBP").value;
+        const hr = document.getElementById("addHR").value;
+        const temp = document.getElementById("addTemp").value;
+        const content = document.getElementById("addNoteContent").value;
+
+        if (!content) {
+          showToast("Please enter note content", "warning");
+          return;
+        }
+
+        closeModal("addNoteModal");
+        showToast("Note saved successfully", "success");
+
+        // Here you would save to database
+        console.log("Saving note:", { noteType, bp, hr, temp, content });
+      }
+
+      function editNote() {
+        closeModal("noteModal");
+        openAddNoteModal();
+        document.getElementById("addNoteContent").value =
+          document.getElementById("modalNoteContent").textContent;
+        showToast("Loading note for editing", "info");
+      }
+
+      function openAttachment(type, date) {
+        let message = "";
+        if (type === "xray") {
+          message = `Opening X-Ray image from ${date}`;
+        } else if (type === "notes") {
+          message = `Opening clinical notes from ${date}`;
+        } else if (type === "prescription") {
+          message = `Opening prescription from ${date}`;
+        }
+        showToast(message, "info");
+      }
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+        const toastIcon = toast.querySelector(".toast-icon i");
+
+        toastMessage.innerText = message;
+        toast.className = "toast show " + type;
+
+        if (type === "success") {
+          toastIcon.className = "fas fa-check-circle";
+        } else if (type === "warning") {
+          toastIcon.className = "fas fa-exclamation-triangle";
+        } else if (type === "info") {
+          toastIcon.className = "fas fa-info-circle";
+        }
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+
+      // Sidebar toggle
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      // Initialize loading screen
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.body.classList.remove("loading-active");
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

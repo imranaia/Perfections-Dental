@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Inventory — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+      .close-modal-btn { background: none; border: none; font-size: 1.2rem; color: var(--mid-gray); cursor: pointer; }
+      .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+      .stock-bar { width: 80px; height: 6px; border-radius: 3px; background: var(--light-border); overflow: hidden; }
+      .stock-bar-fill { height: 100%; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Reception</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="appointments.html"><i class="fas fa-calendar-days"></i> Appointments</a>
+        <a class="glass-nav-link" href="patients.html"><i class="fas fa-users"></i> Patients</a>
+        <a class="glass-nav-link" href="prescriptions.html"><i class="fas fa-pills"></i> Prescriptions</a>
+        <a class="glass-nav-link" href="invoices.html"><i class="fas fa-file-invoice"></i> Invoices</a>
+        <a class="glass-nav-link" href="payments.html"><i class="fas fa-credit-card"></i> Payments</a>
+        <a class="glass-nav-link active" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="reports.html"><i class="fas fa-chart-line"></i> Reports</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <h1>Inventory</h1>
+          <button class="glass-btn glass-btn-primary" id="newItemBtn"><i class="fas fa-plus"></i> New Item</button>
+        </div>
+
+        <div class="glass-grid glass-grid-3" style="margin-bottom:20px;">
+          <div class="glass-card glass-stat"><div class="glass-stat-icon"><i class="fas fa-boxes-stacked"></i></div><div><div class="glass-stat-num" id="statTotal">–</div><div class="glass-stat-label">Total Items</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon red"><i class="fas fa-triangle-exclamation"></i></div><div><div class="glass-stat-num" id="statLow">–</div><div class="glass-stat-label">Critical Stock</div></div></div>
+          <div class="glass-card glass-stat"><div class="glass-stat-icon gold"><i class="fas fa-calendar-xmark"></i></div><div><div class="glass-stat-num" id="statExpiring">–</div><div class="glass-stat-label">Expiring Soon</div></div></div>
+        </div>
+
+        <div class="toolbar">
+          <input type="text" id="searchInput" class="glass-input" placeholder="Search items…" style="width:260px;" />
+        </div>
+
+        <div class="glass-card">
+          <div class="glass-table-wrap">
+            <table class="glass-table">
+              <thead><tr><th>Item</th><th>Category</th><th>Stock</th><th>Price</th><th>Status</th><th></th></tr></thead>
+              <tbody id="itemRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="glass-modal-backdrop" id="modalBackdrop" style="display:none;">
+      <div class="glass-modal">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0;" id="modalTitle"><i class="fas fa-plus"></i> New Item</h3>
+          <button class="close-modal-btn" id="closeModalBtn"><i class="fas fa-xmark"></i></button>
+        </div>
+        <input type="hidden" id="editItemId" />
+        <div class="glass-field"><label>Name</label><input id="f_name" class="glass-input" /></div>
+        <div class="form-row-2">
+          <div class="glass-field"><label>Category</label><input id="f_category" class="glass-input" /></div>
+          <div class="glass-field"><label>Unit</label><input id="f_unit" class="glass-input" placeholder="tablet, bottle…" /></div>
+        </div>
+        <div class="form-row-2">
+          <div class="glass-field"><label>Price (₦)</label><input type="number" id="f_price" class="glass-input" /></div>
+          <div class="glass-field"><label>Current stock</label><input type="number" id="f_stock" class="glass-input" /></div>
+        </div>
+        <div class="form-row-2">
+          <div class="glass-field"><label>Min threshold</label><input type="number" id="f_min" class="glass-input" value="10" /></div>
+          <div class="glass-field"><label>Max stock</label><input type="number" id="f_max" class="glass-input" value="100" /></div>
+        </div>
+        <div class="glass-field"><label>Manufacturer</label><input id="f_manufacturer" class="glass-input" /></div>
+        <button class="glass-btn glass-btn-primary" id="saveBtn" style="width:100%;"><i class="fas fa-check"></i> Save Item</button>
+        <div id="formMessage" style="margin-top:10px; font-size:0.85rem;"></div>
+      </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+      const API = '/api/reception/inventory';
+      async function api(path, options = {}) {
+        const res = await fetch(API + path, {
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); });
+
+      async function loadAlerts() {
+        const { alerts } = await api('/alerts');
+        document.getElementById('statLow').textContent = alerts.critical_stock.length;
+        document.getElementById('statExpiring').textContent = alerts.expiring.length;
+      }
+
+      async function loadItems() {
+        const search = document.getElementById('searchInput').value;
+        const params = new URLSearchParams();
+        if (search) params.set('search', search);
+        const { items } = await api(`/?${params}`);
+        document.getElementById('statTotal').textContent = items.length;
+        const rows = document.getElementById('itemRows');
+        rows.innerHTML = items.length ? items.map(it => {
+          const pct = it.stock_percentage ?? 0;
+          const barColor = pct <= 20 ? 'var(--danger)' : pct <= 50 ? 'var(--gold)' : 'var(--green)';
+          return `
+          <tr>
+            <td><div style="font-weight:700;">${it.name}</div><div style="font-size:0.75rem;color:var(--mid-gray);">${it.manufacturer || ''}</div></td>
+            <td>${it.category || '—'}</td>
+            <td>
+              <div>${it.stock} ${it.unit}</div>
+              <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+            </td>
+            <td>₦${(it.price ?? 0).toLocaleString()}</td>
+            <td><span class="glass-badge ${it.stock_status === 'good' ? 'success' : it.stock_status === 'low' ? 'warning' : 'danger'}">${it.stock_status_text}</span></td>
+            <td><button class="glass-btn glass-btn-ghost edit-btn" data-id="${it.id}" style="padding:6px 12px;"><i class="fas fa-pen"></i></button></td>
+          </tr>`;
+        }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--mid-gray);padding:30px;">No items found</td></tr>';
+
+        rows.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => openEdit(btn.dataset.id, items)));
+      }
+
+      const modal = document.getElementById('modalBackdrop');
+      function resetForm() {
+        ['name', 'category', 'unit', 'price', 'stock', 'min', 'max', 'manufacturer'].forEach(f => document.getElementById('f_' + f).value = '');
+        document.getElementById('f_min').value = 10;
+        document.getElementById('f_max').value = 100;
+        document.getElementById('editItemId').value = '';
+      }
+
+      document.getElementById('newItemBtn').addEventListener('click', () => {
+        resetForm();
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus"></i> New Item';
+        modal.style.display = 'flex';
+      });
+      document.getElementById('closeModalBtn').addEventListener('click', () => { modal.style.display = 'none'; });
+
+      function openEdit(id, items) {
+        const it = items.find(i => String(i.id) === String(id));
+        if (!it) return;
+        resetForm();
+        document.getElementById('editItemId').value = id;
+        document.getElementById('f_name').value = it.name;
+        document.getElementById('f_category').value = it.category || '';
+        document.getElementById('f_unit').value = it.unit || '';
+        document.getElementById('f_price').value = it.price;
+        document.getElementById('f_stock').value = it.stock;
+        document.getElementById('f_min').value = it.min_stock;
+        document.getElementById('f_max').value = it.max_stock;
+        document.getElementById('f_manufacturer').value = it.manufacturer || '';
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-pen"></i> Edit Item';
+        modal.style.display = 'flex';
+      }
+
+      document.getElementById('saveBtn').addEventListener('click', async () => {
+        const msg = document.getElementById('formMessage');
+        const id = document.getElementById('editItemId').value;
+        const payload = {
+          name: document.getElementById('f_name').value.trim(),
+          category: document.getElementById('f_category').value.trim(),
+          unit: document.getElementById('f_unit').value.trim(),
+          price: Number(document.getElementById('f_price').value) || 0,
+          stock: Number(document.getElementById('f_stock').value) || 0,
+          min_stock: Number(document.getElementById('f_min').value) || 10,
+          max_stock: Number(document.getElementById('f_max').value) || 100,
+          manufacturer: document.getElementById('f_manufacturer').value.trim(),
+        };
+        try {
+          if (id) {
+            await api(`/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+          } else {
+            await api('/', { method: 'POST', body: JSON.stringify(payload) });
+          }
+          msg.style.color = 'var(--green-dark)';
+          msg.textContent = 'Saved!';
+          setTimeout(() => { modal.style.display = 'none'; msg.textContent = ''; loadItems(); loadAlerts(); }, 600);
+        } catch (e) {
+          msg.style.color = 'var(--danger)';
+          msg.textContent = e.message;
+        }
+      });
+
+      let t;
+      document.getElementById('searchInput').addEventListener('input', () => { clearTimeout(t); t = setTimeout(loadItems, 300); });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+        await Promise.all([loadItems(), loadAlerts()]);
+      }
+      init();
+    </script>
+  </body>
+</html>

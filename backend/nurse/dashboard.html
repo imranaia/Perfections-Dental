@@ -1,0 +1,1417 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Nurse Dashboard - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .assists-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+      }
+
+      .assist-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-base);
+        border-left: 4px solid var(--primary-blue);
+        cursor: pointer;
+      }
+
+      .assist-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .doctor-info {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .doctor-avatar {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(
+          145deg,
+          var(--primary-blue),
+          var(--primary-blue-dark)
+        );
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .doctor-details h4 {
+        font-size: 1rem;
+        margin-bottom: 2px;
+      }
+
+      .doctor-details p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .patient-list {
+        list-style: none;
+      }
+
+      .patient-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .patient-list li:hover {
+        background: rgba(0, 102, 204, 0.05);
+        padding-left: var(--space-xs);
+      }
+
+      .patient-list li:last-child {
+        border-bottom: none;
+      }
+
+      .patient-list .patient-name {
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+
+      .patient-list .procedure {
+        font-size: 0.8rem;
+        color: var(--primary-blue);
+        background: rgba(0, 102, 204, 0.1);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+      }
+
+      .nurse-procedures {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        margin-bottom: var(--space-xl);
+      }
+
+      .procedure-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-md);
+        border-bottom: 1px solid var(--light-gray);
+        transition: background var(--transition-fast);
+        cursor: pointer;
+      }
+
+      .procedure-item:hover {
+        background: rgba(0, 102, 204, 0.05);
+      }
+
+      .procedure-item:last-child {
+        border-bottom: none;
+      }
+
+      .procedure-info h4 {
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+
+      .procedure-info p {
+        font-size: 0.8rem;
+        color: var(--text-light);
+      }
+
+      .procedure-status {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+      }
+
+      .time-badge {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        background: var(--off-white);
+        padding: 4px 8px;
+        border-radius: var(--radius-full);
+      }
+
+      .task-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+      }
+
+      .task-item {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .task-item:hover {
+        background: var(--pure-white);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .task-checkbox {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--primary-blue);
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all var(--transition-fast);
+      }
+
+      .task-checkbox.checked {
+        background: var(--primary-blue);
+      }
+
+      .task-checkbox.checked i {
+        opacity: 1 !important;
+      }
+
+      .task-content {
+        flex: 1;
+      }
+
+      .task-title {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+      }
+
+      .task-time {
+        font-size: 0.75rem;
+        color: var(--text-light);
+      }
+
+      .activity-item {
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .activity-item:hover {
+        background: rgba(0, 102, 204, 0.05);
+        border-radius: var(--radius-lg);
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      .patient-detail-item {
+        display: flex;
+        margin-bottom: var(--space-sm);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+      }
+
+      .patient-detail-label {
+        width: 100px;
+        font-weight: 600;
+        color: var(--text-light);
+      }
+
+      .patient-detail-value {
+        flex: 1;
+      }
+
+      .vital-signs-modal {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-sm);
+        margin: var(--space-md) 0;
+      }
+
+      .vital-card {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-sm);
+        text-align: center;
+      }
+
+      .vital-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-blue);
+      }
+
+      .vital-label {
+        font-size: 0.7rem;
+        color: var(--text-light);
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu - Will be populated by dashboard.js -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">Nurse Dashboard</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile" onclick="navigateToProfile()"></div>
+          </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card blue" onclick="navigateToMyAssists()">
+            <div class="stat-header">
+              <div class="stat-icon">
+                <i
+                  class="fas fa-hand-holding-medical"
+                  style="color: var(--primary-blue)"
+                ></i>
+              </div>
+            </div>
+            <div class="stat-value" style="color: var(--primary-blue)">6</div>
+            <div class="stat-label">Assists Today</div>
+            <div class="stat-change">With 3 doctors</div>
+          </div>
+
+          <div class="stat-card green" onclick="navigateToProcedures()">
+            <div class="stat-header">
+              <div class="stat-icon">
+                <i class="fas fa-tooth" style="color: var(--primary-green)"></i>
+              </div>
+            </div>
+            <div class="stat-value" style="color: var(--primary-green)">4</div>
+            <div class="stat-label">Independent Procedures</div>
+            <div class="stat-change positive">+2 vs yesterday</div>
+          </div>
+
+          <div class="stat-card orange" onclick="navigateToMyTasks()">
+            <div class="stat-header">
+              <div class="stat-icon">
+                <i class="fas fa-tasks" style="color: var(--orange)"></i>
+              </div>
+            </div>
+            <div class="stat-value" style="color: var(--orange)">8</div>
+            <div class="stat-label">Pending Tasks</div>
+            <div class="stat-change">3 completed</div>
+          </div>
+
+          <div class="stat-card purple" onclick="navigateToProfile()">
+            <div class="stat-header">
+              <div class="stat-icon">
+                <i class="fas fa-star" style="color: var(--purple)"></i>
+              </div>
+            </div>
+            <div class="stat-value" style="color: var(--purple)">4.8</div>
+            <div class="stat-label">Patient Rating</div>
+            <div class="stat-change positive">★★★★☆</div>
+          </div>
+        </div>
+
+        <!-- Assists Grid -->
+        <h3 style="margin-bottom: var(--space-md)">Today's Assists</h3>
+        <div class="assists-grid">
+          <div class="assist-card" onclick="navigateToMyAssists()">
+            <div class="doctor-info">
+              <div class="doctor-avatar">DS</div>
+              <div class="doctor-details">
+                <h4>Dr. Sarah Smith</h4>
+                <p>Room 2 • 3 patients</p>
+              </div>
+            </div>
+            <ul class="patient-list">
+              <li
+                onclick="
+                  event.stopPropagation();
+                  openPatientDetails(
+                    'Sarah Jones',
+                    'Dr. Smith',
+                    '9:00 AM',
+                    'Cleaning',
+                  );
+                "
+              >
+                <span class="patient-name">Sarah Jones</span>
+                <span class="procedure">9:00 AM</span>
+              </li>
+              <li
+                onclick="
+                  event.stopPropagation();
+                  openPatientDetails(
+                    'Michael Obi',
+                    'Dr. Smith',
+                    '10:30 AM',
+                    'Extraction',
+                  );
+                "
+              >
+                <span class="patient-name">Michael Obi</span>
+                <span class="procedure">10:30 AM</span>
+              </li>
+              <li
+                onclick="
+                  event.stopPropagation();
+                  openPatientDetails(
+                    'Ada Eze',
+                    'Dr. Smith',
+                    '2:00 PM',
+                    'Filling',
+                  );
+                "
+              >
+                <span class="patient-name">Ada Eze</span>
+                <span class="procedure">2:00 PM</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="assist-card" onclick="navigateToMyAssists()">
+            <div class="doctor-info">
+              <div class="doctor-avatar">DJ</div>
+              <div class="doctor-details">
+                <h4>Dr. James Jones</h4>
+                <p>Room 1 • 2 patients</p>
+              </div>
+            </div>
+            <ul class="patient-list">
+              <li
+                onclick="
+                  event.stopPropagation();
+                  openPatientDetails(
+                    'Tunde Bakare',
+                    'Dr. Jones',
+                    '9:15 AM',
+                    'Root Canal',
+                  );
+                "
+              >
+                <span class="patient-name">Tunde Bakare</span>
+                <span class="procedure">9:15 AM</span>
+              </li>
+              <li
+                onclick="
+                  event.stopPropagation();
+                  openPatientDetails(
+                    'Chioma Obi',
+                    'Dr. Jones',
+                    '11:00 AM',
+                    'Crown',
+                  );
+                "
+              >
+                <span class="patient-name">Chioma Obi</span>
+                <span class="procedure">11:00 AM</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="assist-card" onclick="navigateToMyAssists()">
+            <div class="doctor-info">
+              <div class="doctor-avatar">DE</div>
+              <div class="doctor-details">
+                <h4>Dr. Emeka Eze</h4>
+                <p>Room 3 • 1 patient</p>
+              </div>
+            </div>
+            <ul class="patient-list">
+              <li
+                onclick="
+                  event.stopPropagation();
+                  openPatientDetails(
+                    'Funke Adebayo',
+                    'Dr. Eze',
+                    '10:00 AM',
+                    'Consultation',
+                  );
+                "
+              >
+                <span class="patient-name">Funke Adebayo</span>
+                <span class="procedure">10:00 AM</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Nurse Procedures -->
+        <div class="nurse-procedures">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: var(--space-lg);
+            "
+          >
+            <h3 style="font-size: 1.2rem">My Independent Procedures</h3>
+            <span class="badge badge-info">Nurse Eligible</span>
+          </div>
+
+          <div
+            class="procedure-item"
+            onclick="
+              openProcedureDetails(
+                'Teeth Cleaning',
+                'Mr. Ade',
+                '11:00 AM',
+                'Room 3',
+              )
+            "
+          >
+            <div class="procedure-info">
+              <h4>Teeth Cleaning - Mr. Ade</h4>
+              <p>Room 3 • Scheduled: 11:00 AM</p>
+            </div>
+            <div class="procedure-status">
+              <span class="time-badge">In 15 min</span>
+              <button
+                class="btn btn-sm btn-primary"
+                onclick="
+                  event.stopPropagation();
+                  startProcedure('Mr. Ade', 'Teeth Cleaning');
+                "
+              >
+                Start
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="procedure-item"
+            onclick="
+              openProcedureDetails(
+                'Fluoride Treatment',
+                'Baby Grace',
+                '12:00 PM',
+                'Room 2',
+              )
+            "
+          >
+            <div class="procedure-info">
+              <h4>Fluoride Treatment - Baby Grace</h4>
+              <p>Room 2 • Scheduled: 12:00 PM</p>
+            </div>
+            <div class="procedure-status">
+              <span class="time-badge">In 1hr 15min</span>
+              <button
+                class="btn btn-sm btn-secondary"
+                onclick="
+                  event.stopPropagation();
+                  prepareProcedure('Baby Grace', 'Fluoride Treatment');
+                "
+              >
+                Prepare
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="procedure-item"
+            onclick="
+              openProcedureDetails(
+                'Oral Hygiene Instruction',
+                'New Patient',
+                '3:00 PM',
+                'Room 1',
+              )
+            "
+          >
+            <div class="procedure-info">
+              <h4>Oral Hygiene Instruction - New Patient</h4>
+              <p>Room 1 • Scheduled: 3:00 PM</p>
+            </div>
+            <div class="procedure-status">
+              <span class="time-badge">In 4hrs</span>
+              <button
+                class="btn btn-sm btn-secondary"
+                onclick="
+                  event.stopPropagation();
+                  viewProcedure('New Patient', 'Oral Hygiene Instruction');
+                "
+              >
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tasks and Notes -->
+        <div class="grid grid-2">
+          <!-- My Tasks -->
+          <div class="table-container">
+            <div class="table-header">
+              <h3 class="table-title">My Tasks</h3>
+              <div class="table-actions">
+                <span class="badge badge-info">8 tasks</span>
+              </div>
+            </div>
+            <div style="padding: var(--space-lg)">
+              <div class="task-grid">
+                <div
+                  class="task-item"
+                  onclick="
+                    openTaskDetails(
+                      'Sterilize Room 1 equipment',
+                      '9:30 AM',
+                      'Room 1',
+                      'high',
+                    )
+                  "
+                >
+                  <div
+                    class="task-checkbox"
+                    onclick="
+                      event.stopPropagation();
+                      toggleTask(this);
+                    "
+                  >
+                    <i class="fas fa-check" style="opacity: 0"></i>
+                  </div>
+                  <div class="task-content">
+                    <div class="task-title">Sterilize Room 1 equipment</div>
+                    <div class="task-time">Due: 9:30 AM</div>
+                  </div>
+                </div>
+
+                <div
+                  class="task-item"
+                  onclick="
+                    openTaskDetails(
+                      'Prepare extraction tray',
+                      '10:00 AM',
+                      'Room 2',
+                      'high',
+                    )
+                  "
+                >
+                  <div
+                    class="task-checkbox"
+                    onclick="
+                      event.stopPropagation();
+                      toggleTask(this);
+                    "
+                  >
+                    <i class="fas fa-check" style="opacity: 0"></i>
+                  </div>
+                  <div class="task-content">
+                    <div class="task-title">Prepare extraction tray</div>
+                    <div class="task-time">Due: 10:00 AM</div>
+                  </div>
+                </div>
+
+                <div
+                  class="task-item"
+                  onclick="
+                    openTaskDetails(
+                      'Restock local anesthesia',
+                      '12:00 PM',
+                      'Storage',
+                      'medium',
+                    )
+                  "
+                >
+                  <div
+                    class="task-checkbox"
+                    onclick="
+                      event.stopPropagation();
+                      toggleTask(this);
+                    "
+                  >
+                    <i class="fas fa-check" style="opacity: 0"></i>
+                  </div>
+                  <div class="task-content">
+                    <div class="task-title">Restock local anesthesia</div>
+                    <div class="task-time">Due: 12:00 PM</div>
+                  </div>
+                </div>
+
+                <div
+                  class="task-item"
+                  onclick="
+                    openTaskDetails(
+                      'Clean Room 2 after procedure',
+                      '2:30 PM',
+                      'Room 2',
+                      'low',
+                    )
+                  "
+                >
+                  <div
+                    class="task-checkbox"
+                    onclick="
+                      event.stopPropagation();
+                      toggleTask(this);
+                    "
+                  >
+                    <i class="fas fa-check" style="opacity: 0"></i>
+                  </div>
+                  <div class="task-content">
+                    <div class="task-title">Clean Room 2 after procedure</div>
+                    <div class="task-time">Due: 2:30 PM</div>
+                  </div>
+                </div>
+              </div>
+              <div style="text-align: center; margin-top: var(--space-md)">
+                <button
+                  class="btn btn-sm btn-primary"
+                  onclick="navigateToMyTasks()"
+                >
+                  View All Tasks
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Notes -->
+          <div class="table-container">
+            <div class="table-header">
+              <h3 class="table-title">Recent Notes</h3>
+              <button
+                class="btn btn-sm btn-primary"
+                onclick="openAddNoteModal()"
+              >
+                + Add Note
+              </button>
+            </div>
+            <div style="padding: var(--space-lg)">
+              <div
+                class="activity-item"
+                onclick="
+                  openNoteDetails(
+                    'Pre-op notes for Mr. Ade',
+                    '10 minutes ago',
+                    'Pre-operative notes for extraction procedure. Patient is anxious.',
+                  )
+                "
+              >
+                <div class="activity-icon">
+                  <i class="fas fa-pen"></i>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title">Pre-op notes for Mr. Ade</div>
+                  <div class="activity-time">10 minutes ago</div>
+                </div>
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: var(--text-light)"
+                ></i>
+              </div>
+
+              <div
+                class="activity-item"
+                onclick="
+                  openNoteDetails(
+                    'Post-cleaning instructions - Sarah',
+                    '1 hour ago',
+                    'Patient advised to avoid hot foods for 24 hours. Follow up in 6 months.',
+                  )
+                "
+              >
+                <div class="activity-icon">
+                  <i class="fas fa-pen"></i>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title">
+                    Post-cleaning instructions - Sarah
+                  </div>
+                  <div class="activity-time">1 hour ago</div>
+                </div>
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: var(--text-light)"
+                ></i>
+              </div>
+
+              <div
+                class="activity-item"
+                onclick="
+                  openNoteDetails(
+                    'Vital signs - Baby Grace',
+                    '2 hours ago',
+                    'BP: 100/60, HR: 110, Temp: 36.8°C. Patient calm.',
+                  )
+                "
+              >
+                <div class="activity-icon">
+                  <i class="fas fa-pen"></i>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title">Vital signs - Baby Grace</div>
+                  <div class="activity-time">2 hours ago</div>
+                </div>
+                <i
+                  class="fas fa-chevron-right"
+                  style="color: var(--text-light)"
+                ></i>
+              </div>
+
+              <div style="text-align: center; margin-top: var(--space-md)">
+                <button
+                  class="btn btn-sm btn-secondary"
+                  onclick="navigateToNotes()"
+                >
+                  View All Notes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient Details Modal -->
+    <div class="modal-overlay" id="patientModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title" id="patientModalTitle"
+            >Patient Details</span
+          >
+          <button class="modal-close" onclick="closeModal('patientModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div style="text-align: center; margin-bottom: var(--space-lg)">
+            <div
+              style="
+                width: 80px;
+                height: 80px;
+                background: var(--primary-blue);
+                border-radius: var(--radius-full);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto;
+                color: white;
+                font-size: 2rem;
+                font-weight: 600;
+              "
+              id="patientInitials"
+            >
+              SJ
+            </div>
+          </div>
+
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Name:</span>
+            <span class="patient-detail-value" id="patientName"
+              >Sarah Jones</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Doctor:</span>
+            <span class="patient-detail-value" id="patientDoctor"
+              >Dr. Smith</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Time:</span>
+            <span class="patient-detail-value" id="patientTime">9:00 AM</span>
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Procedure:</span>
+            <span class="patient-detail-value" id="patientProcedure"
+              >Cleaning</span
+            >
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Vital Signs</h4>
+          <div class="vital-signs-modal">
+            <div class="vital-card">
+              <div class="vital-value">120/80</div>
+              <div class="vital-label">BP</div>
+            </div>
+            <div class="vital-card">
+              <div class="vital-value">72</div>
+              <div class="vital-label">HR</div>
+            </div>
+            <div class="vital-card">
+              <div class="vital-value">36.6°C</div>
+              <div class="vital-label">Temp</div>
+            </div>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">
+            Medical Alerts
+          </h4>
+          <div style="color: var(--error); margin-bottom: var(--space-sm)">
+            <i class="fas fa-exclamation-circle"></i>
+            Allergies: Penicillin, Latex
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('patientModal')"
+          >
+            Close
+          </button>
+          <button class="btn btn-primary" onclick="startAssist()">
+            Start Assist
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Procedure Details Modal -->
+    <div class="modal-overlay" id="procedureModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title" id="procedureModalTitle"
+            >Procedure Details</span
+          >
+          <button class="modal-close" onclick="closeModal('procedureModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Procedure:</span>
+            <span class="patient-detail-value" id="procedureName"
+              >Teeth Cleaning</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Patient:</span>
+            <span class="patient-detail-value" id="procedurePatient"
+              >Mr. Ade</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Time:</span>
+            <span class="patient-detail-value" id="procedureTime"
+              >11:00 AM</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Room:</span>
+            <span class="patient-detail-value" id="procedureRoom">Room 3</span>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">
+            Procedure Steps
+          </h4>
+          <div
+            style="
+              background: var(--off-white);
+              border-radius: var(--radius-lg);
+              padding: var(--space-md);
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: var(--space-sm);
+                margin-bottom: var(--space-sm);
+              "
+            >
+              <input type="checkbox" /> <span>Prepare instruments</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: var(--space-sm);
+                margin-bottom: var(--space-sm);
+              "
+            >
+              <input type="checkbox" /> <span>Verify patient identity</span>
+            </div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: var(--space-sm);
+                margin-bottom: var(--space-sm);
+              "
+            >
+              <input type="checkbox" /> <span>Check vitals</span>
+            </div>
+            <div
+              style="display: flex; align-items: center; gap: var(--space-sm)"
+            >
+              <input type="checkbox" /> <span>Document procedure</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('procedureModal')"
+          >
+            Close
+          </button>
+          <button class="btn btn-primary" id="procedureActionBtn">
+            Start Procedure
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Details Modal -->
+    <div class="modal-overlay" id="taskModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Task Details</span>
+          <button class="modal-close" onclick="closeModal('taskModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Task:</span>
+            <span class="patient-detail-value" id="taskName"
+              >Sterilize Room 1 equipment</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Due:</span>
+            <span class="patient-detail-value" id="taskDue">9:30 AM</span>
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Location:</span>
+            <span class="patient-detail-value" id="taskLocation">Room 1</span>
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Priority:</span>
+            <span class="patient-detail-value" id="taskPriority">High</span>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">
+            Instructions
+          </h4>
+          <p style="color: var(--text-light)" id="taskInstructions">
+            Use autoclave cycle B. Ensure all instruments are properly wrapped.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('taskModal')">
+            Close
+          </button>
+          <button class="btn btn-primary" onclick="completeTask()">
+            Mark Complete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Note Details Modal -->
+    <div class="modal-overlay" id="noteModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Note Details</span>
+          <button class="modal-close" onclick="closeModal('noteModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Title:</span>
+            <span class="patient-detail-value" id="noteTitle"
+              >Pre-op notes for Mr. Ade</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Time:</span>
+            <span class="patient-detail-value" id="noteTime"
+              >10 minutes ago</span
+            >
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">Content</h4>
+          <div
+            style="
+              background: var(--off-white);
+              border-radius: var(--radius-lg);
+              padding: var(--space-md);
+            "
+            id="noteContent"
+          >
+            Pre-operative notes for extraction procedure. Patient is anxious.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('noteModal')">
+            Close
+          </button>
+          <button class="btn btn-primary" onclick="editNote()">
+            Edit Note
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div class="modal-overlay" id="addNoteModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Add New Note</span>
+          <button class="modal-close" onclick="closeModal('addNoteModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Patient</label>
+            <select class="form-control" id="notePatient">
+              <option>Sarah Jones</option>
+              <option>Mr. Ade</option>
+              <option>Baby Grace</option>
+              <option>Michael Obi</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Note Type</label>
+            <select class="form-control" id="noteType">
+              <option>Pre-op Notes</option>
+              <option>Post-op Notes</option>
+              <option>Vital Signs</option>
+              <option>General Observation</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea
+              class="form-control"
+              rows="5"
+              placeholder="Write your notes here..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('addNoteModal')"
+          >
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveNote()">
+            Save Note
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Navigation functions
+      function navigateToMyAssists() {
+        window.location.href = "my-assists.html";
+      }
+
+      function navigateToProcedures() {
+        window.location.href = "procedures.html";
+      }
+
+      function navigateToMyTasks() {
+        window.location.href = "my-tasks.html";
+      }
+
+      function navigateToNotes() {
+        window.location.href = "notes.html";
+      }
+
+      function navigateToProfile() {
+        window.location.href = "profile.html";
+      }
+
+      // Modal functions
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      // Patient details modal
+      function openPatientDetails(name, doctor, time, procedure) {
+        // Set patient initials
+        const initials = name
+          .split(" ")
+          .map((n) => n[0])
+          .join("");
+        document.getElementById("patientInitials").textContent = initials;
+
+        document.getElementById("patientName").textContent = name;
+        document.getElementById("patientDoctor").textContent = doctor;
+        document.getElementById("patientTime").textContent = time;
+        document.getElementById("patientProcedure").textContent = procedure;
+
+        openModal("patientModal");
+      }
+
+      // Procedure details modal
+      function openProcedureDetails(procedure, patient, time, room) {
+        document.getElementById("procedureName").textContent = procedure;
+        document.getElementById("procedurePatient").textContent = patient;
+        document.getElementById("procedureTime").textContent = time;
+        document.getElementById("procedureRoom").textContent = room;
+
+        // Set appropriate action button
+        const actionBtn = document.getElementById("procedureActionBtn");
+        if (time.includes("15 min") || time === "11:00 AM") {
+          actionBtn.textContent = "Start Procedure";
+          actionBtn.onclick = function () {
+            startProcedure(patient, procedure);
+          };
+        } else {
+          actionBtn.textContent = "View Details";
+          actionBtn.onclick = function () {
+            viewProcedure(patient, procedure);
+          };
+        }
+
+        openModal("procedureModal");
+      }
+
+      // Task details modal
+      function openTaskDetails(task, due, location, priority) {
+        document.getElementById("taskName").textContent = task;
+        document.getElementById("taskDue").textContent = due;
+        document.getElementById("taskLocation").textContent = location;
+
+        const priorityEl = document.getElementById("taskPriority");
+        priorityEl.textContent =
+          priority.charAt(0).toUpperCase() + priority.slice(1);
+
+        // Set instructions based on task
+        let instructions = "";
+        if (task.includes("Sterilize")) {
+          instructions =
+            "Use autoclave cycle B. Ensure all instruments are properly wrapped.";
+        } else if (task.includes("Prepare")) {
+          instructions =
+            "Extraction tray should include: forceps, elevators, gauze, suction tip.";
+        } else if (task.includes("Restock")) {
+          instructions =
+            "Check inventory levels. Restock 10 units of 2% lidocaine with epinephrine.";
+        } else {
+          instructions =
+            "Follow standard cleaning protocols. Use appropriate PPE.";
+        }
+
+        document.getElementById("taskInstructions").textContent = instructions;
+
+        openModal("taskModal");
+      }
+
+      // Note details modal
+      function openNoteDetails(title, time, content) {
+        document.getElementById("noteTitle").textContent = title;
+        document.getElementById("noteTime").textContent = time;
+        document.getElementById("noteContent").textContent = content;
+
+        openModal("noteModal");
+      }
+
+      function openAddNoteModal() {
+        openModal("addNoteModal");
+      }
+
+      // Action functions
+      function startAssist() {
+        closeModal("patientModal");
+        navigateToMyAssists();
+      }
+
+      function startProcedure(patient, procedure) {
+        closeModal("procedureModal");
+        // Redirect to procedure page with patient info
+        window.location.href = `procedures.html?patient=${encodeURIComponent(patient)}&procedure=${encodeURIComponent(procedure)}`;
+      }
+
+      function prepareProcedure(patient, procedure) {
+        // Open procedure modal with preparation info
+        openProcedureDetails(procedure, patient, "12:00 PM", "Room 2");
+      }
+
+      function viewProcedure(patient, procedure) {
+        window.location.href = `procedures.html?view=${encodeURIComponent(procedure)}&patient=${encodeURIComponent(patient)}`;
+      }
+
+      function completeTask() {
+        closeModal("taskModal");
+        // Show success message
+        alert("Task marked as complete!");
+      }
+
+      function saveNote() {
+        closeModal("addNoteModal");
+        // Show success message
+        alert("Note saved successfully!");
+      }
+
+      function editNote() {
+        closeModal("noteModal");
+        openAddNoteModal();
+      }
+
+      // Task checkbox toggle
+      function toggleTask(checkbox) {
+        checkbox.classList.toggle("checked");
+        const icon = checkbox.querySelector("i");
+        if (checkbox.classList.contains("checked")) {
+          icon.style.opacity = "1";
+        } else {
+          icon.style.opacity = "0";
+        }
+      }
+
+      // Make checkboxes interactive
+      document.querySelectorAll(".task-checkbox").forEach((checkbox) => {
+        checkbox.addEventListener("click", function (event) {
+          event.stopPropagation();
+          toggleTask(this);
+        });
+      });
+
+      // Sidebar toggle function
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      // Initialize loading screen
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

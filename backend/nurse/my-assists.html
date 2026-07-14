@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>My Assists - Nurse - Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="../../assets/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/loading.css" />
+    <style>
+      .assists-timeline {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        padding: var(--space-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .assist-card {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+        border-left: 4px solid var(--warning);
+        transition: all var(--transition-base);
+        cursor: pointer;
+      }
+
+      .assist-card:hover {
+        transform: translateX(4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .assist-card.completed {
+        border-left-color: var(--success);
+        opacity: 0.8;
+      }
+
+      .assist-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-sm);
+      }
+
+      .doctor-info-small {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+      }
+
+      .doctor-avatar-small {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(
+          145deg,
+          var(--primary-blue),
+          var(--primary-blue-dark)
+        );
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+      }
+
+      .assist-time {
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+
+      .assist-details {
+        margin-left: 52px;
+      }
+
+      .patient-name {
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .procedure-type {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: var(--space-xs);
+      }
+
+      .assist-actions {
+        display: flex;
+        gap: var(--space-sm);
+        margin-top: var(--space-sm);
+      }
+
+      .stats-grid-small {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+      }
+
+      .stat-card-small {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .stat-card-small:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .stat-card-small.orange {
+        border-left: 4px solid var(--orange);
+      }
+
+      .stat-card-small.green {
+        border-left: 4px solid var(--success);
+      }
+
+      .stat-card-small.blue {
+        border-left: 4px solid var(--primary-blue);
+      }
+
+      .stat-icon-small {
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 159, 10, 0.1);
+        border-radius: var(--radius-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--warning);
+        font-size: 1.2rem;
+      }
+
+      .task-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-sm) 0;
+        border-bottom: 1px dashed var(--light-gray);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+      }
+
+      .task-item:hover {
+        background: rgba(0, 102, 204, 0.05);
+        border-radius: var(--radius-lg);
+        padding-left: var(--space-sm);
+      }
+
+      .task-checkbox {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--primary-blue);
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+      }
+
+      .task-checkbox.checked {
+        background: var(--primary-blue);
+      }
+
+      .task-checkbox.checked i {
+        opacity: 1 !important;
+      }
+
+      .task-content {
+        flex: 1;
+      }
+
+      .badge {
+        flex-shrink: 0;
+      }
+
+      .mark-all-btn {
+        transition: all var(--transition-fast);
+      }
+
+      .mark-all-btn:hover {
+        background: var(--success);
+        color: white;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--pure-white);
+        border-radius: var(--radius-xl);
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        padding: var(--space-lg);
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--off-white);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color var(--transition-fast);
+      }
+
+      .modal-close:hover {
+        color: var(--error);
+      }
+
+      .modal-body {
+        padding: var(--space-lg);
+      }
+
+      .modal-footer {
+        padding: var(--space-lg);
+        border-top: 1px solid var(--light-gray);
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-md);
+        background: var(--off-white);
+        border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      }
+
+      .instruments-list {
+        background: var(--off-white);
+        border-radius: var(--radius-lg);
+        padding: var(--space-md);
+        margin: var(--space-md) 0;
+      }
+
+      .instrument-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        padding: var(--space-xs) 0;
+      }
+    </style>
+  </head>
+  <body class="loading-active">
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading My Assists...</p>
+    </div>
+
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <div class="sidebar-logo-img">
+              <img src="../../assets/logo.png" alt="Perfections Dental" />
+            </div>
+            <div class="sidebar-logo-text">
+              <div class="clinic-name">PERFECTIONS</div>
+              <div class="clinic-sub">DENTAL SERVICES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="sidebar-menu"></div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">My Assists</h1>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <span class="status-dot"></span>
+              <span class="status-text">Online</span>
+            </div>
+            <div class="user-profile" onclick="navigateToProfile()"></div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid-small">
+          <div class="stat-card-small orange" onclick="filterAssists('today')">
+            <div class="stat-icon-small">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div>
+              <h3 style="font-size: 1.5rem; color: var(--orange)">6</h3>
+              <p style="color: var(--text-light)">Today's Assists</p>
+            </div>
+          </div>
+
+          <div
+            class="stat-card-small green"
+            onclick="filterAssists('completed')"
+          >
+            <div
+              class="stat-icon-small"
+              style="background: rgba(52, 199, 89, 0.1); color: var(--success)"
+            >
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div>
+              <h3 style="font-size: 1.5rem; color: var(--success)">3</h3>
+              <p style="color: var(--text-light)">Completed</p>
+            </div>
+          </div>
+
+          <div class="stat-card-small blue" onclick="filterAssists('doctors')">
+            <div
+              class="stat-icon-small"
+              style="
+                background: rgba(0, 102, 204, 0.1);
+                color: var(--primary-blue);
+              "
+            >
+              <i class="fas fa-user-md"></i>
+            </div>
+            <div>
+              <h3 style="font-size: 1.5rem; color: var(--primary-blue)">3</h3>
+              <p style="color: var(--text-light)">Doctors</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assists Timeline -->
+        <div class="assists-timeline">
+          <h3 style="margin-bottom: var(--space-lg)">Today's Assists</h3>
+
+          <!-- Dr. Smith's Assists -->
+          <div style="margin-bottom: var(--space-xl)">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: var(--space-md);
+                margin-bottom: var(--space-md);
+              "
+            >
+              <div class="doctor-avatar-small">DS</div>
+              <div>
+                <h4>Dr. Sarah Smith</h4>
+                <p style="color: var(--text-light)">Room 2 • 3 assists today</p>
+              </div>
+            </div>
+
+            <div
+              class="assist-card"
+              onclick="
+                openAssistDetails(
+                  'Sarah Jones',
+                  'Dr. Smith',
+                  '9:00 AM',
+                  'Crown Consultation',
+                  'checked-in',
+                )
+              "
+            >
+              <div class="assist-header">
+                <div class="doctor-info-small">
+                  <span class="assist-time">9:00 AM - 9:30 AM</span>
+                </div>
+                <span class="badge badge-success">Checked In</span>
+              </div>
+              <div class="assist-details">
+                <div class="patient-name">Sarah Jones</div>
+                <div class="procedure-type">Crown Consultation</div>
+                <div class="assist-actions" onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="
+                      startAssist(
+                        'Sarah Jones',
+                        'Dr. Smith',
+                        'Crown Consultation',
+                      )
+                    "
+                  >
+                    Start Assist
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="
+                      viewAssistDetails(
+                        'Sarah Jones',
+                        'Dr. Smith',
+                        '9:00 AM',
+                        'Crown Consultation',
+                      )
+                    "
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="assist-card"
+              onclick="
+                openAssistDetails(
+                  'Michael Obi',
+                  'Dr. Smith',
+                  '10:30 AM',
+                  'Root Canal',
+                  'next',
+                )
+              "
+            >
+              <div class="assist-header">
+                <div class="doctor-info-small">
+                  <span class="assist-time">10:30 AM - 11:30 AM</span>
+                </div>
+                <span class="badge badge-warning">Next</span>
+              </div>
+              <div class="assist-details">
+                <div class="patient-name">Michael Obi</div>
+                <div class="procedure-type">Root Canal</div>
+                <div class="assist-actions" onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="prepareRoom('Room 2', 'Root Canal')"
+                  >
+                    Prepare Room
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="
+                      viewAssistDetails(
+                        'Michael Obi',
+                        'Dr. Smith',
+                        '10:30 AM',
+                        'Root Canal',
+                      )
+                    "
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="assist-card completed"
+              onclick="
+                openAssistDetails(
+                  'John Okonkwo',
+                  'Dr. Smith',
+                  '8:00 AM',
+                  'Emergency Extraction',
+                  'completed',
+                )
+              "
+            >
+              <div class="assist-header">
+                <div class="doctor-info-small">
+                  <span class="assist-time">8:00 AM - 8:30 AM</span>
+                </div>
+                <span class="badge badge-info">Completed</span>
+              </div>
+              <div class="assist-details">
+                <div class="patient-name">John Okonkwo</div>
+                <div class="procedure-type">Emergency - Extraction</div>
+                <div class="assist-actions" onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="viewNotes('John Okonkwo')"
+                  >
+                    View Notes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dr. Jones's Assists -->
+          <div style="margin-bottom: var(--space-xl)">
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: var(--space-md);
+                margin-bottom: var(--space-md);
+              "
+            >
+              <div class="doctor-avatar-small">DJ</div>
+              <div>
+                <h4>Dr. James Jones</h4>
+                <p style="color: var(--text-light)">Room 3 • 2 assists today</p>
+              </div>
+            </div>
+
+            <div
+              class="assist-card"
+              onclick="
+                openAssistDetails(
+                  'Tunde Bakare',
+                  'Dr. Jones',
+                  '9:15 AM',
+                  'Consultation',
+                  'in-progress',
+                )
+              "
+            >
+              <div class="assist-header">
+                <div class="doctor-info-small">
+                  <span class="assist-time">9:15 AM - 9:45 AM</span>
+                </div>
+                <span class="badge badge-warning">In Progress</span>
+              </div>
+              <div class="assist-details">
+                <div class="patient-name">Tunde Bakare</div>
+                <div class="procedure-type">Consultation</div>
+                <div class="assist-actions" onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="joinAssist('Room 3', 'Tunde Bakare')"
+                  >
+                    Join
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="
+                      viewAssistDetails(
+                        'Tunde Bakare',
+                        'Dr. Jones',
+                        '9:15 AM',
+                        'Consultation',
+                      )
+                    "
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="assist-card"
+              onclick="
+                openAssistDetails(
+                  'Chioma Obi',
+                  'Dr. Jones',
+                  '11:00 AM',
+                  'Filling',
+                  'scheduled',
+                )
+              "
+            >
+              <div class="assist-header">
+                <div class="doctor-info-small">
+                  <span class="assist-time">11:00 AM - 11:45 AM</span>
+                </div>
+                <span class="badge badge-info">Scheduled</span>
+              </div>
+              <div class="assist-details">
+                <div class="patient-name">Chioma Obi</div>
+                <div class="procedure-type">Filling</div>
+                <div class="assist-actions" onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="prepareTray('Filling', 'Room 3')"
+                  >
+                    Prepare
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="
+                      viewAssistDetails(
+                        'Chioma Obi',
+                        'Dr. Jones',
+                        '11:00 AM',
+                        'Filling',
+                      )
+                    "
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dr. Eze's Assists -->
+          <div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: var(--space-md);
+                margin-bottom: var(--space-md);
+              "
+            >
+              <div class="doctor-avatar-small">DE</div>
+              <div>
+                <h4>Dr. Emeka Eze</h4>
+                <p style="color: var(--text-light)">Room 1 • 1 assist today</p>
+              </div>
+            </div>
+
+            <div
+              class="assist-card"
+              onclick="
+                openAssistDetails(
+                  'Funke Adebayo',
+                  'Dr. Eze',
+                  '2:00 PM',
+                  'Extraction',
+                  'scheduled',
+                )
+              "
+            >
+              <div class="assist-header">
+                <div class="doctor-info-small">
+                  <span class="assist-time">2:00 PM - 2:45 PM</span>
+                </div>
+                <span class="badge badge-info">Scheduled</span>
+              </div>
+              <div class="assist-details">
+                <div class="patient-name">Funke Adebayo</div>
+                <div class="procedure-type">Extraction</div>
+                <div class="assist-actions" onclick="event.stopPropagation()">
+                  <button
+                    class="btn btn-sm btn-primary"
+                    onclick="prepareTray('Extraction', 'Room 1')"
+                  >
+                    Prepare Tray
+                  </button>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    onclick="
+                      viewAssistDetails(
+                        'Funke Adebayo',
+                        'Dr. Eze',
+                        '2:00 PM',
+                        'Extraction',
+                      )
+                    "
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Tasks -->
+        <div class="table-container">
+          <div class="table-header">
+            <h3 class="table-title">Preparation Tasks</h3>
+            <button
+              class="btn btn-sm btn-primary mark-all-btn"
+              onclick="markAllTasks()"
+            >
+              Mark All Complete
+            </button>
+          </div>
+          <div style="padding: var(--space-lg)" id="tasksList">
+            <div
+              class="task-item"
+              data-task-id="1"
+              onclick="
+                openTaskDetails(
+                  'Prepare extraction tray for Dr. Jones',
+                  '11:00 AM',
+                  'Room 3',
+                  'Forceps, elevator, gauze, suction',
+                )
+              "
+            >
+              <div
+                class="task-checkbox"
+                onclick="
+                  event.stopPropagation();
+                  toggleTask(this);
+                "
+              >
+                <i class="fas fa-check" style="opacity: 0"></i>
+              </div>
+              <div class="task-content">
+                <div style="font-weight: 500">
+                  Prepare extraction tray for Dr. Jones (11:00 AM)
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-light)">
+                  Room 3 • Instruments: Forceps, elevator, gauze
+                </div>
+              </div>
+              <span class="badge badge-warning">In 30 min</span>
+            </div>
+
+            <div
+              class="task-item"
+              data-task-id="2"
+              onclick="
+                openTaskDetails(
+                  'Sterilize equipment - Room 2',
+                  '10:00 AM',
+                  'Room 2',
+                  'Autoclave cycle B',
+                )
+              "
+            >
+              <div
+                class="task-checkbox"
+                onclick="
+                  event.stopPropagation();
+                  toggleTask(this);
+                "
+              >
+                <i class="fas fa-check" style="opacity: 0"></i>
+              </div>
+              <div class="task-content">
+                <div style="font-weight: 500">Sterilize equipment - Room 2</div>
+                <div style="font-size: 0.8rem; color: var(--text-light)">
+                  After Dr. Smith's 9:00 AM procedure
+                </div>
+              </div>
+              <span class="badge badge-info">Due 10:00 AM</span>
+            </div>
+
+            <div
+              class="task-item"
+              data-task-id="3"
+              onclick="
+                openTaskDetails(
+                  'Restock anesthesia',
+                  '12:00 PM',
+                  'Storage',
+                  'Lidocaine 2%, 10 units',
+                )
+              "
+            >
+              <div
+                class="task-checkbox"
+                onclick="
+                  event.stopPropagation();
+                  toggleTask(this);
+                "
+              >
+                <i class="fas fa-check" style="opacity: 0"></i>
+              </div>
+              <div class="task-content">
+                <div style="font-weight: 500">Restock local anesthesia</div>
+                <div style="font-size: 0.8rem; color: var(--text-light)">
+                  Storage Room • Check expiration dates
+                </div>
+              </div>
+              <span class="badge badge-info">Due 12:00 PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assist Details Modal -->
+    <div class="modal-overlay" id="assistModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Assist Details</span>
+          <button class="modal-close" onclick="closeModal('assistModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Patient:</span>
+            <span class="patient-detail-value" id="assistPatient"
+              >Sarah Jones</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Doctor:</span>
+            <span class="patient-detail-value" id="assistDoctor"
+              >Dr. Smith</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Time:</span>
+            <span class="patient-detail-value" id="assistTime">9:00 AM</span>
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Procedure:</span>
+            <span class="patient-detail-value" id="assistProcedure"
+              >Crown Consultation</span
+            >
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">
+            Assist Notes
+          </h4>
+          <textarea
+            class="form-control"
+            rows="3"
+            placeholder="Add notes about this assist..."
+            id="assistNotes"
+          ></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('assistModal')">
+            Close
+          </button>
+          <button class="btn btn-primary" id="assistActionBtn">
+            Start Assist
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Details Modal -->
+    <div class="modal-overlay" id="taskModal">
+      <div class="modal-container">
+        <div class="modal-header">
+          <span class="modal-title">Task Details</span>
+          <button class="modal-close" onclick="closeModal('taskModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Task:</span>
+            <span class="patient-detail-value" id="taskName"
+              >Prepare extraction tray</span
+            >
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Due:</span>
+            <span class="patient-detail-value" id="taskDue">11:00 AM</span>
+          </div>
+          <div class="patient-detail-item">
+            <span class="patient-detail-label">Location:</span>
+            <span class="patient-detail-value" id="taskLocation">Room 3</span>
+          </div>
+
+          <h4 style="margin: var(--space-md) 0 var(--space-sm)">
+            Instruments/Items Needed
+          </h4>
+          <div class="instruments-list" id="taskInstruments">
+            <div class="instrument-item"><input type="checkbox" /> Forceps</div>
+            <div class="instrument-item">
+              <input type="checkbox" /> Elevator
+            </div>
+            <div class="instrument-item"><input type="checkbox" /> Gauze</div>
+            <div class="instrument-item">
+              <input type="checkbox" /> Suction tip
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal('taskModal')">
+            Close
+          </button>
+          <button class="btn btn-primary" onclick="completeTaskFromModal()">
+            Mark Complete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/dashboard.js"></script>
+    <script src="../../js/loading.js"></script>
+    <script>
+      // Navigation functions
+      function navigateToProfile() {
+        window.location.href = "profile.html";
+      }
+
+      // Modal functions
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      // Assist functions
+      function openAssistDetails(patient, doctor, time, procedure, status) {
+        document.getElementById("assistPatient").textContent = patient;
+        document.getElementById("assistDoctor").textContent = doctor;
+        document.getElementById("assistTime").textContent = time;
+        document.getElementById("assistProcedure").textContent = procedure;
+
+        const actionBtn = document.getElementById("assistActionBtn");
+        if (status === "completed") {
+          actionBtn.textContent = "View Notes";
+          actionBtn.onclick = function () {
+            viewNotes(patient);
+          };
+        } else if (status === "in-progress") {
+          actionBtn.textContent = "Join Assist";
+          actionBtn.onclick = function () {
+            joinAssist("Room", patient);
+          };
+        } else {
+          actionBtn.textContent = "Start Assist";
+          actionBtn.onclick = function () {
+            startAssist(patient, doctor, procedure);
+          };
+        }
+
+        openModal("assistModal");
+      }
+
+      function startAssist(patient, doctor, procedure) {
+        closeModal("assistModal");
+        alert(`Starting assist for ${patient} with ${doctor} - ${procedure}`);
+        // In a real app, you would redirect to the assist page
+        // window.location.href = `active-assist.html?patient=${encodeURIComponent(patient)}`;
+      }
+
+      function viewAssistDetails(patient, doctor, time, procedure) {
+        openAssistDetails(patient, doctor, time, procedure, "view");
+      }
+
+      function joinAssist(room, patient) {
+        alert(`Joining assist in ${room} for ${patient}`);
+        closeModal("assistModal");
+      }
+
+      function prepareRoom(room, procedure) {
+        alert(`Preparing ${room} for ${procedure}`);
+      }
+
+      function prepareTray(procedure, room) {
+        alert(`Preparing tray for ${procedure} in ${room}`);
+      }
+
+      function viewNotes(patient) {
+        alert(`Viewing notes for ${patient}`);
+        closeModal("assistModal");
+        // window.location.href = `notes.html?patient=${encodeURIComponent(patient)}`;
+      }
+
+      // Task functions
+      function toggleTask(checkbox) {
+        checkbox.classList.toggle("checked");
+        const icon = checkbox.querySelector("i");
+        if (checkbox.classList.contains("checked")) {
+          icon.style.opacity = "1";
+        } else {
+          icon.style.opacity = "0";
+        }
+
+        // Check if all tasks are completed
+        updateMarkAllButton();
+      }
+
+      function openTaskDetails(task, due, location, instruments) {
+        document.getElementById("taskName").textContent = task;
+        document.getElementById("taskDue").textContent = due;
+        document.getElementById("taskLocation").textContent = location;
+
+        // Parse instruments
+        const instrumentsList = document.getElementById("taskInstruments");
+        const items = instruments.split(", ");
+        instrumentsList.innerHTML = "";
+        items.forEach((item) => {
+          instrumentsList.innerHTML += `
+            <div class="instrument-item">
+              <input type="checkbox"> ${item}
+            </div>
+          `;
+        });
+
+        openModal("taskModal");
+      }
+
+      function completeTaskFromModal() {
+        closeModal("taskModal");
+        // Find and check the corresponding task checkbox
+        const taskName = document.getElementById("taskName").textContent;
+        const taskItems = document.querySelectorAll(".task-item");
+
+        taskItems.forEach((item) => {
+          const title = item.querySelector(
+            ".task-content div:first-child",
+          ).textContent;
+          if (title.includes(taskName.split(" - ")[0])) {
+            const checkbox = item.querySelector(".task-checkbox");
+            if (!checkbox.classList.contains("checked")) {
+              checkbox.classList.add("checked");
+              checkbox.querySelector("i").style.opacity = "1";
+            }
+          }
+        });
+
+        updateMarkAllButton();
+        alert("Task completed successfully!");
+      }
+
+      function markAllTasks() {
+        const checkboxes = document.querySelectorAll(".task-checkbox");
+        checkboxes.forEach((checkbox) => {
+          checkbox.classList.add("checked");
+          checkbox.querySelector("i").style.opacity = "1";
+        });
+        updateMarkAllButton();
+        alert("All tasks marked as complete!");
+      }
+
+      function updateMarkAllButton() {
+        const totalTasks = document.querySelectorAll(".task-item").length;
+        const completedTasks = document.querySelectorAll(
+          ".task-checkbox.checked",
+        ).length;
+        const markAllBtn = document.querySelector(".mark-all-btn");
+
+        if (completedTasks === totalTasks && totalTasks > 0) {
+          markAllBtn.textContent = "All Complete ✓";
+          markAllBtn.style.background = "var(--success)";
+        } else {
+          markAllBtn.textContent = "Mark All Complete";
+          markAllBtn.style.background = "";
+        }
+      }
+
+      // Filter functions
+      function filterAssists(filter) {
+        alert(`Filtering assists: ${filter}`);
+        // In a real app, you would filter the assists
+      }
+
+      // Sidebar toggle function
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      // Initialize checkboxes and loading
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize task checkboxes
+        document.querySelectorAll(".task-checkbox").forEach((checkbox) => {
+          checkbox.addEventListener("click", function (event) {
+            event.stopPropagation();
+            toggleTask(this);
+          });
+        });
+
+        // Hide loading screen after page loads
+        setTimeout(function () {
+          document.body.classList.remove("loading-active");
+          document.querySelector(".loading-screen").style.display = "none";
+        }, 500);
+      });
+    </script>
+  </body>
+</html>
