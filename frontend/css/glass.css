@@ -102,6 +102,31 @@ body.login-page .login-wrap.glass-strong {
     border: 1px solid rgba(4, 80, 160, 0.16);
     box-shadow: 0 34px 70px -18px rgba(4, 80, 160, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
+/* The 3 base blobs only reach the top-right and bottom-left corners,
+   leaving top-left/bottom-right (and the space right behind the card)
+   plain white on a mostly-empty login screen. Enlarge/reposition them
+   and add two more (via pseudo-elements, no markup change needed) so
+   color reaches every edge instead of just two corners. */
+body.login-page .glass-mesh span:nth-child(1) { width: 760px; height: 760px; top: -240px; right: -240px; }
+body.login-page .glass-mesh span:nth-child(2) { width: 640px; height: 640px; bottom: -220px; left: -200px; }
+body.login-page .glass-mesh span:nth-child(3) { width: 560px; height: 560px; top: 25%; left: 8%; }
+body.login-page .glass-mesh::before,
+body.login-page .glass-mesh::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.3;
+    animation: glass-drift 20s ease-in-out infinite alternate;
+}
+body.login-page .glass-mesh::before {
+    width: 560px; height: 560px; background: var(--green);
+    top: -180px; left: -180px; animation-delay: -4s;
+}
+body.login-page .glass-mesh::after {
+    width: 600px; height: 600px; background: var(--blue-mid);
+    bottom: -200px; right: -180px; animation-delay: -10s;
+}
 
 /* ── Core glass surface ── */
 .glass {

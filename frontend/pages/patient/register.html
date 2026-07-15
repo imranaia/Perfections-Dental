@@ -18,10 +18,32 @@
       .error-message { background: var(--danger-light); color: var(--danger); border-left-color: var(--danger); }
       .success-message { background: var(--green-light); color: var(--green-dark); border-left-color: var(--green); }
       .switch-link { display: block; text-align: center; margin-top: 18px; font-size: 0.85rem; color: var(--blue); text-decoration: none; font-weight: 600; }
+      .back-home-btn {
+        position: fixed; top: 24px; left: 24px; z-index: 50;
+        display: inline-flex; align-items: center; gap: 9px;
+        background: linear-gradient(110deg, var(--blue-mid), var(--blue-dark));
+        color: #fff; text-decoration: none;
+        padding: 12px 22px 12px 18px; border-radius: 100px;
+        font-weight: 700; font-size: 0.88rem;
+        box-shadow: 0 10px 26px rgba(4, 80, 160, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+        transition: all 0.3s var(--ease);
+      }
+      .back-home-btn:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 16px 34px rgba(4, 80, 160, 0.5), inset 0 1px 0 rgba(255,255,255,0.25);
+      }
+      .back-home-btn i { font-size: 0.8rem; }
+      @media (max-width: 640px) {
+        .back-home-btn { top: 16px; left: 16px; padding: 10px 18px 10px 14px; font-size: 0.82rem; }
+      }
     </style>
   </head>
   <body class="glass-app login-page">
     <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <a href="/" class="back-home-btn">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
 
     <div class="login-wrap glass-strong">
       <div class="login-title">Create Your Patient Account</div>
