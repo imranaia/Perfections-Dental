@@ -177,7 +177,7 @@ body.login-page .glass-mesh::after {
     transition: width 0.3s var(--ease);
 }
 .glass-sidebar.open {
-    width: 250px;
+    width: 264px;
 }
 .glass-sidebar-backdrop {
     position: fixed;
@@ -262,17 +262,17 @@ body.login-page .glass-mesh::after {
 .glass-brand-mark img { width: 100%; height: 100%; object-fit: cover; }
 
 .glass-brand-words {
-    overflow: hidden;
-    white-space: nowrap;
+    min-width: 0; /* let flex shrink it instead of forcing the card wider */
 }
 .glass-sidebar:not(.open) .glass-brand-words { display: none; }
 .glass-brand-words strong {
     display: block;
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: 0.94rem;
     font-weight: 800;
     color: var(--blue-dark);
     letter-spacing: -0.2px;
+    white-space: nowrap;
 }
 .glass-brand-words small {
     font-size: 0.66rem;
