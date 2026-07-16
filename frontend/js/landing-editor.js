@@ -16,6 +16,7 @@
   const STYLE = `
     .pd-editable { outline: 1px dashed rgba(4,80,160,0.4); outline-offset: 3px; cursor: text; border-radius: 4px; }
     .pd-editable:focus { outline: 2px solid var(--blue); background: rgba(234,244,255,0.6); }
+    .pd-editable-link { outline: 2px dashed rgba(29,181,104,0.55); outline-offset: 2px; cursor: pointer !important; }
     .pd-photo-overlay {
       position: absolute; inset: 0; background: rgba(2,20,45,0.55); color: #fff;
       display: flex; align-items: center; justify-content: center; opacity: 0;
@@ -317,6 +318,21 @@
     if (heroCard && heroImg) {
       addPhotoOverlay(heroCard, heroImg, () => {});
     }
+
+    // Links (e.g. the footer's social icons) can't be made contenteditable
+    // the way text can -- clicking prompts for the URL instead of
+    // navigating away while in edit mode.
+    document.querySelectorAll('[data-field-href]').forEach((el) => {
+      el.classList.add('pd-editable-link');
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const current = el.getAttribute('href') === '#' ? '' : el.getAttribute('href');
+        const url = prompt('Link URL:', current || '');
+        if (url !== null && url.trim()) {
+          el.setAttribute('href', url.trim());
+        }
+      });
+    });
   }
 
   async function saveAll(statusEl) {
@@ -331,6 +347,10 @@
       });
       document.querySelectorAll('[data-field-src]').forEach((el) => {
         if (el.src) settings[el.getAttribute('data-field-src')] = el.getAttribute('src');
+      });
+      document.querySelectorAll('[data-field-href]').forEach((el) => {
+        const href = el.getAttribute('href');
+        if (href && href !== '#') settings[el.getAttribute('data-field-href')] = href;
       });
       await api('/api/superadmin/settings/', { method: 'POST', body: JSON.stringify(settings) });
 

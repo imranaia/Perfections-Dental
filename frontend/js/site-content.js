@@ -99,6 +99,11 @@
         if (settings[key]) el.src = settings[key];
       });
 
+      document.querySelectorAll('[data-field-href]').forEach((el) => {
+        const key = el.getAttribute('data-field-href');
+        if (settings[key]) el.href = settings[key];
+      });
+
       const teamGrid = document.getElementById('teamGrid');
       if (teamGrid && Array.isArray(data.team) && data.team.length > 0) {
         teamGrid.innerHTML = data.team.map(renderTeamCard).join('');
