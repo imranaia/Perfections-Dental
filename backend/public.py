@@ -26,6 +26,8 @@ def get_site_content():
 
         settings = {}
         team = []
+        gallery = []
+        testimonials = []
 
         with db.cursor() as cursor:
             cursor.execute("""
@@ -43,8 +45,30 @@ def get_site_content():
             """)
             team = [dict(row) for row in cursor.fetchall()]
 
+            cursor.execute("""
+                SELECT id, image_url, caption
+                FROM gallery_images
+                WHERE is_active = 1
+                ORDER BY display_order, id
+            """)
+            gallery = [dict(row) for row in cursor.fetchall()]
+
+            cursor.execute("""
+                SELECT id, author_name, author_role, quote, rating
+                FROM testimonials
+                WHERE is_active = 1
+                ORDER BY display_order, id
+            """)
+            testimonials = [dict(row) for row in cursor.fetchall()]
+
         db.close()
-        return jsonify({'success': True, 'settings': settings, 'team': team}), 200
+        return jsonify({
+            'success': True,
+            'settings': settings,
+            'team': team,
+            'gallery': gallery,
+            'testimonials': testimonials,
+        }), 200
     except Exception as e:
         print(f"Get site content error: {e}")
         return jsonify({'error': 'Failed to fetch site content'}), 500

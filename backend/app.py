@@ -41,8 +41,10 @@ from superadmin.analytics import analytics_bp
 from superadmin.financial import financial_bp
 from superadmin.access_control import access_control_bp
 from superadmin.team import team_bp, uploads_bp
+from superadmin.gallery import gallery_bp
+from superadmin.testimonials import testimonials_bp
 from superadmin.dashboard import superadmin_bp
-from patient import patient_bp, patient_records_bp, patient_appointments_bp
+from patient import patient_bp, patient_records_bp, patient_appointments_bp, patient_testimonials_bp
 from public import public_bp
 from auth import auth_bp, login_required, role_required
 from config import config
@@ -169,8 +171,11 @@ def create_app(config_name='default'):
     app.register_blueprint(patient_bp)
     app.register_blueprint(patient_records_bp)
     app.register_blueprint(patient_appointments_bp)
+    app.register_blueprint(patient_testimonials_bp)
     app.register_blueprint(team_bp)
     app.register_blueprint(uploads_bp)
+    app.register_blueprint(gallery_bp)
+    app.register_blueprint(testimonials_bp)
     app.register_blueprint(public_bp)
 
     return app

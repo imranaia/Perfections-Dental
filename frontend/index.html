@@ -514,6 +514,7 @@
         height: 250px;
         background: rgba(255, 255, 255, 0.05);
         border-radius: 50%;
+        pointer-events: none;
       }
       .stat-item {
         text-align: center;
@@ -636,6 +637,7 @@
         );
         opacity: 0;
         transition: opacity 0.3s;
+        pointer-events: none;
       }
       .svc-card:hover {
         transform: translateY(-10px);
@@ -754,6 +756,7 @@
         height: 180px;
         background: rgba(255, 255, 255, 0.07);
         border-radius: 50%;
+        pointer-events: none;
       }
       .bento-icon {
         font-size: 2.4rem;
@@ -1097,6 +1100,7 @@
           rgba(29, 181, 104, 0.15),
           transparent 70%
         );
+        pointer-events: none;
       }
       .cta-block::after {
         content: "";
@@ -1110,6 +1114,7 @@
           rgba(255, 255, 255, 0.05),
           transparent 70%
         );
+        pointer-events: none;
       }
       .cta-tag {
         display: inline-block;
@@ -1492,6 +1497,7 @@
                 <img
                   src="https://images.pexels.com/photos/3845626/pexels-photo-3845626.jpeg?auto=compress&cs=tinysrgb&w=900"
                   alt="Modern Dental Clinic"
+                  data-field-src="site.hero_image_url"
                   onerror="
                     this.src =
                       'https://placehold.co/900x680/EAF4FF/0056A8?text=Perfections+Dental'
@@ -1559,8 +1565,8 @@
         <div class="services-grid">
           <div class="svc-card reveal">
             <div class="svc-icon"><i class="fas fa-smile-wink"></i></div>
-            <h3>Cosmetic Dentistry</h3>
-            <p>
+            <h3 data-field="site.svc1_title">Cosmetic Dentistry</h3>
+            <p data-field="site.svc1_desc">
               Veneers, teeth whitening, and total smile makeovers — crafted to
               absolute aesthetic perfection.
             </p>
@@ -1570,8 +1576,8 @@
           </div>
           <div class="svc-card reveal reveal-delay-1">
             <div class="svc-icon"><i class="fas fa-microscope"></i></div>
-            <h3>Root Canal Therapy</h3>
-            <p>
+            <h3 data-field="site.svc2_title">Root Canal Therapy</h3>
+            <p data-field="site.svc2_desc">
               Painless, precise rotary endodontics using the latest technology
               for maximum comfort.
             </p>
@@ -1581,8 +1587,8 @@
           </div>
           <div class="svc-card reveal reveal-delay-2">
             <div class="svc-icon"><i class="fas fa-tooth"></i></div>
-            <h3>Dental Implants</h3>
-            <p>
+            <h3 data-field="site.svc3_title">Dental Implants</h3>
+            <p data-field="site.svc3_desc">
               Permanent, natural-looking tooth replacement solutions that last a
               lifetime.
             </p>
@@ -1592,8 +1598,8 @@
           </div>
           <div class="svc-card reveal">
             <div class="svc-icon"><i class="fas fa-child"></i></div>
-            <h3>Pediatric Dentistry</h3>
-            <p>
+            <h3 data-field="site.svc4_title">Pediatric Dentistry</h3>
+            <p data-field="site.svc4_desc">
               Gentle, fun dental care designed to give children a positive
               lifelong relationship with oral health.
             </p>
@@ -1611,8 +1617,8 @@
             >
               <i class="fas fa-teeth"></i>
             </div>
-            <h3>Orthodontics</h3>
-            <p>
+            <h3 data-field="site.svc5_title">Orthodontics</h3>
+            <p data-field="site.svc5_desc">
               Invisalign & custom braces for the perfectly aligned, harmonious
               smile you deserve.
             </p>
@@ -1630,8 +1636,8 @@
             >
               <i class="fas fa-shield-heart"></i>
             </div>
-            <h3>Emergency Dental</h3>
-            <p>
+            <h3 data-field="site.svc6_title">Emergency Dental</h3>
+            <p data-field="site.svc6_desc">
               24/7 urgent relief for trauma, severe pain, and dental emergencies
               — we're always here.
             </p>
@@ -1658,8 +1664,8 @@
         <div class="bento-grid">
           <div class="bento bento-blue reveal">
             <span class="bento-icon">🤖</span>
-            <h3>AI-Powered Diagnostics</h3>
-            <p>
+            <h3 data-field="site.why1_title">AI-Powered Diagnostics</h3>
+            <p data-field="site.why1_desc">
               3D CBCT imaging, digital smile design, and AI analysis deliver
               unprecedented precision and flawless results that traditional
               dentistry simply cannot match.
@@ -1667,32 +1673,32 @@
           </div>
           <div class="bento bento-green reveal reveal-delay-1">
             <span class="bento-icon">🏅</span>
-            <h3>Award-Winning Clinic</h3>
-            <p>
+            <h3 data-field="site.why2_title">Award-Winning Clinic</h3>
+            <p data-field="site.why2_desc">
               Recognised as Abuja's best dental facility 2023 & 2024. Excellence
               isn't an accident — it's our standard.
             </p>
           </div>
           <div class="bento bento-light reveal">
             <span class="bento-icon">👨‍⚕️</span>
-            <h3>Elite Specialist Team</h3>
-            <p>
+            <h3 data-field="site.why3_title">Elite Specialist Team</h3>
+            <p data-field="site.why3_desc">
               Led by Dr. Saadu Muhammad Dodo with 18+ years of international
               expertise. Every specialist is best-in-class.
             </p>
           </div>
           <div class="bento bento-cream reveal reveal-delay-1">
             <span class="bento-icon">💆</span>
-            <h3>Truly Pain-Free</h3>
-            <p>
+            <h3 data-field="site.why4_title">Truly Pain-Free</h3>
+            <p data-field="site.why4_desc">
               Sedation dentistry and a calm, anxiety-free environment ensure
               your visit is always comfortable.
             </p>
           </div>
           <div class="bento bento-light reveal reveal-delay-2">
             <span class="bento-icon">🌍</span>
-            <h3>Global Standards</h3>
-            <p>
+            <h3 data-field="site.why5_title">Global Standards</h3>
+            <p data-field="site.why5_desc">
               International-grade sterilisation, infection control, and
               treatment protocols. World-class care, right here in Abuja.
             </p>
@@ -1805,7 +1811,7 @@
           </p>
           <div class="sec-line"></div>
         </div>
-        <div class="gallery-grid reveal">
+        <div class="gallery-grid reveal" id="galleryGrid">
           <div class="gallery-item">
             <img
               src="https://images.pexels.com/photos/3845751/pexels-photo-3845751.jpeg?auto=compress&cs=tinysrgb&w=800"
@@ -1885,7 +1891,7 @@
           </p>
           <div class="sec-line"></div>
         </div>
-        <div class="testi-grid">
+        <div class="testi-grid" id="testiGrid">
           <div class="testi-card reveal">
             <div class="testi-quote">"</div>
             <div class="stars">★★★★★</div>
@@ -1942,9 +1948,9 @@
     <section id="contact" class="cta-section">
       <div class="container">
         <div class="cta-block reveal">
-          <div class="cta-tag">✨ Consultation Available</div>
-          <h2>Ready for your<br /><em>dream smile?</em></h2>
-          <p>
+          <div class="cta-tag" data-field="site.cta_tag">✨ Consultation Available</div>
+          <h2 data-field-html="site.cta_headline">Ready for your<br /><em>dream smile?</em></h2>
+          <p data-field="site.cta_subtext">
             Book a consultation with our specialists today. Experience Abuja's
             finest dental care — and leave smiling.
           </p>

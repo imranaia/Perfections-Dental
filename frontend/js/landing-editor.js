@@ -22,13 +22,19 @@
       transition: opacity 0.2s; cursor: pointer; font-size: 1.4rem; z-index: 5;
     }
     .pd-photo-overlay:hover { opacity: 1; }
-    .team-img-wrap, #logoMark { position: relative; }
+    .team-img-wrap, #logoMark, .hero-card, .gallery-item { position: relative; }
+    /* .pd-photo-overlay sits at z-index:5 to cover the whole image; these
+       are already position:absolute in the base stylesheet (pinned to the
+       bottom of the image) but need an explicit z-index above 5 too, or
+       the overlay (invisible until hover, but still hit-testable) silently
+       swallows clicks meant for the editable text inside them. */
+    .team-ribbon, .gallery-overlay { z-index: 6; }
     .pd-team-delete {
       position: absolute; top: 8px; right: 8px; z-index: 6; width: 28px; height: 28px;
       border-radius: 50%; border: none; background: rgba(192,57,43,0.9); color: #fff;
       cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
     }
-    .pd-add-team {
+    .pd-add-team, .pd-add-photo {
       border: 2px dashed rgba(4,80,160,0.35); border-radius: 28px; display: flex;
       align-items: center; justify-content: center; min-height: 220px; cursor: pointer;
       color: var(--blue); font-weight: 700; background: rgba(234,244,255,0.4);
@@ -185,6 +191,116 @@
     addTeamMemberButton(grid);
   }
 
+  function makeGalleryItemEditable(item, id) {
+    item.dataset.galleryId = id != null ? String(id) : '';
+
+    let overlay = item.querySelector('.gallery-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'gallery-overlay';
+      overlay.innerHTML = '<span></span>';
+      item.appendChild(overlay);
+    }
+    overlay.style.opacity = '1'; // the caption is hover-only normally; force visible while editing
+    const captionEl = overlay.querySelector('span');
+    captionEl.contentEditable = 'true';
+    captionEl.classList.add('pd-editable');
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'pd-team-delete';
+    delBtn.innerHTML = '<i class="fas fa-xmark"></i>';
+    delBtn.title = 'Remove photo';
+    delBtn.addEventListener('click', async () => {
+      if (!confirm('Remove this photo?')) return;
+      if (item.dataset.galleryId) {
+        try { await api(`/api/superadmin/gallery/${item.dataset.galleryId}`, { method: 'DELETE' }); }
+        catch (err) { alert(err.message); return; }
+      }
+      item.remove();
+    });
+    item.appendChild(delBtn);
+
+    const img = item.querySelector('img');
+    if (img) {
+      addPhotoOverlay(item, img, (url) => { item.dataset.photoUrl = url; });
+    }
+  }
+
+  function addGalleryPhotoButton(grid) {
+    const btn = document.createElement('div');
+    // Deliberately NOT class "gallery-item" -- see the equivalent note on
+    // addTeamMemberButton()'s "team-card" exclusion.
+    btn.className = 'pd-add-photo';
+    btn.innerHTML = '<div><i class="fas fa-plus"></i><br>Add photo</div>';
+    btn.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/png,image/jpeg,image/webp';
+      input.addEventListener('change', async () => {
+        const file = input.files[0];
+        if (!file) return;
+        try {
+          const url = await uploadPhoto(file);
+          const item = document.createElement('div');
+          item.className = 'gallery-item';
+          item.innerHTML = `<img src="${url}" alt="" /><div class="gallery-overlay"><span>New photo</span></div>`;
+          grid.insertBefore(item, btn);
+          makeGalleryItemEditable(item, null);
+        } catch (err) {
+          alert(err.message);
+        }
+      });
+      input.click();
+    });
+    grid.appendChild(btn);
+  }
+
+  function setupGalleryEditing() {
+    const grid = document.getElementById('galleryGrid');
+    if (!grid) return;
+    grid.querySelectorAll('.gallery-item').forEach((item) => {
+      makeGalleryItemEditable(item, item.dataset.galleryId || null);
+    });
+    addGalleryPhotoButton(grid);
+  }
+
+  function makeTestiCardEditable(card, id) {
+    card.dataset.testiId = id != null ? String(id) : '';
+
+    const quoteEl = card.querySelector('.testi-text');
+    const nameEl = card.querySelector('.testi-name strong');
+    const roleEl = card.querySelector('.testi-name span');
+    [quoteEl, nameEl, roleEl].forEach((el) => {
+      if (el) { el.contentEditable = 'true'; el.classList.add('pd-editable'); }
+    });
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'pd-team-delete';
+    delBtn.innerHTML = '<i class="fas fa-xmark"></i>';
+    delBtn.title = 'Remove review';
+    delBtn.addEventListener('click', async () => {
+      if (!confirm('Remove this review?')) return;
+      if (card.dataset.testiId) {
+        try { await api(`/api/superadmin/testimonials/${card.dataset.testiId}`, { method: 'DELETE' }); }
+        catch (err) { alert(err.message); return; }
+      }
+      card.remove();
+    });
+    card.style.position = 'relative';
+    card.appendChild(delBtn);
+  }
+
+  function setupTestimonialEditing() {
+    // No "add" button here on purpose -- reviews come from patients
+    // (backend/patient/testimonials.py), superadmin can only edit/remove
+    // what's already been submitted, same as any other moderation view.
+    const grid = document.getElementById('testiGrid');
+    if (!grid) return;
+    grid.querySelectorAll('.testi-card').forEach((card) => {
+      makeTestiCardEditable(card, card.dataset.testiId || null);
+    });
+  }
+
   function setupFieldEditing() {
     document.querySelectorAll('[data-field], [data-field-html]').forEach((el) => {
       el.contentEditable = 'true';
@@ -194,6 +310,12 @@
     const logoImg = logoMark && logoMark.querySelector('img');
     if (logoMark && logoImg) {
       addPhotoOverlay(logoMark, logoImg, () => {});
+    }
+
+    const heroCard = document.querySelector('.hero-card');
+    const heroImg = heroCard && heroCard.querySelector('img[data-field-src]');
+    if (heroCard && heroImg) {
+      addPhotoOverlay(heroCard, heroImg, () => {});
     }
   }
 
@@ -234,6 +356,48 @@
         }
       }
 
+      const galleryGrid = document.getElementById('galleryGrid');
+      const galleryItems = galleryGrid ? Array.from(galleryGrid.querySelectorAll('.gallery-item')) : [];
+      for (let i = 0; i < galleryItems.length; i++) {
+        const item = galleryItems[i];
+        const clean = (s) => s.replace(/\s+/g, ' ').trim();
+        const captionEl = item.querySelector('.gallery-overlay span');
+        const caption = clean(captionEl ? captionEl.textContent : '');
+        const img = item.querySelector('img');
+        const image_url = item.dataset.photoUrl || (img ? img.getAttribute('src') : null);
+        const payload = { image_url, caption, display_order: i, is_active: true };
+
+        if (item.dataset.galleryId) {
+          await api(`/api/superadmin/gallery/${item.dataset.galleryId}`, { method: 'PUT', body: JSON.stringify(payload) });
+        } else {
+          const created = await api('/api/superadmin/gallery/', { method: 'POST', body: JSON.stringify(payload) });
+          item.dataset.galleryId = String(created.image_id);
+        }
+      }
+
+      // Testimonials are patient-submitted; superadmin can only edit/remove
+      // ones that already exist here, never create new ones (no "new"
+      // branch, unlike team/gallery -- there's nothing to POST).
+      const testiGrid = document.getElementById('testiGrid');
+      const testiCards = testiGrid ? Array.from(testiGrid.querySelectorAll('.testi-card')) : [];
+      for (let i = 0; i < testiCards.length; i++) {
+        const card = testiCards[i];
+        if (!card.dataset.testiId) continue;
+        const clean = (s) => s.replace(/\s+/g, ' ').trim();
+        const quote = clean(card.querySelector('.testi-text').textContent);
+        const author_name = clean(card.querySelector('.testi-name strong').textContent);
+        const author_role = clean(card.querySelector('.testi-name span').textContent);
+        // Rating isn't inline-editable here -- read the star count back out
+        // of the DOM so PUT doesn't silently reset it to the endpoint's
+        // default of 5.
+        const starsText = card.querySelector('.stars') ? card.querySelector('.stars').textContent : '';
+        const rating = (starsText.match(/★/g) || []).length || 5;
+        await api(`/api/superadmin/testimonials/${card.dataset.testiId}`, {
+          method: 'PUT',
+          body: JSON.stringify({ quote, author_name, author_role, rating, is_active: true, display_order: i }),
+        });
+      }
+
       statusEl.textContent = 'Saved — reloading…';
       setTimeout(() => { location.href = '/index.html?edit=1'; }, 700);
     } catch (err) {
@@ -242,18 +406,25 @@
   }
 
   function addEditBar() {
+    // When this page is embedded inside the superadmin's "Edit Landing
+    // Page" admin shell (frontend/pages/superadmin/edit-landing.html),
+    // there's already a real sidebar one level up for navigating away --
+    // no Exit button needed, and it would only leave the admin area.
+    const inIframe = window.self !== window.top;
+
     const bar = document.createElement('div');
     bar.className = 'pd-edit-bar';
     bar.innerHTML = `
       <span><i class="fas fa-pen-to-square"></i> Editing Landing Page</span>
       <span class="pd-status"></span>
       <button class="pd-save-btn"><i class="fas fa-check"></i> Save Changes</button>
-      <button class="pd-exit-btn"><i class="fas fa-arrow-right-from-bracket"></i> Exit</button>
+      ${inIframe ? '' : '<button class="pd-exit-btn"><i class="fas fa-arrow-right-from-bracket"></i> Exit</button>'}
     `;
     document.body.appendChild(bar);
     const status = bar.querySelector('.pd-status');
     bar.querySelector('.pd-save-btn').addEventListener('click', () => saveAll(status));
-    bar.querySelector('.pd-exit-btn').addEventListener('click', () => { location.href = '/'; });
+    const exitBtn = bar.querySelector('.pd-exit-btn');
+    if (exitBtn) exitBtn.addEventListener('click', () => { location.href = '/'; });
   }
 
   async function init() {
@@ -274,6 +445,8 @@
     injectStyle();
     setupFieldEditing();
     setupTeamEditing();
+    setupGalleryEditing();
+    setupTestimonialEditing();
     addEditBar();
   }
 

@@ -39,6 +39,7 @@
         <a class="glass-nav-link" data-tab="records"><i class="fas fa-file-waveform"></i> Medical Records</a>
         <a class="glass-nav-link" data-tab="prescriptions"><i class="fas fa-pills"></i> Medications</a>
         <a class="glass-nav-link" data-tab="billing"><i class="fas fa-receipt"></i> Billing</a>
+        <a class="glass-nav-link" data-tab="review"><i class="fas fa-star"></i> Leave a Review</a>
         <div style="flex:1"></div>
         <a class="glass-nav-link" id="logoutBtn"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
       </aside>
@@ -145,6 +146,34 @@
             </table></div>
           </div>
         </section>
+
+        <!-- LEAVE A REVIEW -->
+        <section class="tab-panel" id="tab-review">
+          <div class="glass-card" style="max-width:520px;">
+            <h3><i class="fas fa-star"></i> Rate Your Experience</h3>
+            <p style="color:var(--mid-gray); font-size:0.88rem; margin-bottom:16px;">
+              Your review publishes right away on our homepage — thank you for sharing it.
+            </p>
+            <div id="reviewMessage" class="message" style="padding:12px 16px; border-radius:var(--radius-sm); margin-bottom:16px; font-size:0.86rem; border-left:3px solid; display:none;"></div>
+            <div class="glass-field">
+              <label>Your rating</label>
+              <div id="starPicker" style="font-size:1.8rem; color:var(--light-border); cursor:pointer; letter-spacing:4px;">
+                <span data-star="1"><i class="fas fa-star"></i></span><span data-star="2"><i class="fas fa-star"></i></span><span data-star="3"><i class="fas fa-star"></i></span><span data-star="4"><i class="fas fa-star"></i></span><span data-star="5"><i class="fas fa-star"></i></span>
+              </div>
+            </div>
+            <div class="glass-field">
+              <label>Your review</label>
+              <textarea id="reviewText" class="glass-textarea" placeholder="Tell us about your visit…" rows="4"></textarea>
+            </div>
+            <button id="submitReviewBtn" class="glass-btn glass-btn-primary" style="width:100%; padding:13px;">
+              <i class="fas fa-paper-plane"></i> Submit Review
+            </button>
+          </div>
+          <div class="glass-card" style="max-width:520px; margin-top:18px;">
+            <h3><i class="fas fa-clock-rotate-left"></i> Your Past Reviews</h3>
+            <div id="myReviewsList" style="margin-top:10px;"></div>
+          </div>
+        </section>
       </main>
     </div>
 
@@ -195,6 +224,7 @@
         loadInvoices();
         loadDoctors();
         loadMyRequests();
+        loadMyReviews();
 
         const dateInput = document.getElementById('dateSelect');
         const tomorrow = new Date(Date.now() + 86400000);
@@ -332,6 +362,79 @@
           loadSlots();
         }
       });
+
+      // ── Leave a Review ──
+      let selectedRating = 0;
+      const starPicker = document.getElementById('starPicker');
+      const starEls = Array.from(starPicker.querySelectorAll('span'));
+
+      function paintStars(n) {
+        starEls.forEach((el) => {
+          el.style.color = Number(el.dataset.star) <= n ? '#f59e0b' : 'var(--light-border)';
+        });
+      }
+
+      starEls.forEach((el) => {
+        el.addEventListener('mouseenter', () => paintStars(Number(el.dataset.star)));
+        el.addEventListener('click', () => {
+          selectedRating = Number(el.dataset.star);
+          paintStars(selectedRating);
+        });
+      });
+      starPicker.addEventListener('mouseleave', () => paintStars(selectedRating));
+
+      function showReviewMessage(type, text) {
+        const msg = document.getElementById('reviewMessage');
+        msg.textContent = text;
+        msg.style.display = 'block';
+        if (type === 'error') {
+          msg.style.background = 'var(--danger-light)';
+          msg.style.color = 'var(--danger)';
+          msg.style.borderLeftColor = 'var(--danger)';
+        } else {
+          msg.style.background = 'var(--green-light)';
+          msg.style.color = 'var(--green-dark)';
+          msg.style.borderLeftColor = 'var(--green)';
+        }
+      }
+
+      document.getElementById('submitReviewBtn').addEventListener('click', async () => {
+        const quote = document.getElementById('reviewText').value.trim();
+        if (!selectedRating) {
+          showReviewMessage('error', 'Please pick a star rating first.');
+          return;
+        }
+        if (!quote) {
+          showReviewMessage('error', 'Please write a few words about your visit.');
+          return;
+        }
+        try {
+          await api('/testimonials/', { method: 'POST', body: JSON.stringify({ quote, rating: selectedRating }) });
+          showReviewMessage('success', 'Thank you! Your review is now live on our homepage.');
+          document.getElementById('reviewText').value = '';
+          selectedRating = 0;
+          paintStars(0);
+          loadMyReviews();
+        } catch (err) {
+          showReviewMessage('error', err.message);
+        }
+      });
+
+      async function loadMyReviews() {
+        try {
+          const { reviews } = await api('/testimonials/mine');
+          const list = document.getElementById('myReviewsList');
+          list.innerHTML = reviews.length ? reviews.map((r) => `
+            <div class="list-row" style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:10px 0; border-bottom:1px solid var(--light-border);">
+              <div style="color:#f59e0b;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+              <div style="font-size:0.86rem; color:var(--dark);">${r.quote}</div>
+              <div style="font-size:0.72rem; color:var(--mid-gray);">${new Date(r.created_at).toLocaleDateString()}</div>
+            </div>
+          `).join('') : '<p style="color:var(--mid-gray); font-size:0.85rem;">You haven\'t left a review yet.</p>';
+        } catch (err) {
+          console.error('Failed to load reviews:', err);
+        }
+      }
 
       init();
     </script>

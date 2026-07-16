@@ -452,6 +452,33 @@ CREATE TABLE IF NOT EXISTS team_members (
     updated_at    DATETIME NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Landing page "A World-Class Environment" gallery section (superadmin/gallery.py)
+CREATE TABLE IF NOT EXISTS gallery_images (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    image_url     TEXT NOT NULL,
+    caption       TEXT,
+    display_order INTEGER NOT NULL DEFAULT 0,
+    is_active     INTEGER NOT NULL DEFAULT 1,
+    created_at    DATETIME NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Patient-submitted ratings/reviews shown in the "What Our Patients Say"
+-- section (backend/patient/testimonials.py, superadmin/testimonials.py).
+-- Publishes immediately per product decision -- is_active exists purely as
+-- an after-the-fact takedown switch, not a pre-publish approval gate.
+CREATE TABLE IF NOT EXISTS testimonials (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    patient_id    INTEGER,
+    author_name   TEXT NOT NULL,
+    author_role   TEXT,
+    quote         TEXT NOT NULL,
+    rating        INTEGER NOT NULL DEFAULT 5,
+    display_order INTEGER NOT NULL DEFAULT 0,
+    is_active     INTEGER NOT NULL DEFAULT 1,
+    created_at    DATETIME NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (patient_id) REFERENCES patients(id)
+);
+
 -- Enforces first-come-first-served booking: one non-cancelled appointment
 -- per doctor per exact datetime slot.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_appt_slot_unique

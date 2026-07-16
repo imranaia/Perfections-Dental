@@ -26,7 +26,7 @@
     const photo = member.photo_url || '';
 
     return `
-      <div class="team-card reveal visible">
+      <div class="team-card reveal visible" data-team-id="${member.id}">
         <div class="team-img-wrap">
           ${photo ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(member.name)}" onerror="this.style.display='none'" />` : ''}
           <div class="team-ribbon">
@@ -37,6 +37,41 @@
         <div class="team-body">
           <p>${escapeHtml(member.bio || '')}</p>
           <div class="team-tags">${tagsHtml}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderGalleryItem(image) {
+    return `
+      <div class="gallery-item" data-gallery-id="${image.id}">
+        <img src="${escapeHtml(image.image_url)}" alt="${escapeHtml(image.caption || '')}" onerror="this.style.display='none'" />
+        <div class="gallery-overlay"><span>${escapeHtml(image.caption || '')}</span></div>
+      </div>`;
+  }
+
+  function initials(name) {
+    return (name || '')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0].toUpperCase())
+      .join('');
+  }
+
+  function renderTestiCard(t) {
+    const rating = Math.max(1, Math.min(5, parseInt(t.rating, 10) || 5));
+    const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    return `
+      <div class="testi-card reveal visible" data-testi-id="${t.id}">
+        <div class="testi-quote">"</div>
+        <div class="stars">${stars}</div>
+        <p class="testi-text">${escapeHtml(t.quote)}</p>
+        <div class="testi-author">
+          <div class="testi-av">${escapeHtml(initials(t.author_name))}</div>
+          <div class="testi-name">
+            <strong>${escapeHtml(t.author_name)}</strong>
+            <span>${escapeHtml(t.author_role || '')}</span>
+          </div>
         </div>
       </div>`;
   }
@@ -69,6 +104,16 @@
         teamGrid.innerHTML = data.team.map(renderTeamCard).join('');
       }
 
+      const galleryGrid = document.getElementById('galleryGrid');
+      if (galleryGrid && Array.isArray(data.gallery) && data.gallery.length > 0) {
+        galleryGrid.innerHTML = data.gallery.map(renderGalleryItem).join('');
+      }
+
+      const testiGrid = document.getElementById('testiGrid');
+      if (testiGrid && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
+        testiGrid.innerHTML = data.testimonials.map(renderTestiCard).join('');
+      }
+
       return data;
     } catch (err) {
       console.error('Failed to load site content:', err);
@@ -76,7 +121,7 @@
     }
   }
 
-  window.PerfectionsSiteContent = { loadSiteContent, renderTeamCard };
+  window.PerfectionsSiteContent = { loadSiteContent, renderTeamCard, renderGalleryItem, renderTestiCard };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadSiteContent);

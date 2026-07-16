@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Edit Landing Page — Perfections Dental</title>
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/glass.css" />
+    <style>
+      .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .page-head h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--blue-dark); margin: 0; }
+      .page-head p { font-size: 0.85rem; color: var(--mid-gray); margin: 2px 0 0; }
+      .editor-frame-wrap { border-radius: 20px; overflow: hidden; box-shadow: var(--glass-shadow-lg); height: calc(100vh - 130px); min-height: 500px; background: #fff; }
+      #landingFrame { width: 100%; height: 100%; border: none; display: block; }
+    </style>
+  </head>
+  <body class="glass-app">
+    <div class="glass-mesh"><span></span><span></span><span></span></div>
+
+    <div class="glass-shell">
+      <aside class="glass-sidebar glass">
+        <a class="glass-brand" href="dashboard.html">
+          <div class="glass-brand-mark"><img src="/assets/logo.png" onerror="this.style.display='none'" /></div>
+          <div class="glass-brand-words"><strong>Perfections Dental</strong><small>Services Limited</small></div>
+        </a>
+        <a class="glass-nav-link" href="dashboard.html"><i class="fas fa-gauge"></i> Dashboard</a>
+        <a class="glass-nav-link" href="doctors.html"><i class="fas fa-user-doctor"></i> Doctors</a>
+        <a class="glass-nav-link" href="nurses.html"><i class="fas fa-user-nurse"></i> Nurses</a>
+        <a class="glass-nav-link" href="reception.html"><i class="fas fa-bell-concierge"></i> Reception Staff</a>
+        <a class="glass-nav-link" href="services.html"><i class="fas fa-tooth"></i> Services</a>
+        <a class="glass-nav-link" href="inventory.html"><i class="fas fa-boxes-stacked"></i> Inventory</a>
+        <a class="glass-nav-link" href="financial.html"><i class="fas fa-sack-dollar"></i> Financial</a>
+        <a class="glass-nav-link" href="analytics.html"><i class="fas fa-chart-pie"></i> Analytics</a>
+        <a class="glass-nav-link" href="performance.html"><i class="fas fa-ranking-star"></i> Performance</a>
+        <a class="glass-nav-link" href="access-control.html"><i class="fas fa-shield-halved"></i> Access Control</a>
+        <a class="glass-nav-link" href="settings.html"><i class="fas fa-gear"></i> Settings</a>
+        <a class="glass-nav-link active" href="edit-landing.html"><i class="fas fa-pen-to-square"></i> Edit Landing Page</a>
+        <div style="flex:1"></div>
+        <a class="glass-nav-link" href="profile.html"><i class="fas fa-user"></i> Profile</a>
+        <a class="glass-nav-link" id="logoutBtn" href="#"><i class="fas fa-right-from-bracket"></i> Sign Out</a>
+      </aside>
+
+      <main class="glass-main">
+        <div class="page-head">
+          <div>
+            <h1>Edit Landing Page</h1>
+            <p>This is the real public homepage — click any highlighted text or photo below to edit it, then save. Use the sidebar to leave whenever you're done.</p>
+          </div>
+        </div>
+        <div class="editor-frame-wrap">
+          <iframe id="landingFrame" src="/index.html?edit=1" title="Landing page editor"></iframe>
+        </div>
+      </main>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/sidebar.js"></script>
+    <script src="/js/role-switch.js"></script>
+    <script>
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await logout();
+      });
+
+      async function init() {
+        const user = await checkAuth();
+        if (!user) return;
+      }
+      init();
+    </script>
+  </body>
+</html>
